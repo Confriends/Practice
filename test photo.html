@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=.5">
+<style>
+body {
+  background-image: url('inv.png');
+}
+
+/* Container for scrolling images */
+.image-gallery {
+  display: flex;
+  overflow-x: scroll; /* Enables horizontal scrolling */
+  gap: 10px; /* Adds space between images */
+  margin-top: 70px;
+  padding-bottom: 20px;
+}
+
+/* Image container */
+.image-container {
+  flex-shrink: 0; /* Prevent images from shrinking */
+  position: relative;
+  width: 100%; /* Make the image container take full width available */
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.image-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+</style>
+</head>
+<body>
+    <h1></h1>
+
+    <!-- Image gallery container with scroll -->
+    <div class="image-gallery">
+        <!-- Image 1 -->
+        <div class="image-container">
+            <img src="ScreenShot537.png" alt="Image 1 Description" />
+        </div>
+
+        <!-- Image 2 -->
+        <div class="image-container">
+            <img src="ScreenShot539.png" alt="Image 2 Description" />
+        </div>
+
+        <!-- Image 3 -->
+        <div class="image-container">
+            <img src="ScreenShot540.png" alt="Image 3 Description" />
+        </div>
+
+
+        <!-- Image 3 -->
+        <div class="image-container">
+            <img src="ScreenShot534.png" alt="Image 3 Description" />
+        </div>
+
+        <!-- Add more images as needed -->
+    </div>
+
+    <!-- Clickable areas (remains unchanged) -->
+    <div class="clickable-area" style="position: absolute; top: 20px; left: 520px; width: 200px; height: 100px; background-color: transparent;">
+        <a href="index.HTML" style="display: block; width: 100%; height: 100%;"></a>
+    </div>
+    <div class="clickable-area" style="position: absolute; top: 20px; left: 150px; width: 200px; height: 100px; background-color: transparent;">
+        <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
+    </div>
+    <div class="clickable-area" style="position: absolute; top: 20px; left: 350px; width: 200px; height: 100px; background-color: transparent;">
+        <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
+    </div>
+    
+    <!-- Add more images as needed -->
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=.5">
+<style>
+body {
+  background-image: url('inv.png');
+}
+        /* Your CSS styles go here */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            margin-top: 70px;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1></h1>
+    <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/_MT5-Z0rI_Y?si=kiea4Zhaqs4w0_71" frameborder="0" allowfullscreen></iframe>
+    </div>
+<div class="clickable-area" style="position: absolute; top: 20px; left: 520px; width: 200px; height: 100px; background-color: transparent;">
+    <a href="DATA.HTML" style="display: block; width: 100%; height: 100%;"></a>
+</div>
+<div class="clickable-area" style="position: absolute; top: 20px; left: 150px; width: 200px; height: 100px; background-color: transparent;">
+    <a href="index.html" style="display: block; width: 100%; height: 100%;"></a>
+</div>
+<div class="clickable-area" style="position: absolute; top: 20px; left: 350px; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
+</div>
+    
+    <!-- Add more embedded videos as needed -->
+</body>
+</html>
