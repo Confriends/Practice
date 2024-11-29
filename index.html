@@ -4,14 +4,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=.5">
 <style>
 body {
-    background-image: url('fo4quest2.jpg'); /* replace with your image path */
-    background-size: cover; /* Ensures the image covers the entire screen */
-    background-position: center top; /* Aligns the image to the top-center */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
-    background-attachment: fixed; /* Keeps the background fixed while scrolling */
-    background-color: black; /* Fills empty space with black */
-    margin: 0; /* Removes default margin */
-    height: 100vh; /* Ensures the body takes the full height of the screen */
+  background-image: url('fo4quest2.jpg');  
+  margin: 0;
+  min-width: 250px;
 }
 
 /* Include the padding and border in an element's total width and height */
@@ -155,7 +150,7 @@ input {
   bottom: 30px;
   right: 10px;
   padding: 10px;
-  font-size: 25px;
+  font-size: 20px;
   color: lime;
   font-family: Arial, sans-serif;
   text-align: right;
@@ -176,11 +171,7 @@ input {
 }
 
 .resetBtn:hover {
-  background-color: #ff4500;
-}
-
-#fullscreen-toggle:hover {
-  background-color: #32cd32; /* Slightly darker green when hovering */
+  background-color: #ff4500; /* Darker tomato color */
 }
 </style>
 <!-- Confetti CDN -->
@@ -195,6 +186,7 @@ input {
 </div>
 
 <ul id="myUL">
+
 </ul>
 
 <!-- Lime green status bar -->
@@ -208,25 +200,186 @@ input {
 
 <!-- Add sound for confetti -->
 <audio id="confettiSound" src="level up.wav" preload="auto"></audio>
-
 <script>
-// Function to request fullscreen
-function requestFullscreen() {
-  if (document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen();
-  } else if (document.documentElement.mozRequestFullScreen) { // Firefox
-    document.documentElement.mozRequestFullScreen();
-  } else if (document.documentElement.webkitRequestFullscreen) { // Chrome and Safari
-    document.documentElement.webkitRequestFullscreen();
-  } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
-    document.documentElement.msRequestFullscreen();
+  function requestFullscreen() {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+      document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullscreen) { // Chrome and Safari
+      document.documentElement.webkitRequestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+      document.documentElement.msRequestFullscreen();
+    }
+  }
+</script>
+<script>
+// Load the saved progress from localStorage if available
+function loadProgress() {
+  const savedProgress = localStorage.getItem('progress');
+  const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+  if (savedProgress) {
+    document.getElementById("statusBar").style.width = savedProgress + "%";
+    document.getElementById("statusBar").textContent = Math.round(savedProgress) + "%";
+  }
+
+  // Re-create tasks and mark them as completed based on saved data
+  const ul = document.getElementById("myUL");
+  savedTasks.forEach(task => {
+    const li = document.createElement("li");
+    li.textContent = task.text;
+    if (task.checked) {
+      li.classList.add("checked");
+    }
+    ul.appendChild(li);
+    addCloseButton(li);
+
+    // Allow for checking/unchecking tasks after they are loaded
+    li.addEventListener('click', function() {
+      this.classList.toggle('checked');
+      updateStatusBar();
+    });
+  });
+  updateStatusBar(); // Update the status bar based on the loaded tasks
+}
+
+// Add a "close" button to a list item
+function addCloseButton(li) {
+  var span = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  span.className = "close";
+  span.appendChild(txt);
+  li.appendChild(span);
+  
+  span.onclick = function() {
+    var div = this.parentElement;
+    div.style.display = "none";
+    updateStatusBar();
   }
 }
 
-// Automatically request fullscreen when the page loads
-window.onload = function() {
-  requestFullscreen();
-};
+// Save tasks and progress to localStorage
+function saveProgress() {
+  const tasks = [];
+  const taskItems = document.querySelectorAll("ul li");
+
+  taskItems.forEach(task => {
+    tasks.push({
+      text: task.textContent.replace("\u00D7", "").trim(),
+      checked: task.classList.contains("checked")
+    });
+  });
+
+  const completedTasks = document.querySelectorAll("ul li.checked");
+  const progress = (completedTasks.length / taskItems.length) * 100;
+
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+  localStorage.setItem('progress', progress);
+}
+
+// Update the status bar based on completed tasks
+function updateStatusBar() {
+  const tasks = document.querySelectorAll("ul li");
+  const completedTasks = document.querySelectorAll("ul li.checked");
+  const percentage = (completedTasks.length / tasks.length) * 100;
+
+  document.getElementById("statusBar").style.width = percentage + "%";
+  document.getElementById("statusBar").textContent = Math.round(percentage) + "%"; // Show percentage text
+  saveProgress();  // Save progress to localStorage
+
+  // Trigger confetti if status bar is 100%
+  if (percentage === 100) {
+    triggerConfetti();
+  }
+}
+
+// Trigger confetti effect when 100% completion is reached
+function triggerConfetti() {
+  // Play the confetti sound
+  const sound = document.getElementById("confettiSound");
+  sound.play();
+
+  // Trigger confetti
+  confetti({
+    particleCount: 200,
+    spread: 90,
+    origin: { y: 0.6 },
+    colors: ['#ff0', '#ff0', '#0f0', '#00f', '#f0f'],
+  });
+}
+
+// Add event listener for Enter key press
+document.getElementById("myInput").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+      newElement();
+  }
+});
+
+// Create a new list item when clicking on the "Add" button
+function newElement() {
+  var li = document.createElement("li");
+  var inputValue = document.getElementById("myInput").value;
+  var t = document.createTextNode(inputValue);
+  li.appendChild(t);
+
+  if (inputValue === '') {
+    alert("You must write something!");
+  } else {
+    document.getElementById("myUL").appendChild(li);
+  }
+  document.getElementById("myInput").value = "";
+
+  addCloseButton(li);  // Add close button to the new item
+
+  // Add event listener for toggling "checked" class
+  li.addEventListener('click', function() {
+    this.classList.toggle('checked');
+    updateStatusBar();
+  });
+
+  updateStatusBar();
+}
+
+// Reset all tasks and progress
+function resetTasks() {
+  // Clear the tasks list
+  const ul = document.getElementById("myUL");
+  ul.innerHTML = "";  // Remove all tasks
+
+  // Clear the status bar and set it back to 0%
+  document.getElementById("statusBar").style.width = "0%";
+  document.getElementById("statusBar").textContent = "0%";
+
+  // Clear localStorage
+  localStorage.removeItem('tasks');
+  localStorage.removeItem('progress');
+}
+
+// Load the saved progress when the page is loaded
+window.onload = loadProgress;
+
+// Function to update date and time in the bottom right corner
+function updateTime() {
+  const now = new Date();
+  const options = { 
+    weekday: 'short', 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric', 
+    hour: 'numeric', 
+    minute: 'numeric', 
+    hour12: true 
+  };
+  const timeString = now.toLocaleString('en-US', options);
+  document.getElementById("timeDisplay").textContent = timeString;
+}
+
+// Update time every minute
+setInterval(updateTime, 60000);
+
+// Initial call to update time immediately when the page loads
+updateTime();
 </script>
 
 <div class="clickable-area" style="position: absolute; top: 20px; left: 130px; width: 200px; height: 100px; background-color: transparent;">
@@ -234,7 +387,5 @@ window.onload = function() {
 </div>
 <div class="clickable-area" style="position: absolute; top: 20px; left: 350px; width: 200px; height: 100px; background-color: transparent;">
     <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
-</div>
-
 </body>
 </html>
