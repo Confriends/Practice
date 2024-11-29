@@ -179,21 +179,6 @@ input {
   background-color: #ff4500;
 }
 
-/* Fullscreen Button Styling */
-#fullscreen-toggle {
-  position: fixed;
-  top: 100px;
-  right: 20px;
-  padding: 10px 20px;
-  background-color: limegreen;
-  border: none;
-  color: black;
-  font-size: 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
 #fullscreen-toggle:hover {
   background-color: #32cd32; /* Slightly darker green when hovering */
 }
@@ -224,29 +209,24 @@ input {
 <!-- Add sound for confetti -->
 <audio id="confettiSound" src="level up.wav" preload="auto"></audio>
 
-<!-- Fullscreen Toggle Button -->
-<button id="fullscreen-toggle" onclick="toggleFullscreen()">Toggle Fullscreen</button>
-
 <script>
-// Check if fullscreen state is stored in localStorage when the page loads
-window.onload = function() {
-  if (localStorage.getItem('fullscreen') === 'true') {
-    document.documentElement.requestFullscreen();  // Enter fullscreen if saved state is 'true'
-  }
-};
-
-// Function to toggle fullscreen
-function toggleFullscreen() {
-  if (!document.fullscreenElement) {
+// Function to request fullscreen
+function requestFullscreen() {
+  if (document.documentElement.requestFullscreen) {
     document.documentElement.requestFullscreen();
-    localStorage.setItem('fullscreen', 'true');  // Save fullscreen state
-  } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-      localStorage.setItem('fullscreen', 'false');  // Save exit fullscreen state
-    }
+  } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+    document.documentElement.mozRequestFullScreen();
+  } else if (document.documentElement.webkitRequestFullscreen) { // Chrome and Safari
+    document.documentElement.webkitRequestFullscreen();
+  } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+    document.documentElement.msRequestFullscreen();
   }
 }
+
+// Automatically request fullscreen when the page loads
+window.onload = function() {
+  requestFullscreen();
+};
 </script>
 
 <div class="clickable-area" style="position: absolute; top: 20px; left: 130px; width: 200px; height: 100px; background-color: transparent;">
