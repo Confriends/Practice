@@ -228,13 +228,6 @@ input {
 <audio id="confettiSound" src="level up.wav" preload="auto"></audio>
 
 <script>
-window.onload = function() {
-  // Check fullscreen state stored in localStorage
-  const isFullscreen = localStorage.getItem('fullscreen') === 'true';
-  if (isFullscreen && !document.fullscreenElement) {
-    document.documentElement.requestFullscreen(); // Request fullscreen if needed
-  }
-};
 // Load the saved progress from localStorage if available
 function loadProgress() {
   const savedProgress = localStorage.getItem('progress');
@@ -402,26 +395,22 @@ setInterval(updateTime, 60000);
 // Initial call to update time immediately when the page loads
 updateTime();
 
-// Fullscreen toggle function with persistence in localStorage
+// Fullscreen toggle function
 document.getElementById('fullscreen-btn').addEventListener('click', function() {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen();
-    localStorage.setItem('fullscreen', 'true'); // Store fullscreen state
   } else {
     if (document.exitFullscreen) {
       document.exitFullscreen();
-      localStorage.setItem('fullscreen', 'false'); // Store fullscreen state
     }
   }
 });
+</script>
 
 <div class="clickable-area" style="position: absolute; top: 20px; left: 130px; width: 200px; height: 100px; background-color: transparent;">
     <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
 </div>
 <div class="clickable-area" style="position: absolute; top: 20px; left: 350px; width: 200px; height: 100px; background-color: transparent;">
     <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
-</script>
-
-
 </body>
 </html>
