@@ -228,6 +228,26 @@ input {
 <audio id="confettiSound" src="level up.wav" preload="auto"></audio>
 
 <script>
+// Fullscreen toggle function
+document.getElementById('fullscreen-btn').addEventListener('click', function() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+    localStorage.setItem('fullscreen', 'true');  // Save fullscreen state
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+      localStorage.setItem('fullscreen', 'false');  // Save fullscreen state
+    }
+  }
+});
+
+// Check if fullscreen was saved in localStorage when the page loads
+window.onload = function() {
+  if (localStorage.getItem('fullscreen') === 'true') {
+    document.documentElement.requestFullscreen();
+  }
+};
+
 // Load the saved progress from localStorage if available
 function loadProgress() {
   const savedProgress = localStorage.getItem('progress');
