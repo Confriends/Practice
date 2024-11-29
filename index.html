@@ -3,7 +3,7 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=.5">
 <style>
-body {
+body    {
     background-image: url('fo4quest2.jpg'); /* replace with your image path */
     background-size: cover; /* Ensures the image covers the entire screen */
     background-position: center top; /* Aligns the image to the top-center */
@@ -228,130 +228,200 @@ input {
 <audio id="confettiSound" src="level up.wav" preload="auto"></audio>
 
 <script>
-// Fullscreen toggle function
-document.getElementById('fullscreen-btn').addEventListener('click', function() {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen();
-    localStorage.setItem('fullscreen', 'true');  // Save fullscreen state
-  } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-      localStorage.setItem('fullscreen', 'false');  // Save fullscreen state
+window.onload = function() {
+  // Check fullscreen state stored in localStorage
+  const isFullscreen = localStorage.getItem('fullscreen') === 'true';
+  if (isFullscreen && !document.fullscreenElement) {
+    document.documentElement.requestFullscreen(); // Request fullscreen if needed
+  }
+};
+// Load the saved progress from localStorage if available
+function loadProgress() {
+  const savedProgress = localStorage.getItem('progress');
+  const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+  if (savedProgress) {
+    document.getElementById("statusBar").style.width = savedProgress + "%";
+    document.getElementById("statusBar").textContent = Math.round(savedProgress) + "%";
+  }
+
+  // Re-create tasks and mark them as completed based on saved data
+  const ul = document.getElementById("myUL");
+  savedTasks.forEach(task => {
+    const li = document.createElement("li");
+    li.textContent = task.text;
+    if (task.checked) {
+      li.classList.add("checked");
     }
+    ul.appendChild(li);
+    addCloseButton(li);
+
+    // Allow for checking/unchecking tasks after they are loaded
+    li.addEventListener('click', function() {
+      this.classList.toggle('checked');
+      updateStatusBar();
+    });
+  });
+  updateStatusBar(); // Update the status bar based on the loaded tasks
+}
+
+// Add a "close" button to a list item
+function addCloseButton(li) {
+  var span = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  span.className = "close";
+  span.appendChild(txt);
+  li.appendChild(span);
+  
+  span.onclick = function() {
+    var div = this.parentElement;
+    div.style.display = "none";
+    updateStatusBar();
+  }
+}
+
+// Save tasks and progress to localStorage
+function saveProgress() {
+  const tasks = [];
+  const taskItems = document.querySelectorAll("ul li");
+
+  taskItems.forEach(task => {
+    tasks.push({
+      text: task.textContent.replace("\u00D7", "").trim(),
+      checked: task.classList.contains("checked")
+    });
+  });
+
+  const completedTasks = document.querySelectorAll("ul li.checked");
+  const progress = (completedTasks.length / taskItems.length) * 100;
+
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+  localStorage.setItem('progress', progress);
+}
+
+// Update the status bar based on completed tasks
+function updateStatusBar() {
+  const tasks = document.querySelectorAll("ul li");
+  const completedTasks = document.querySelectorAll("ul li.checked");
+  const percentage = (completedTasks.length / tasks.length) * 100;
+
+  document.getElementById("statusBar").style.width = percentage + "%";
+  document.getElementById("statusBar").textContent = Math.round(percentage) + "%"; // Show percentage text
+  saveProgress();  // Save progress to localStorage
+
+  // Trigger confetti if status bar is 100%
+  if (percentage === 100) {
+    triggerConfetti();
+  }
+}
+
+// Trigger confetti effect when 100% completion is reached
+function triggerConfetti() {
+  // Play the confetti sound
+  const sound = document.getElementById("confettiSound");
+  sound.play();
+
+  // Trigger confetti
+  confetti({
+    particleCount: 200,
+    spread: 90,
+    origin: { y: 0.6 },
+    colors: ['#ff0', '#ff0', '#0f0', '#00f', '#f0f'],
+  });
+}
+
+// Add event listener for Enter key press
+document.getElementById("myInput").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+      newElement();
   }
 });
 
-// Check if fullscreen was saved in localStorage when the page loads
-window.onload = function() {
-  if (localStorage.getItem('fullscreen') === 'true') {
-    document.documentElement.requestFullscreen();
-  }
-};
+// Create a new list item when clicking on the "Add" button
+function newElement() {
+  var li = document.createElement("li");
+  var inputValue = document.getElementById("myInput").value;
+  var t = document.createTextNode(inputValue);
+  li.appendChild(t);
 
-// Your other functions (loadProgress, newElement, updateStatusBar, etc.) go here
-</script>
+  if (inputValue === '') {
+    alert("You must write something!");
+  } else {
+    document.getElementById("myUL").appendChild(li);
+  }
+  document.getElementById("myInput").value = "";
+
+  addCloseButton(li);  // Add close button to the new item
+
+  // Add event listener for toggling "checked" class
+  li.addEventListener('click', function() {
+    this.classList.toggle('checked');
+    updateStatusBar();
+  });
+
+  updateStatusBar();
+}
+
+// Reset all tasks and progress
+function resetTasks() {
+  // Clear the tasks list
+  const ul = document.getElementById("myUL");
+  ul.innerHTML = "";  // Remove all tasks
+
+  // Clear the status bar and set it back to 0%
+  document.getElementById("statusBar").style.width = "0%";
+  document.getElementById("statusBar").textContent = "0%";
+
+  // Clear localStorage
+  localStorage.removeItem('tasks');
+  localStorage.removeItem('progress');
+}
+
+// Load the saved progress when the page is loaded
+window.onload = loadProgress;
+
+// Function to update date and time in the bottom right corner
+function updateTime() {
+  const now = new Date();
+  const options = { 
+    weekday: 'short', 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric', 
+    hour: 'numeric', 
+    minute: 'numeric', 
+    hour12: true 
+  };
+  const timeString = now.toLocaleString('en-US', options);
+  document.getElementById("timeDisplay").textContent = timeString;
+}
+
+// Update time every minute
+setInterval(updateTime, 60000);
+
+// Initial call to update time immediately when the page loads
+updateTime();
+
+// Fullscreen toggle function with persistence in localStorage
+document.getElementById('fullscreen-btn').addEventListener('click', function() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+    localStorage.setItem('fullscreen', 'true'); // Store fullscreen state
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+      localStorage.setItem('fullscreen', 'false'); // Store fullscreen state
+    }
+  }
+});
 
 <div class="clickable-area" style="position: absolute; top: 20px; left: 130px; width: 200px; height: 100px; background-color: transparent;">
     <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
 </div>
 <div class="clickable-area" style="position: absolute; top: 20px; left: 350px; width: 200px; height: 100px; background-color: transparent;">
     <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
-</div>
+</script>
 
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=.5">
-  <style>
-    body {
-      background-image: url('inv.png');
-    }
-    ul {
-      margin: 100px;
-      padding: 100px;
-      width: 55%;
-      float: left;
-    }
-    ul {
-      list-style-type: none;
-      padding: 50;
-    }
-    li {
-      margin-top: 0px;
-      margin-bottom: 10px;
-    }
-    a {
-      text-decoration: none;
-      color: #000;
-      padding: 10px;
-      display: block;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-      cursor: pointer;
-      position: relative;
-      padding: 12px 8px 12px 40px;
-      list-style-type: none;
-      background: #228B22;
-      font-size: 25px;
-      transition: 0.2s;
-    }
-    a:hover {
-      background-color: #f0f0f0;
-    }
 
-    /* Fullscreen Button Styling */
-    #fullscreen-btn {
-      position: fixed;
-      top: 100px;
-      right: 20px;
-      padding: 10px 20px;
-      background-color: limegreen;
-      border: none;
-      color: black;
-      font-size: 10px;
-      cursor: pointer;
-      border-radius: 5px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    #fullscreen-btn:hover {
-      background-color: #32cd32; /* Slightly darker green when hovering */
-    }
-  </style>
-</head>
-<body>
-  <!-- Fullscreen Button -->
-  <button id="fullscreen-btn">Toggle Fullscreen</button>
-
-  <ul>
-    <li><a href="test photo.html"> Nuka-cade </a></li>
-    <li><a href="SILVERSHROUD.HTML">The Silver Shroud</a></li>
-    <li><a href="Love My Baby.html">I Love My Baby</a></li>
-    <!-- Add more video links as needed -->
-  </ul>
-
-  <div class="clickable-area" style="position: absolute; top: 20px; left: 520px; width: 200px; height: 100px; background-color: transparent;">
-    <a href="index.HTML" style="display: block; width: 100%; height: 100%;"></a>
-  </div>
-
-  <div class="clickable-area" style="position: absolute; top: 20px; left: 150px; width: 200px; height: 100px; background-color: transparent;">
-    <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
-  </div>
-
-  <script>
-    // Fullscreen toggle function
-    document.getElementById('fullscreen-btn').addEventListener('click', function() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-      }
-    });
-  </script>
 </body>
 </html>
