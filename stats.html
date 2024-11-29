@@ -47,14 +47,14 @@
     }
 
     /* Left Column (36% across) */
-    #bar1 { top: 190px; left: 36%; transform: translateX(-50%); }
-    #bar2 { top: 334px; left: 36%; transform: translateX(-50%); }
-    #bar3 { top: 478px; left: 36%; transform: translateX(-50%); }
+    #bar1 { top: 160px; left: 36%; transform: translateX(100%); }
+    #bar2 { top: 304px; left: 36%; transform: translateX(-50%); }
+    #bar3 { top: 448px; left: 36%; transform: translateX(-50%); }
 
     /* Right Column (66% across) */
-    #bar4 { top: 190px; left: 66%; transform: translateX(-50%); }
-    #bar5 { top: 334px; left: 66%; transform: translateX(-50%); }
-    #bar6 { top: 478px; left: 66%; transform: translateX(-50%); }
+    #bar4 { top: 592px; left: 66%; transform: translateX(-300%); }
+    #bar5 { top: 304px; left: 66%; transform: translateX(-50%); }
+    #bar6 { top: 448px; left: 66%; transform: translateX(-50%); }
 
   </style>
 </head>
@@ -63,27 +63,27 @@
   <div class="container">
     <!-- Status Bars with labels -->
     <div id="bar1" class="status-bar" onclick="changeProgress('bar1')">
-      <label>Water</label>
+      <label>WATER</label>
       <div class="progress-bar" id="progress1"></div>
     </div>
     <div id="bar2" class="status-bar" onclick="changeProgress('bar2')">
-      <label>Steps</label>
+      <label>FOOD</label>
       <div class="progress-bar" id="progress2"></div>
     </div>
     <div id="bar3" class="status-bar" onclick="changeProgress('bar3')">
-      <label>Self Care</label>
+      <label>SELFCARE</label>
       <div class="progress-bar" id="progress3"></div>
     </div>
     <div id="bar4" class="status-bar" onclick="changeProgress('bar4')">
-      <label>Food</label>
+      <label>STEPS</label>
       <div class="progress-bar" id="progress4"></div>
     </div>
     <div id="bar5" class="status-bar" onclick="changeProgress('bar5')">
-      <label>Admin</label>
+      <label>ADMIN</label>
       <div class="progress-bar" id="progress5"></div>
     </div>
     <div id="bar6" class="status-bar" onclick="changeProgress('bar6')">
-      <label>Chores</label>
+      <label>CHORES</label>
       <div class="progress-bar" id="progress6"></div>
     </div>
   </div>
