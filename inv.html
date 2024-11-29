@@ -41,8 +41,15 @@ ul {
             background-color: #f0f0f0;
         }
     </style>
+<script>
+// Check if fullscreen state is stored in localStorage when the page loads
+window.onload = function() {
+  if (localStorage.getItem('fullscreen') === 'true') {
+    document.documentElement.requestFullscreen();
+  }
+};
+</script>
 </head>
-body
     
     <ul>
         <li><a href="test photo.html"> Nuka-cade </a></li>
