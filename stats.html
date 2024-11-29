@@ -17,52 +17,98 @@
     height: 100vh; /* Ensures the body takes the full height of the screen */
 }
 
-    /* Main container for the status bars */
-    .container {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
+/* Main container for the status bars */
+.container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
 
-    /* Status Bars Container in two columns */
-    .status-bar {
-      position: absolute;
-      width: 120px;
-      height: 20px;
-      background-color: #333;
-      transition: background 0.3s ease;
-      cursor: pointer;
-      border: 2px solid #4CAF50; /* Sharp, rectangular edges */
-    }
+/* Status Bars Container in two columns */
+.status-bar {
+  position: absolute;
+  width: 12vw;  /* Use viewport width for responsive resizing */
+  height: 2vh;  /* Use viewport height for responsive resizing */
+  background-color: #333;
+  transition: background 0.3s ease;
+  cursor: pointer;
+  border: 2px solid #4CAF50; /* Sharp, rectangular edges */
+}
 
-    .status-bar label {
-      color: lime;
-      font-size: 12px;
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-      position: absolute;
-      width: 100%;
-      top: -25px;
-      font-weight: bold;
-    }
+.status-bar label {
+  color: lime;
+  font-size: 1.2vw;  /* Use viewport width for label font size */
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  top: -25px;
+  font-weight: bold;
+}
 
-    /* Progress Bar Styling */
-    .progress-bar {
-      height: 100%;
-      background-color: lime;
-      width: 0%; /* Initial progress is 0% */
-    }
+/* Progress Bar Styling */
+.progress-bar {
+  height: 100%;
+  background-color: lime;
+  width: 0%; /* Initial progress is 0% */
+}
 
-    /* Left Column (36% across) */
-    #bar1 { top: 160px; left: 36%; transform: translateX(100%); }
-    #bar2 { top: 304px; left: 36%; transform: translateX(-50%); }
-    #bar3 { top: 448px; left: 36%; transform: translateX(-50%); }
+/* Left Column (36% across) */
+#bar1 { 
+  top: 16vh;   /* Adjusted with viewport height */
+  left: 36vw;  /* Adjusted with viewport width */
+  transform: translateX(100%);
+}
 
-    /* Right Column (66% across) */
-    #bar4 { top: 592px; left: 66%; transform: translateX(-300%); }
-    #bar5 { top: 304px; left: 66%; transform: translateX(-50%); }
-    #bar6 { top: 448px; left: 66%; transform: translateX(-50%); }
+#bar2 { 
+  top: 30vh;   /* Adjusted with viewport height */
+  left: 36vw;  /* Adjusted with viewport width */
+  transform: translateX(-50%);
+}
 
+#bar3 { 
+  top: 44vh;   /* Adjusted with viewport height */
+  left: 36vw;  /* Adjusted with viewport width */
+  transform: translateX(-50%);
+}
+
+/* Right Column (66% across) */
+#bar4 { 
+  top: 59vh;   /* Adjusted with viewport height */
+  left: 66vw;  /* Adjusted with viewport width */
+  transform: translateX(-300%);
+}
+
+#bar5 { 
+  top: 30vh;   /* Adjusted with viewport height */
+  left: 66vw;  /* Adjusted with viewport width */
+  transform: translateX(-50%);
+}
+
+#bar6 { 
+  top: 44vh;   /* Adjusted with viewport height */
+  left: 66vw;  /* Adjusted with viewport width */
+  transform: translateX(-50%);
+}
+
+/* Example of additional responsiveness for smaller screens */
+@media (max-width: 768px) {
+  .status-bar {
+    width: 20vw;  /* Make bars slightly bigger on smaller screens */
+    height: 4vh;  /* Increase height a bit */
+  }
+
+  .status-bar label {
+    font-size: 2vw; /* Adjust font size based on smaller screen */
+  }
+
+  /* Adjust the positioning of bars */
+  #bar1 { top: 20vh; }
+  #bar2 { top: 35vh; }
+  #bar3 { top: 50vh; }
+  #bar4 { top: 65vh; }
+  #bar5 { top: 35vh; }
+  #bar6 { top: 50vh; }
   </style>
 </head>
 <body>
