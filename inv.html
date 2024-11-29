@@ -49,15 +49,14 @@ ul {
         <li><a href="Love My Baby.html">I Love My Baby</a></li>
         <!-- Add more video links as needed -->
     </ul>
-	
+    </script>
+	<script>
 // Check if fullscreen state is stored in localStorage when the page loads
 window.onload = function() {
   if (localStorage.getItem('fullscreen') === 'true') {
     document.documentElement.requestFullscreen();
   }
 };
-    </script>
-
 </script>
 <div class="clickable-area" style="position: absolute; top: 20px; left: 520px; width: 200px; height: 100px; background-color: transparent;">
     <a href="index.html" style="display: block; width: 100%; height: 100%;"></a>
@@ -65,5 +64,14 @@ window.onload = function() {
 <div class="clickable-area" style="position: absolute; top: 20px; left: 150px; width: 200px; height: 100px; background-color: transparent;">
     <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
 </div>
+  <!-- Fullscreen JavaScript (for other pages like stats.html, inv.html, etc.) -->
+  <script>
+    // Check if fullscreen state is stored in localStorage when the page loads
+    window.onload = function() {
+      if (localStorage.getItem('fullscreen') === 'true') {
+        document.documentElement.requestFullscreen();  // Enter fullscreen if saved state is 'true'
+      }
+    };
+  </script>
 </body>
 </html>
