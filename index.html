@@ -193,7 +193,7 @@ input {
 </head>
 <body>
 <button id="fullscreen-btn" onclick="toggleFullscreen()">Go Fullscreen</button>
-    <script>
+       <script>
         // Function to toggle fullscreen mode and save it to localStorage
         function toggleFullscreen() {
             if (!document.fullscreenElement &&   // Not in fullscreen
@@ -213,6 +213,7 @@ input {
 
                 // Save fullscreen state in localStorage
                 localStorage.setItem('isFullscreen', 'true');
+                console.log('Fullscreen state set to: true');
             } else {
                 // Exit fullscreen
                 if (document.exitFullscreen) {
@@ -227,6 +228,7 @@ input {
 
                 // Save fullscreen state in localStorage
                 localStorage.setItem('isFullscreen', 'false');
+                console.log('Fullscreen state set to: false');
             }
         }
     </script>
