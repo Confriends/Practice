@@ -29,12 +29,15 @@ ul {
 
 /* Style the list items */
 ul li {
+  position: fixed;
+  top: 50%;
+  left: 0;
   cursor: pointer;
   position: relative;
   padding: 12px 8px 12px 40px;
   list-style-type: none;
   background: #228B22;
-  font-size: 25px;
+  font-size: 20px;
   transition: 0.2s;
   
   /* make the list items unselectable */
@@ -106,6 +109,9 @@ ul li.checked::before {
 
 /* Style the input */
 input {
+  position: fixed;
+  top: 25%;
+  left: 0;
   margin: 0;
   border: none;
   border-radius: 0;
@@ -118,6 +124,9 @@ input {
 
 /* Style the "Add" button */
 .addBtn {
+  position: fixed;
+  top: 25%;
+  left: 37%;
   padding: 10px;
   width: 18%;
   background: #4CBB17;
@@ -130,6 +139,9 @@ input {
   border-radius: 0;
 }
 #fullscreen-btn {
+	    position: fixed;
+            top: 0;
+            right: 0;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
@@ -142,11 +154,10 @@ input {
 .addBtn:hover {
   background-color: #008000;
 }
-
 /* Lime green status bar */
 .status-bar {
   position: fixed;
-  bottom: 0;
+  bottom: 10%;
   left: 0;
   width: 60%; /* 60% width for the bottom bar */
   height: 30px;
@@ -161,10 +172,10 @@ input {
 /* Lime green date/time display */
 .time-display {
   position: fixed;
-  bottom: 30px;
+  bottom: 1%;
   right: 10px;
   padding: 10px;
-  font-size: 20px;
+  font-size: 25px;
   color: lime;
   font-family: Arial, sans-serif;
   text-align: right;
