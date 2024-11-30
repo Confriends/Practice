@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -75,12 +74,21 @@ window.onload = function() {
 </div>
   <!-- Fullscreen JavaScript (for other pages like stats.html, inv.html, etc.) -->
   <script>
-    // Check if fullscreen state is stored in localStorage when the page loads
-    window.onload = function() {
-      if (localStorage.getItem('fullscreen') === 'true') {
-        document.documentElement.requestFullscreen();  // Enter fullscreen if saved state is 'true'
-      }
-    };
-  </script>
+        // Check if the fullscreen flag is set in localStorage
+        window.onload = function() {
+            if (localStorage.getItem('isFullscreen') === 'true') {
+                // Enter fullscreen automatically on page load
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                    document.documentElement.msRequestFullscreen();
+                }
+            }
+        };
+    </script>
 </body>
 </html>
