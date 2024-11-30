@@ -192,65 +192,6 @@ input {
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-<button id="fullscreen-btn" onclick="toggleFullscreen()">Go Fullscreen</button>
-<script>
-        // Function to toggle fullscreen mode and save it to localStorage
-        function toggleFullscreen() {
-            if (!document.fullscreenElement && 
-                !document.mozFullScreenElement && 
-                !document.webkitFullscreenElement && 
-                !document.msFullscreenElement) {
-                // Request fullscreen
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
-                    document.documentElement.mozRequestFullScreen();
-                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, Opera
-                    document.documentElement.webkitRequestFullscreen();
-                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
-                    document.documentElement.msRequestFullscreen();
-                }
-
-                // Save fullscreen state in localStorage
-                localStorage.setItem('isFullscreen', 'true');
-                console.log('Fullscreen enabled');
-            } else {
-                // Exit fullscreen
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.mozCancelFullScreen) { // Firefox
-                    document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) { // IE/Edge
-                    document.msExitFullscreen();
-                }
-
-                // Save fullscreen state in localStorage
-                localStorage.setItem('isFullscreen', 'false');
-                console.log('Fullscreen disabled');
-            }
-        }
-
-        // Check if fullscreen was set previously and enable it on page load
-        window.onload = function() {
-            const fullscreenState = localStorage.getItem('isFullscreen');
-            console.log('Fullscreen state: ' + fullscreenState); // Debugging log
-
-            if (fullscreenState === 'true') {
-                // Request fullscreen if it was set previously
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
-                    document.documentElement.mozRequestFullScreen();
-                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, Opera
-                    document.documentElement.webkitRequestFullscreen();
-                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
-                    document.documentElement.msRequestFullscreen();
-                }
-            }
-        };
-    </script>
 
 <div id="myDIV" class="header">
   <h2 style="margin:5px"></h2>
@@ -447,5 +388,64 @@ updateTime();
 </div>
 <div class="clickable-area" style="position: absolute; top: 20px; left: 25%; width: 200px; height: 100px; background-color: transparent;">
     <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
+<button id="fullscreen-btn" onclick="toggleFullscreen()">Go Fullscreen</button>
+<script>
+        // Function to toggle fullscreen mode and save it to localStorage
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && 
+                !document.mozFullScreenElement && 
+                !document.webkitFullscreenElement && 
+                !document.msFullscreenElement) {
+                // Request fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, Opera
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                    document.documentElement.msRequestFullscreen();
+                }
+
+                // Save fullscreen state in localStorage
+                localStorage.setItem('isFullscreen', 'true');
+                console.log('Fullscreen enabled');
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) { // Firefox
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { // IE/Edge
+                    document.msExitFullscreen();
+                }
+
+                // Save fullscreen state in localStorage
+                localStorage.setItem('isFullscreen', 'false');
+                console.log('Fullscreen disabled');
+            }
+        }
+
+        // Check if fullscreen was set previously and enable it on page load
+        window.onload = function() {
+            const fullscreenState = localStorage.getItem('isFullscreen');
+            console.log('Fullscreen state: ' + fullscreenState); // Debugging log
+
+            if (fullscreenState === 'true') {
+                // Request fullscreen if it was set previously
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, Opera
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                    document.documentElement.msRequestFullscreen();
+                }
+            }
+        };
+    </script>
 </body>
 </html>
