@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+   <audio id="clickSound" src="load holotape.wav"></audio>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=.5">
 <style>
@@ -51,12 +52,23 @@ ul {
 </head>
     
     <ul>
-        <li><a href="test photo.html"> Nuka-cade </a></li>
-	<li><a href="SILVERSHROUD.HTML">The Silver Shroud</a></li>
-        <li><a href="Love My Baby.html">I Love My Baby</a></li>
+        <li><a href="test photo.html"onclick="playSound(event)"> Nuka-cade </a></li>
+	<li><a href="SILVERSHROUD.HTML"onclick="playSound(event)">The Silver Shroud</a></li>
+        <li><a href="Love My Baby.html"onclick="playSound(event)">I Love My Baby</a></li>
         <!-- Add more video links as needed -->
     </ul>
-    </script>
+<script>
+       function playSound(event) {
+           event.preventDefault(); // Prevent the default link behavior
+           var audio = document.getElementById('clickSound');
+           audio.play(); // Play the sound
+
+           // Delay opening the new page to allow the sound to play
+           setTimeout(function() {
+               window.open(event.target.href, '_blank');
+           }, 500); // Adjust the delay as needed
+       }
+   </script>
 	<script>
 // Check if fullscreen state is stored in localStorage when the page loads
 window.onload = function() {
