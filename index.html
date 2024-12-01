@@ -33,7 +33,7 @@ ul {
 /* Style the list items */
 ul li {
   position: fixed;
-  top: 50%;
+  top: 55%;
   left: 0;
   cursor: pointer;
   position: relative;
@@ -145,12 +145,11 @@ input {
 .addBtn:hover {
   background-color: #008000;
 }
-/* Lime green status bar */
 .status-bar {
   position: fixed;
   bottom: 10%;
   left: 0;
-  width: 60%; /* 60% width for the bottom bar */
+  width: 60%;
   height: 30px;
   background-color: #D3FFBD;
   border-top: 30px solid lime;
@@ -163,7 +162,7 @@ input {
 /* Lime green date/time display */
 .time-display {
   position: fixed;
-  bottom: 1%; /* Adjusted to make the clock visible */
+  bottom: 1%;
   right: 10px;
   padding: 10px;
   font-size: 25px;
@@ -187,10 +186,10 @@ input {
 }
 
 .resetBtn:hover {
-  background-color: #ff4500; /* Darker tomato color */
+  background-color: #ff4500;
 }
 </style>
-<!-- Confetti CDN -->
+
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
@@ -202,21 +201,15 @@ input {
 </div>
 
 <ul id="myUL">
-
 </ul>
 
-<!-- Lime green status bar -->
 <div id="statusBar" class="status-bar">0%</div>
 
-<!-- Date/Time display -->
 <div id="timeDisplay" class="time-display"></div>
 
-<!-- Reset Button -->
 <span onclick="resetTasks()" class="resetBtn">Reset</span>
 
-<!-- Add sound for confetti -->
 <audio id="confettiSound" src="confetti.wav" preload="auto"></audio>
-<!-- Add sound for status bar completion -->
 <audio id="statusCompleteSound" src="level up.wav" preload="auto"></audio>
 
 <script>
@@ -230,7 +223,6 @@ function loadProgress() {
     document.getElementById("statusBar").textContent = Math.round(savedProgress) + "%";
   }
 
-  // Re-create tasks and mark them as completed based on saved data
   const ul = document.getElementById("myUL");
   savedTasks.forEach(task => {
     const li = document.createElement("li");
@@ -241,16 +233,15 @@ function loadProgress() {
     ul.appendChild(li);
     addCloseButton(li);
 
-    // Allow for checking/unchecking tasks after they are loaded
     li.addEventListener('click', function() {
       this.classList.toggle('checked');
       updateStatusBar();
       if (this.classList.contains('checked')) {
-        triggerConfetti(); // Trigger confetti when checked
+        triggerConfetti(); 
       }
     });
   });
-  updateStatusBar(); // Update the status bar based on the loaded tasks
+  updateStatusBar();
 }
 
 // Add a "close" button to a list item
@@ -295,21 +286,17 @@ function updateStatusBar() {
 
   document.getElementById("statusBar").style.width = percentage + "%";
   document.getElementById("statusBar").textContent = Math.round(percentage) + "%"; // Show percentage text
-  saveProgress();  // Save progress to localStorage
+  saveProgress();  
 
-  // Play the status completion sound if the bar reaches 100%
   if (percentage === 100) {
     document.getElementById("statusCompleteSound").play();
   }
 }
 
-// Trigger confetti when a task is checked
 function triggerConfetti() {
-  // Play the confetti sound
   const sound = document.getElementById("confettiSound");
   sound.play();
-
-  // Trigger confetti
+  
   confetti({
     particleCount: 50,
     spread: 70,
@@ -318,14 +305,12 @@ function triggerConfetti() {
   });
 }
 
-// Add event listener for Enter key press
 document.getElementById("myInput").addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
       newElement();
   }
 });
 
-// Create a new list item when clicking on the "Add" button
 function newElement() {
   var li = document.createElement("li");
   var inputValue = document.getElementById("myInput").value;
@@ -339,43 +324,38 @@ function newElement() {
   }
   document.getElementById("myInput").value = "";
 
-  addCloseButton(li);  // Add close button to the new item
+  addCloseButton(li);  
 
-  // Add event listener for toggling "checked" class
   li.addEventListener('click', function() {
     this.classList.toggle('checked');
     updateStatusBar();
     if (this.classList.contains('checked')) {
-      triggerConfetti(); // Trigger confetti when checked
+      triggerConfetti();
     }
   });
 
   updateStatusBar();
 }
 
-// Reset all tasks and progress
 function resetTasks() {
-  // Clear the tasks list
   const ul = document.getElementById("myUL");
-  ul.innerHTML = "";  // Remove all tasks
+  ul.innerHTML = "";
 
-  // Clear the status bar and set it back to 0%
   document.getElementById("statusBar").style.width = "0%";
   document.getElementById("statusBar").textContent = "0%";
 
-  // Clear localStorage
   localStorage.removeItem('tasks');
   localStorage.removeItem('progress');
 }
 
-// Update time every second
+setInterval(updateClock, 1000);
+
 function updateClock() {
   const timeDisplay = document.getElementById("timeDisplay");
   const now = new Date();
   
-  // Get the day, month, year, and 12-hour time with AM/PM
   const day = now.getDate();
-  const month = now.toLocaleString('default', { month: 'short' }); // 3-letter month
+  const month = now.toLocaleString('default', { month: 'short' });
   const year = now.getFullYear();
   
   let hours = now.getHours();
@@ -383,19 +363,12 @@ function updateClock() {
   
   const ampm = hours >= 12 ? 'PM' : 'AM';
   hours = hours % 12;
-  hours = hours ? hours : 12; // 12 AM/PM case
+  hours = hours ? hours : 12; 
   
   timeDisplay.textContent = `${month} ${day}, ${year} ${hours}:${minutes} ${ampm}`;
 }
 
-// Update the clock every second
-setInterval(updateClock, 1000);
+window.onload = loadProgress; // Ensure that the progress is loaded when the page is loaded
 </script>
-<div class="clickable-area" style="position: absolute; top: 20px; left: 10%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
-</div>
-<div class="clickable-area" style="position: absolute; top: 20px; left: 25%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
-    </div>
 </body>
 </html>
