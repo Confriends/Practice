@@ -141,18 +141,6 @@ input {
   transition: 0.3s;
   border-radius: 0;
 }
-#fullscreen-btn {
-	    position: fixed;
-            top: 0;
-            right: 0;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
 
 .addBtn:hover {
   background-color: #008000;
@@ -175,7 +163,7 @@ input {
 /* Lime green date/time display */
 .time-display {
   position: fixed;
-  bottom: 1%;
+  bottom: 1%; /* Adjusted to make the clock visible */
   right: 10px;
   padding: 10px;
   font-size: 25px;
@@ -227,7 +215,10 @@ input {
 <span onclick="resetTasks()" class="resetBtn">Reset</span>
 
 <!-- Add sound for confetti -->
-<audio id="confettiSound" src="level up.wav" preload="auto"></audio>
+<audio id="confettiSound" src="confetti.wav" preload="auto"></audio>
+<!-- Add sound for status bar completion -->
+<audio id="statusCompleteSound" src="level up.wav" preload="auto"></audio>
+
 <script>
 // Load the saved progress from localStorage if available
 function loadProgress() {
@@ -254,6 +245,9 @@ function loadProgress() {
     li.addEventListener('click', function() {
       this.classList.toggle('checked');
       updateStatusBar();
+      if (this.classList.contains('checked')) {
+        triggerConfetti(); // Trigger confetti when checked
+      }
     });
   });
   updateStatusBar(); // Update the status bar based on the loaded tasks
@@ -303,13 +297,13 @@ function updateStatusBar() {
   document.getElementById("statusBar").textContent = Math.round(percentage) + "%"; // Show percentage text
   saveProgress();  // Save progress to localStorage
 
-  // Trigger confetti if status bar is 100%
+  // Play the status completion sound if the bar reaches 100%
   if (percentage === 100) {
-    triggerConfetti();
+    document.getElementById("statusCompleteSound").play();
   }
 }
 
-// Trigger confetti effect when 100% completion is reached
+// Trigger confetti when a task is checked
 function triggerConfetti() {
   // Play the confetti sound
   const sound = document.getElementById("confettiSound");
@@ -317,8 +311,8 @@ function triggerConfetti() {
 
   // Trigger confetti
   confetti({
-    particleCount: 200,
-    spread: 90,
+    particleCount: 50,
+    spread: 70,
     origin: { y: 0.6 },
     colors: ['#ff0', '#ff0', '#0f0', '#00f', '#f0f'],
   });
@@ -351,6 +345,9 @@ function newElement() {
   li.addEventListener('click', function() {
     this.classList.toggle('checked');
     updateStatusBar();
+    if (this.classList.contains('checked')) {
+      triggerConfetti(); // Trigger confetti when checked
+    }
   });
 
   updateStatusBar();
@@ -371,95 +368,29 @@ function resetTasks() {
   localStorage.removeItem('progress');
 }
 
-// Load the saved progress when the page is loaded
-window.onload = loadProgress;
-
-// Function to update date and time in the bottom right corner
-function updateTime() {
+// Update time every second
+function updateClock() {
+  const timeDisplay = document.getElementById("timeDisplay");
   const now = new Date();
-  const options = { 
-    weekday: 'short', 
-    year: 'numeric', 
-    month: 'short', 
-    day: 'numeric', 
-    hour: 'numeric', 
-    minute: 'numeric', 
-    hour12: true 
-  };
-  const timeString = now.toLocaleString('en-US', options);
-  document.getElementById("timeDisplay").textContent = timeString;
+  
+  // Get the day, month, year, and 12-hour time with AM/PM
+  const day = now.getDate();
+  const month = now.toLocaleString('default', { month: 'short' }); // 3-letter month
+  const year = now.getFullYear();
+  
+  let hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 12 AM/PM case
+  
+  timeDisplay.textContent = `${month} ${day}, ${year} ${hours}:${minutes} ${ampm}`;
 }
 
-// Update time every minute
-setInterval(updateTime, 60000);
-
-// Initial call to update time immediately when the page loads
-updateTime();
+// Update the clock every second
+setInterval(updateClock, 1000);
 </script>
 
-<div class="clickable-area" style="position: absolute; top: 20px; left: 10%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
-</div>
-<div class="clickable-area" style="position: absolute; top: 20px; left: 25%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
-<button id="fullscreen-btn" onclick="toggleFullscreen()">Go Fullscreen</button>
-<script>
-        // Function to toggle fullscreen mode and save it to localStorage
-        function toggleFullscreen() {
-            if (!document.fullscreenElement && 
-                !document.mozFullScreenElement && 
-                !document.webkitFullscreenElement && 
-                !document.msFullscreenElement) {
-                // Request fullscreen
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
-                    document.documentElement.mozRequestFullScreen();
-                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, Opera
-                    document.documentElement.webkitRequestFullscreen();
-                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
-                    document.documentElement.msRequestFullscreen();
-                }
-
-                // Save fullscreen state in localStorage
-                localStorage.setItem('isFullscreen', 'true');
-                console.log('Fullscreen enabled');
-            } else {
-                // Exit fullscreen
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.mozCancelFullScreen) { // Firefox
-                    document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) { // IE/Edge
-                    document.msExitFullscreen();
-                }
-
-                // Save fullscreen state in localStorage
-                localStorage.setItem('isFullscreen', 'false');
-                console.log('Fullscreen disabled');
-            }
-        }
-
-        // Check if fullscreen was set previously and enable it on page load
-        window.onload = function() {
-            const fullscreenState = localStorage.getItem('isFullscreen');
-            console.log('Fullscreen state: ' + fullscreenState); // Debugging log
-
-            if (fullscreenState === 'true') {
-                // Request fullscreen if it was set previously
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
-                    document.documentElement.mozRequestFullScreen();
-                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, Opera
-                    document.documentElement.webkitRequestFullscreen();
-                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
-                    document.documentElement.msRequestFullscreen();
-                }
-            }
-        };
-    </script>
 </body>
 </html>
