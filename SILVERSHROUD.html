@@ -193,7 +193,7 @@ document.addEventListener('touchstart', function(e) {
 
     if (timeDifference < DOUBLE_TAP_THRESHOLD) {
         // Trigger the link selection (double-tap detected)
-        activateSelectedArea();
+        activateSelectedArea(); // Select the highlighted link immediately
     } else {
         // Regular behavior to move to the next area
         highlightNextArea();
