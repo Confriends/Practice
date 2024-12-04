@@ -148,8 +148,12 @@ function highlightPreviousArea() {
 function activateSelectedArea() {
     const currentLink = clickableAreas[currentIndex];
     
-    // Ensure the currently highlighted link is clicked
-    currentLink.click(); // This will open the link as if the user clicked on it
+    // Ensure the currently highlighted link is clicked and that the href is accessed from the correct element
+    if (currentLink.tagName.toLowerCase() === 'a') {
+        const href = currentLink.href;
+        // Open the link directly using the href attribute, ensuring it's the correct one
+        window.open(href, '_blank');
+    }
 }
 
 // Handle mouse wheel event to cycle through clickable areas (prevent scrolling)
@@ -194,16 +198,19 @@ let lastTapTime = 0;
 const DOUBLE_TAP_THRESHOLD = 500; // Threshold in milliseconds
 
 document.addEventListener('touchstart', function(event) {
-    const currentTime = new Date().getTime();
-    const timeDifference = currentTime - lastTapTime;
+    // Check if the touch event was on an anchor link element
+    if (event.target.tagName.toLowerCase() === 'a') {
+        const currentTime = new Date().getTime();
+        const timeDifference = currentTime - lastTapTime;
 
-    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
-        // Trigger the link selection (double-tap detected)
-        activateSelectedArea();
+        if (timeDifference < DOUBLE_TAP_THRESHOLD) {
+            // Trigger the link selection (double-tap detected)
+            activateSelectedArea();
+        }
+
+        // Update the last tap time
+        lastTapTime = currentTime;
     }
-
-    // Update the last tap time
-    lastTapTime = currentTime;
 });
 </script>
 
