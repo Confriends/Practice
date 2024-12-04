@@ -1,67 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=.5">
-<style>
-body {
-    background-image: url('inv.png'); /* replace with your image path */
-    background-size: cover;
-    background-position: center top;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: black;
-    margin: 0;
-    height: 100vh;
-    overflow: hidden; /* Prevent page scroll */
-}
+    <meta name="viewport" content="width=device-width, initial-scale=.5">
+    <style>
+    body {
+        background-image: url('inv.png'); /* replace with your image path */
+        background-size: cover;
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-color: black;
+        margin: 0;
+        height: 100vh;
+        overflow: hidden; /* Prevent page scrolling */
+    }
 
-.video-container {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
-    height: 0;
-    overflow: hidden;
-    margin-top: 70px;
-}
+    .clickable-area {
+        position: absolute;
+        width: 200px;
+        height: 100px;
+        background-color: transparent;
+    }
 
-.video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
+    a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+        cursor: pointer;
+        position: relative;
+        background-color: transparent;
+    }
 
-.clickable-area {
-    position: absolute;
-    width: 200px;
-    height: 100px;
-    background-color: transparent;
-}
+    /* Highlighted state for clickable areas */
+    .highlight {
+        border: 3px solid #00FF00; /* Green border */
+        background-color: rgba(0, 255, 0, 0.3); /* Light green background */
+    }
 
-a {
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Highlighted state for clickable areas */
-.highlight {
-    border: 3px solid #00FF00; /* Bright green border */
-    background-color: rgba(0, 255, 0, 0.3); /* Light green background */
-}
-</style>
+    </style>
 </head>
 <body>
 
-<h1></h1>
-<div class="video-container">
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/HkMD3nZqw0Q?si=Fd7IeyluN-n4jKTf" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-    <a href="index.HTML" style="display: block; width: 100%; height: 100%;"></a>
-</div>
-
-<!-- Clickable areas for navigation, matching the previous page's structure -->
+<!-- Clickable areas arranged in the correct order for the pages -->
 <div class="clickable-area" id="area1" style="top: 20px; left: 18%;">
     <a href="stats.html" onclick="playSound(event)"></a>
 </div>
@@ -71,7 +52,7 @@ a {
 </div>
 
 <div class="clickable-area" id="area3" style="top: 20px; left: 45%;">
-    <a href="data.html" onclick="playSound(event)"></a>
+    <a href="index.html" onclick="playSound(event)"></a>
 </div>
 
 <div class="clickable-area" id="area4" style="top: 20px; right: 13.2%;">
@@ -79,115 +60,128 @@ a {
 </div>
 
 <!-- Click sound -->
-<audio id="clickSound" src="click.wav"></audio> <!-- Default click sound -->
-<audio id="specialClickSound" src="click.wav"></audio> <!-- Special click sound -->
+<audio id="clickSound" src="click.wav"></audio>
+<audio id="specialClickSound" src="click.wav"></audio> <!-- Special sound for certain links -->
 
 <script>
-// Array of all clickable areas (links) in order of appearance
+// Array of all clickable areas in the order of appearance
 const clickableAreas = [
-    document.querySelector('a[href="stats.html"]'), // Stats link
-    document.querySelector('a[href="inv.html"]'),   // Inventory link
-    document.querySelector('a[href="data.html"]'),  // Data link
-    document.querySelector('a[href="radio.html"]')  // Radio link
+    document.querySelector('a[href="stats.html"]'), // Stats page
+    document.querySelector('a[href="inv.html"]'),   // Inventory page
+    document.querySelector('a[href="index.html"]'), // Index page
+    document.querySelector('a[href="radio.html"]')  // Radio page
 ];
 
-let currentIndex = 0; // Starting index
+let currentIndex = 0; // Start at the first link
 
-// Function to play the appropriate sound
+// Debounce variables
+let debounceTimeout = null;
+const DEBOUNCE_DELAY = 300; // 300ms delay to prevent multiple actions
+
+function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+}
+
+// Play the sound when a link is clicked
 function playSound(event) {
-    event.preventDefault(); // Prevent the default link behavior until we are ready
+    event.preventDefault(); // Prevent the default link behavior
     
+    // Play the click sound
     var audio = document.getElementById('clickSound');
-    audio.play(); // Play the default click sound
+    audio.play();
 
-    // Delay opening the new page to allow the sound to play
+    // Open the link after the sound finishes
     setTimeout(function() {
-        window.open(event.target.href, '_blank'); // Open the link after the delay
-    }, 500); // Adjust the delay as needed
+        window.location.href = event.target.href; // Open the link after a delay
+    }, 500);
 }
 
-// Function to highlight the next clickable area
+// Highlight the next clickable area
 function highlightNextArea() {
-    clickableAreas[currentIndex].classList.remove('highlight'); // Remove previous highlight
-    currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
-    clickableAreas[currentIndex].classList.add('highlight'); // Add new highlight
-    var audio = document.getElementById('clickSound');
-    audio.play(); // Play click sound
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight'); // Remove current highlight
+        currentIndex = (currentIndex + 1) % clickableAreas.length; // Move to the next link
+        clickableAreas[currentIndex].classList.add('highlight'); // Highlight next
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
 }
 
-// Function to highlight the previous clickable area
+// Highlight the previous clickable area
 function highlightPreviousArea() {
-    clickableAreas[currentIndex].classList.remove('highlight'); // Remove previous highlight
-    currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
-    clickableAreas[currentIndex].classList.add('highlight'); // Add new highlight
-    var audio = document.getElementById('clickSound');
-    audio.play(); // Play click sound
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight'); // Remove current highlight
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Move to the previous link
+        clickableAreas[currentIndex].classList.add('highlight'); // Highlight previous
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
 }
 
-// Function to activate the currently highlighted area (simulate a click)
+// Activate the currently highlighted area (simulate a click)
 function activateSelectedArea() {
     const currentLink = clickableAreas[currentIndex];
     currentLink.click(); // Simulate a click on the highlighted area
 }
 
-// Handling touch events for swipe detection
-let touchStartY = 0; // Track the initial touch position
-let lastSwipeTime = 0; // Track the time of the last swipe
-const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
+// Handle touch events for swipe detection
+let touchStartY = 0;
+let lastSwipeTime = 0;
+const DOUBLE_SWIPE_THRESHOLD = 500;
 
 document.addEventListener('touchstart', function(e) {
-    touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
+    touchStartY = e.touches[0].clientY;
 });
 
 document.addEventListener('touchmove', function(e) {
-    const touchEndY = e.touches[0].clientY; // Get the current touch position
+    const touchEndY = e.touches[0].clientY;
     const screenHeight = window.innerHeight;
 
-    // Swipe up from the top half of the screen (move forward)
+    // Swipe up (move forward)
     if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
         highlightNextArea();
     }
-    // Swipe down from the bottom half of the screen (move backward)
+
+    // Swipe down (move backward)
     else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
         const currentTime = Date.now();
 
-        // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
         if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
-            highlightPreviousArea(); // Only go back one step
+            highlightPreviousArea(); // Double swipe -> go back one step
         } else {
-            highlightPreviousArea();
+            highlightPreviousArea(); // Normal swipe -> go back one step
         }
 
-        // Update the last swipe time to the current time
         lastSwipeTime = currentTime;
     }
 });
 
-// Handling mouse wheel events to cycle through clickable areas
+// Handle mouse wheel events to cycle through clickable areas
 window.addEventListener('wheel', function(event) {
-    event.preventDefault(); // Prevent default scroll behavior (no page scrolling)
+    event.preventDefault(); // Prevent default scrolling
     
     if (event.deltaY > 0) {
         highlightNextArea(); // Scroll down -> Move forward
     } else {
         highlightPreviousArea(); // Scroll up -> Move backward
     }
-}, { passive: false }); // Allows calling event.preventDefault()
+}, { passive: false });
 
-// Add event listeners for device buttons or keyboard
+// Handle keydown events (arrow keys and enter to select)
 document.addEventListener('keydown', function(event) {
-    if (event.key === 'ArrowRight') {
-        highlightNextArea(); // Move forward
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+        highlightNextArea(); // Move forward (Right/Down)
     }
-    else if (event.key === 'ArrowLeft') {
-        highlightPreviousArea(); // Move backward
+    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+        highlightPreviousArea(); // Move backward (Left/Up)
     }
     else if (event.key === 'Enter') {
         activateSelectedArea(); // Select the highlighted link
     }
 });
 
-// Initial highlight
+// Initial highlight (add highlight to the first link)
 clickableAreas[currentIndex].classList.add('highlight');
 </script>
 
