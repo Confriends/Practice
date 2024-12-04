@@ -94,7 +94,13 @@ a:hover {
     <li><a href="SILVERSHROUD.html" onclick="playSound(event)">The Silver Shroud</a></li>
     <li><a href="Love My Baby.html" onclick="playSound(event)">I Love My Baby</a></li>
 </ul>
-
+window.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+        highlightPreviousArea(); // Navigate to the previous clickable area
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+        highlightNextArea(); // Navigate to the next clickable area
+    }
+});
 <script>
 // All clickable areas (both <li> and <div class="clickable-area">)
 const clickableAreas = [...document.querySelectorAll('a')]; // Select all <a> links (from both <li> and <div>)
