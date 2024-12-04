@@ -1,8 +1,6 @@
-<!DOCTYPE html>
 <html>
    <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
    <audio id="specialClickSound" src="load holotape.wav"></audio> <!-- New sound for 3 links -->
-   <audio id="specialPageSound" src="specialpage.wav"></audio> <!-- New sound when specific links are opened -->
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=.5">
 <style>
@@ -86,7 +84,7 @@ a:hover {
     <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Data</a>
 </div>
 
-<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 12.9%;">
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 13%;">
     <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Radio</a>
 </div>
 
@@ -100,6 +98,7 @@ a:hover {
 <script>
 // All clickable areas (both <li> and <div class="clickable-area">)
 const clickableAreas = [
+    // Array representing the clickable areas in the desired order
     document.querySelector('a[href="stats.html"]'),
     document.querySelector('a[href="inv.html"]'),
     document.querySelector('a[href="data.html"]'),
@@ -119,9 +118,6 @@ function playSound(event) {
     if (event.target.innerText === "Nuka-cade" || event.target.innerText === "The Silver Shroud" || event.target.innerText === "I Love My Baby") {
         var specialAudio = document.getElementById('specialClickSound');
         specialAudio.play(); // Play the special sound
-        // Play the page open sound
-        var pageSound = document.getElementById('specialPageSound');
-        pageSound.play(); // Play a sound when these specific pages are opened
     } else {
         var audio = document.getElementById('clickSound');
         audio.play(); // Play the default click sound
@@ -145,15 +141,7 @@ function highlightNextArea() {
 // Function to highlight the previous clickable area
 function highlightPreviousArea() {
     clickableAreas[currentIndex].classList.remove('highlight');
-    
-    // Ensure backward navigation goes one step back, not two
-    currentIndex -= 1; // Decrement by 1
-    if (currentIndex < 0) {
-        currentIndex = clickableAreas.length - 1; // Wrap around to the last item
-    }
-    
-    console.log("Current index after backward: ", currentIndex); // Debugging log
-    
+    currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
     clickableAreas[currentIndex].classList.add('highlight');
     var audio = document.getElementById('clickSound');
     audio.play(); // Play click sound
