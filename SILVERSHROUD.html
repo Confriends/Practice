@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-   <audio id="clickSound" src="click.wav"></audio>
+   <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
+   <audio id="specialClickSound" src="load holotape.wav"></audio> <!-- New sound for 3 links -->
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=.5">
 <style>
@@ -76,7 +77,7 @@ a:hover {
 </div>
 
 <div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 33%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"></a>
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"onclick="playSound(event)"></a>
 </div>
 
 <div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 42%;">
@@ -100,11 +101,18 @@ const clickableAreas = [...document.querySelectorAll('a')]; // Select all <a> li
 
 let currentIndex = 0;
 
-// Function to play the click sound
+// Function to play the appropriate sound
 function playSound(event) {
     event.preventDefault(); // Prevent the default link behavior until we are ready
-    var audio = document.getElementById('clickSound');
-    audio.play(); // Play the sound
+    
+    // Check if the clicked link is one of the three special ones
+    if (event.target.innerText === "Nuka-cade" || event.target.innerText === "The Silver Shroud" || event.target.innerText === "I Love My Baby") {
+        var specialAudio = document.getElementById('specialClickSound');
+        specialAudio.play(); // Play the special sound
+    } else {
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play the default click sound
+    }
 
     // Delay opening the new page to allow the sound to play
     setTimeout(function() {
