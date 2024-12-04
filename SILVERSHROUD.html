@@ -109,6 +109,15 @@ const clickableAreas = [
 
 let currentIndex = 0; // Starting index
 
+// Debounce variables
+let debounceTimeout = null;
+const DEBOUNCE_DELAY = 300; // 300ms delay
+
+function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+}
+
 // Function to play the appropriate sound
 function playSound(event) {
     event.preventDefault(); // Prevent the default link behavior until we are ready
@@ -129,20 +138,24 @@ function playSound(event) {
 
 // Function to highlight the next clickable area
 function highlightNextArea() {
-    clickableAreas[currentIndex].classList.remove('highlight');
-    currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
-    clickableAreas[currentIndex].classList.add('highlight');
-    var audio = document.getElementById('clickSound');
-    audio.play(); // Play click sound
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
 }
 
 // Function to highlight the previous clickable area
 function highlightPreviousArea() {
-    clickableAreas[currentIndex].classList.remove('highlight');
-    currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
-    clickableAreas[currentIndex].classList.add('highlight');
-    var audio = document.getElementById('clickSound');
-    audio.play(); // Play click sound
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
 }
 
 // Function to activate the currently highlighted area (simulate a click)
@@ -198,11 +211,11 @@ window.addEventListener('wheel', function(event) {
 
 // Add event listeners for device buttons or keyboard
 document.addEventListener('keydown', function(event) {
-    if (event.key === 'ArrowRight') {
-        highlightNextArea(); // Move forward
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+        highlightNextArea(); // Move forward (Right/Down)
     }
-    else if (event.key === 'ArrowLeft') {
-        highlightPreviousArea(); // Move backward
+    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+        highlightPreviousArea(); // Move backward (Left/Up)
     }
     else if (event.key === 'Enter') {
         activateSelectedArea(); // Select the highlighted link
