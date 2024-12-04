@@ -151,6 +151,25 @@ function activateSelectedArea() {
     currentLink.click(); // This will open the link as if the user clicked on it
 }
 
+// Handle mouse wheel event to cycle through clickable areas (prevent scrolling)
+window.addEventListener('wheel', function(event) {
+    event.preventDefault(); // Prevent default scroll behavior
+    
+    if (event.deltaY > 0) {
+        highlightNextArea(); // Scroll down -> Next area
+    } else {
+        highlightPreviousArea(); // Scroll up -> Previous area
+    }
+}, { passive: false }); // 'passive: false' allows calling event.preventDefault()
+
+// Add event listener for touchstart (for cycling through clickable areas)
+document.addEventListener('touchstart', function(e) {
+    e.preventDefault(); // Prevent default scrolling
+
+    // Logic to cycle through clickable areas
+    highlightNextArea();  // Move to the next clickable area
+});
+
 // Add event listeners for the device buttons (replace with the actual key codes)
 document.addEventListener('keydown', function(event) {
     // Button for Move Forward (next area)
@@ -185,7 +204,6 @@ document.addEventListener('touchstart', function(event) {
     // Update the last tap time
     lastTapTime = currentTime;
 });
-
 </script>
 
 </body>
