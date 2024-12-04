@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+   <audio id="clickSound" src="load holotape.wav"></audio>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=.5">
+<style>
+body {
+    background-image: url('inv.png'); /* replace with your image path */
+    background-size: cover; /* Ensures the image covers the entire screen */
+    background-position: center top; /* Aligns the image to the top-center */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-attachment: fixed; /* Keeps the background fixed while scrolling */
+    background-color: black; /* Fills empty space with black */
+    margin: 0; /* Removes default margin */
+    height: 100vh; /* Ensures the body takes the full height of the screen */
+}
+ul {
+  margin:  100px;
+  padding: 100px;
+  width: 55%;
+  float: left;
+        
+        ul {
+            list-style-type: none;
+            padding: 50;
+        }
+        li {
+            margin-top: 0px;
+            margin-bottom: 10px;
+        }
+        a {
+            text-decoration: none;
+            color: #000;
+            padding: 10px;
+            display: block;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+  cursor: pointer;
+  position: relative;
+  padding: 12px 8px 12px 40px;
+  list-style-type: none;
+  background: #228B22;
+  font-size: 25px;
+  transition: 0.2s;
+            
+        }
+        a:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+    
+    <ul>
+        <li><a href="falloutplaylist.html"onclick="playSound(event)"> Fallout Playlist </a></li>
+	<li><a href="brat.html"onclick="playSound(event)">BRAT</a></li>
+    </ul>
+<script>
+       function playSound(event) {
+           event.preventDefault(); // Prevent the default link behavior
+           var audio = document.getElementById('clickSound');
+           audio.play(); // Play the sound
+
+           // Delay opening the new page to allow the sound to play
+           setTimeout(function() {
+               window.open(event.target.href, '_blank');
+           }, 500); // Adjust the delay as needed
+       }
+   </script>
+	 
+<div class="clickable-area" style="position: absolute; top: 20px; left: 42%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="index.html" style="display: block; width: 100%; height: 100%;"></a>
+</div> 
+<div class="clickable-area" style="position: absolute; top: 20px; left: 10%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
+
+</div>
+    </script>
+</body>
+</html>
