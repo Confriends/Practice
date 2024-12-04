@@ -72,19 +72,20 @@ a:hover {
 
 <body>
 
+<!-- Your clickable areas -->
 <div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
     <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
-<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"onclick="playSound(event)"></a>
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.2%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
 <div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
     <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
-<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 12.5%;">
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 12.8%;">
     <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
@@ -99,7 +100,7 @@ a:hover {
 // All clickable areas (both <li> and <div class="clickable-area">)
 const clickableAreas = [...document.querySelectorAll('a')]; // Select all <a> links (from both <li> and <div>)
 
-let currentIndex = 0;
+let currentIndex = 0; // Starting index
 
 // Function to play the appropriate sound
 function playSound(event) {
@@ -122,92 +123,91 @@ function playSound(event) {
 
 // Function to highlight the next clickable area
 function highlightNextArea() {
-    // Remove highlight from the current area
     clickableAreas[currentIndex].classList.remove('highlight');
-    
-    // Increment the index (cycle back to 0 when it reaches the end)
-    currentIndex = (currentIndex + 1) % clickableAreas.length;
-
-    // Highlight the next area
+    currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
     clickableAreas[currentIndex].classList.add('highlight');
-
-    // Play the clicking sound
     var audio = document.getElementById('clickSound');
-    audio.play();
+    audio.play(); // Play click sound
 }
 
 // Function to highlight the previous clickable area
 function highlightPreviousArea() {
-    // Remove highlight from the current area
     clickableAreas[currentIndex].classList.remove('highlight');
-    
-    // Decrement the index (cycle back to the end when it reaches 0)
-    currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length;
-
-    // Highlight the previous area
+    currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
     clickableAreas[currentIndex].classList.add('highlight');
-
-    // Play the clicking sound
     var audio = document.getElementById('clickSound');
-    audio.play();
+    audio.play(); // Play click sound
 }
 
 // Function to activate the currently highlighted area (simulate a click)
 function activateSelectedArea() {
     const currentLink = clickableAreas[currentIndex];
-    
-    // Ensure the currently highlighted link is clicked
-    currentLink.click(); // This will open the link as if the user clicked on it
+    currentLink.click(); // Simulate a click on the highlighted area
 }
 
-// Handle mouse wheel event to cycle through clickable areas (prevent scrolling)
+// Handling touch events for swipe detection
+let touchStartY = 0; // Track the initial touch position
+
+document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
+});
+
+// Swipe up or swipe down (top/bottom screen actions)
+document.addEventListener('touchmove', function(e) {
+    const touchEndY = e.touches[0].clientY; // Get the current touch position
+    const screenHeight = window.innerHeight;
+
+    // Swipe down from the bottom half of the screen (move forward)
+    if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+        highlightNextArea();
+    }
+    // Swipe up from the top half of the screen (move backward)
+    else if (touchStartY > touchEndY && touchStartY < screenHeight / 2) {
+        highlightPreviousArea();
+    }
+});
+
+// Handling mouse wheel events to cycle through clickable areas
 window.addEventListener('wheel', function(event) {
     event.preventDefault(); // Prevent default scroll behavior
     
     if (event.deltaY > 0) {
-        highlightNextArea(); // Scroll down -> Next area
+        highlightNextArea(); // Scroll down -> Move forward
     } else {
-        highlightPreviousArea(); // Scroll up -> Previous area
+        highlightPreviousArea(); // Scroll up -> Move backward
     }
-}, { passive: false }); // 'passive: false' allows calling event.preventDefault()
+}, { passive: false }); // Allows calling event.preventDefault()
 
-// Add event listeners for the device buttons (replace with the actual key codes)
+// Add event listeners for device buttons or keyboard
 document.addEventListener('keydown', function(event) {
-    // Button for Move Forward (next area)
     if (event.key === 'ArrowRight') {
         highlightNextArea(); // Move forward
     }
-    
-    // Button for Move Backward (previous area)
     else if (event.key === 'ArrowLeft') {
         highlightPreviousArea(); // Move backward
     }
-
-    // Button for Select (click the current highlighted link)
     else if (event.key === 'Enter') {
-        activateSelectedArea(); // Open the highlighted link
+        activateSelectedArea(); // Select the current link
     }
 });
 
-// Consolidated Double-Tap Logic (for touchscreen or ring controller)
+// Double-tap functionality to open selected area
 let lastTapTime = 0;
-const DOUBLE_TAP_THRESHOLD = 500; // Threshold in milliseconds
+const DOUBLE_TAP_THRESHOLD = 500;
 
 document.addEventListener('touchstart', function(e) {
     e.preventDefault(); // Prevent default scrolling behavior
-    
     const currentTime = new Date().getTime();
     const timeDifference = currentTime - lastTapTime;
 
     if (timeDifference < DOUBLE_TAP_THRESHOLD) {
         // Trigger the link selection (double-tap detected)
-        activateSelectedArea(); // Select the highlighted link immediately
+        activateSelectedArea();
     } else {
         // Regular behavior to move to the next area
         highlightNextArea();
     }
 
-    // Update the last tap time
     lastTapTime = currentTime;
 });
 </script>
