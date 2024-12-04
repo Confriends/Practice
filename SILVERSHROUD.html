@@ -163,14 +163,6 @@ window.addEventListener('wheel', function(event) {
     }
 }, { passive: false }); // 'passive: false' allows calling event.preventDefault()
 
-// Add event listener for touchstart (for cycling through clickable areas)
-document.addEventListener('touchstart', function(e) {
-    e.preventDefault(); // Prevent default scrolling
-
-    // Logic to cycle through clickable areas
-    highlightNextArea();  // Move to the next clickable area
-});
-
 // Add event listeners for the device buttons (replace with the actual key codes)
 document.addEventListener('keydown', function(event) {
     // Button for Move Forward (next area)
@@ -189,17 +181,22 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Double-Tap Logic (for touchscreen or ring controller)
+// Consolidated Double-Tap Logic (for touchscreen or ring controller)
 let lastTapTime = 0;
 const DOUBLE_TAP_THRESHOLD = 500; // Threshold in milliseconds
 
-document.addEventListener('touchstart', function(event) {
+document.addEventListener('touchstart', function(e) {
+    e.preventDefault(); // Prevent default scrolling behavior
+    
     const currentTime = new Date().getTime();
     const timeDifference = currentTime - lastTapTime;
 
     if (timeDifference < DOUBLE_TAP_THRESHOLD) {
         // Trigger the link selection (double-tap detected)
         activateSelectedArea();
+    } else {
+        // Regular behavior to move to the next area
+        highlightNextArea();
     }
 
     // Update the last tap time
