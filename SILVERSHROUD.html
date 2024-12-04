@@ -74,19 +74,19 @@ a:hover {
 
 <!-- Your clickable areas arranged in the correct order -->
 <div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
-    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Stat</a>
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
 <div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Inv</a>
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
 <div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
-    <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Data</a>
+    <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
 <div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 12.9%;">
-    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Radio</a>
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
 <!-- More clickable items below -->
@@ -144,7 +144,13 @@ function highlightPreviousArea() {
     clickableAreas[currentIndex].classList.remove('highlight');
     
     // Ensure backward navigation goes one step back, not two
-    currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Correct backward movement logic
+    currentIndex -= 1; // Decrement by 1
+    if (currentIndex < 0) {
+        currentIndex = clickableAreas.length - 1; // Wrap around to the last item
+    }
+    
+    console.log("Current index after backward: ", currentIndex); // Debugging log
+    
     clickableAreas[currentIndex].classList.add('highlight');
     var audio = document.getElementById('clickSound');
     audio.play(); // Play click sound
