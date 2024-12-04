@@ -1,6 +1,6 @@
 <html>
    <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
-   <audio id="specialClickSound" src="load holotape.wav"></audio> <!-- New sound for 3 links -->
+   <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=.5">
 <style>
@@ -73,19 +73,19 @@ a:hover {
 
 <!-- Your clickable areas arranged in the correct order -->
 <div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
-    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Stat</a>
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
 <div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Inv</a>
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
 <div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
-    <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Data</a>
+    <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
-<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 13%;">
-    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Radio</a>
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 13.2%;">
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
 <!-- More clickable items below -->
@@ -165,12 +165,12 @@ document.addEventListener('touchmove', function(e) {
     const touchEndY = e.touches[0].clientY; // Get the current touch position
     const screenHeight = window.innerHeight;
 
-    // Swipe down from the bottom half of the screen (move forward)
-    if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+    // Swipe up from the top half of the screen (move forward)
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
         highlightNextArea();
     }
-    // Swipe up from the top half of the screen (move backward)
-    else if (touchStartY > touchEndY && touchStartY < screenHeight / 2) {
+    // Swipe down from the bottom half of the screen (move backward)
+    else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
         highlightPreviousArea();
     }
 });
