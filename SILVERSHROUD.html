@@ -1,51 +1,170 @@
 <!DOCTYPE html>
 <html>
+   <audio id="clickSound" src="load holotape.wav"></audio>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=.5">
 <style>
 body {
-  background-image: url('inv.png'); /* replace with your image path */
-    background-size: cover; /* Ensures the image covers the entire screen */
-    background-position: center top; /* Aligns the image to the top-center */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
-    background-attachment: fixed; /* Keeps the background fixed while scrolling */
-    background-color: black; /* Fills empty space with black */
-    margin: 0; /* Removes default margin */
-    height: 100vh; /* Ensures the body takes the full height of the screen */
+    background-image: url('inv.png'); /* replace with your image path */
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: black;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden; /* Prevent page scrolling */
 }
-        /* Your CSS styles go here */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            overflow: hidden;
-            margin-top: 70px;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 10%;
-            left: 0;
-            width: 100%;
-            height: 90%;
-        }
-    </style>
+
+ul {
+    margin: 100px;
+    padding: 100px;
+    width: 55%;
+    float: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 50;
+}
+
+li {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    padding: 10px;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    list-style-type: none;
+    background: #228B22;
+    font-size: 25px;
+    transition: 0.2s;
+}
+
+/* Highlighted state for clickable areas */
+.highlight {
+    border: 0px solid green;
+}
+
+a:hover {
+    background-color: transparent;
+}
+
+.clickable-area {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    background-color: transparent;
+}
+
+/* Optional: Add any custom styling for clickable areas (if needed) */
+</style>
 </head>
+
 <body>
-    <h1></h1>
-    <div class="video-container">
-        <iframe style="border-radius:22px" src="https://open.spotify.com/embed/playlist/3puwwV4sX9bBiZ0vaNmsWp?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    </div>
-<div class="clickable-area" style="position: absolute; top: 20px; left: 350px; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
+
+<div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 10%;">
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
-  <div class="clickable-area" style="position: absolute; top: 20px; left: 42%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="index.html" style="display: block; width: 100%; height: 100%;"></a>
-</div> 
-<div class="clickable-area" style="position: absolute; top: 20px; left: 10%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
-    <div class="clickable-area" style="position: absolute; top: 20px; right: 15%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="radio.html" style="display: block; width: 100%; height: 100%;"></a>
+
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 25%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"></a>
 </div>
+
+<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 40%;">
+    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
+
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 15%;">
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<!-- Existing list items (li) -->
+<ul>
+    <li><a href="test photo.html" onclick="playSound(event)"> Nuka-cade </a></li>
+    <li><a href="SILVERSHROUD.html" onclick="playSound(event)">The Silver Shroud</a></li>
+    <li><a href="Love My Baby.html" onclick="playSound(event)">I Love My Baby</a></li>
+</ul>
+
+<script>
+// All clickable areas (both <li> and <div class="clickable-area">)
+const clickableAreas = [...document.querySelectorAll('a')]; // Select all <a> links (from both <li> and <div>)
+
+let currentIndex = 0;
+
+// Function to play the click sound
+function playSound(event) {
+    event.preventDefault(); // Prevent the default link behavior until we are ready
+    var audio = document.getElementById('clickSound');
+    audio.play(); // Play the sound
+
+    // Delay opening the new page to allow the sound to play
+    setTimeout(function() {
+        window.open(event.target.href, '_blank'); // Open the link after the delay
+    }, 500); // Adjust the delay as needed
+}
+
+// Function to highlight the next clickable area
+function highlightNextArea() {
+    // Remove highlight from the current area
+    clickableAreas[currentIndex].classList.remove('highlight');
+    
+    // Increment the index (cycle back to 0 when it reaches the end)
+    currentIndex = (currentIndex + 1) % clickableAreas.length;
+
+    // Highlight the next area
+    clickableAreas[currentIndex].classList.add('highlight');
+
+    // Play the clicking sound
+    var audio = document.getElementById('clickSound');
+    audio.play();
+}
+
+// Function to highlight the previous clickable area
+function highlightPreviousArea() {
+    // Remove highlight from the current area
+    clickableAreas[currentIndex].classList.remove('highlight');
+    
+    // Decrement the index (cycle back to the end when it reaches 0)
+    currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length;
+
+    // Highlight the previous area
+    clickableAreas[currentIndex].classList.add('highlight');
+
+    // Play the clicking sound
+    var audio = document.getElementById('clickSound');
+    audio.play();
+}
+
+// Handle mouse wheel event to cycle through clickable areas (prevent scrolling)
+window.addEventListener('wheel', function(event) {
+    event.preventDefault(); // Prevent default scroll behavior
+    
+    if (event.deltaY > 0) {
+        highlightNextArea(); // Scroll down -> Next area
+    } else {
+        highlightPreviousArea(); // Scroll up -> Previous area
+    }
+}, { passive: false }); // 'passive: false' allows calling event.preventDefault()
+
+// Optional: Handle arrow keys to cycle through clickable areas
+window.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+        highlightNextArea(); // Down/Right arrow -> Next area
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+        highlightPreviousArea(); // Up/Left arrow -> Previous area
+    }
+});
+
+</script>
 </body>
 </html>
