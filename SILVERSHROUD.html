@@ -3,11 +3,6 @@
    <audio id="clickSound" src="load holotape.wav"></audio>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=.5">
-<style><!DOCTYPE html>
-<html>
-   <audio id="clickSound" src="load holotape.wav"></audio>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=.5">
 <style>
 body {
     background-image: url('inv.png'); /* replace with your image path */
@@ -159,45 +154,6 @@ window.addEventListener('wheel', function(event) {
     }
 }, { passive: false }); // 'passive: false' allows calling event.preventDefault()
 
-// Handle keyboard events for navigation and selection (Enter/Space to select)
-window.addEventListener('keydown', function(event) {
-    if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-        highlightPreviousArea(); // Navigate to the previous clickable area
-    } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-        highlightNextArea(); // Navigate to the next clickable area
-    }
-
-    // Activate selected area with Enter or Space
-    if (event.key === 'Enter' || event.key === ' ') {
-        activateSelectedArea(); // Select and activate the currently highlighted area
-    }
-});
-
-// Function to activate the currently highlighted area (simulate a click)
-function activateSelectedArea() {
-    const currentLink = clickableAreas[currentIndex];
-    
-    // Simulate a click on the selected link
-    currentLink.click(); // This will open the link as if the user clicked on it
-}
-
-// Double-Tap Logic (for touchscreen or ring controller)
-let lastTapTime = 0;
-const DOUBLE_TAP_THRESHOLD = 500; // Threshold in milliseconds
-
-document.addEventListener('touchstart', function(event) {
-    const currentTime = new Date().getTime();
-    const timeDifference = currentTime - lastTapTime;
-
-    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
-        // Trigger the link selection (double-tap detected)
-        activateSelectedArea();
-    }
-
-    // Update the last tap time
-    lastTapTime = currentTime;
-});
-
 // Add event listener for touchstart (for cycling through clickable areas)
 document.addEventListener('touchstart', function(e) {
     e.preventDefault(); // Prevent default scrolling
@@ -206,213 +162,14 @@ document.addEventListener('touchstart', function(e) {
     highlightNextArea();  // Move to the next clickable area
 });
 
-</script>
-
-</body>
-</html>
-
-body {
-    background-image: url('inv.png'); /* replace with your image path */
-    background-size: cover;
-    background-position: center top;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: black;
-    margin: 0;
-    height: 100vh;
-    overflow: hidden; /* Prevent page scrolling */
-}
-
-ul {
-    margin: 100px;
-    padding: 100px;
-    width: 55%;
-    float: left;
-}
-
-ul {
-    list-style-type: none;
-    padding: 50;
-}
-
-li {
-    margin-top: 0px;
-    margin-bottom: 10px;
-}
-
-a {
-    text-decoration: none;
-    color: #000;
-    padding: 10px;
-    display: block;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-    cursor: pointer;
-    position: relative;
-    padding: 12px 8px 12px 40px;
-    list-style-type: none;
-    background: #228B22;
-    font-size: 25px;
-    transition: 0.2s;
-}
-
-/* Highlighted state for clickable areas */
-.highlight {
-    border: 0px solid green;
-}
-
-a:hover {
-    background-color: transparent;
-}
-
-.clickable-area {
-    position: absolute;
-    width: 200px;
-    height: 100px;
-    background-color: transparent;
-}
-</style>
-</head>
-
-<body>
-
-<div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 10%;">
-    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
-</div>
-
-<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 25%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"></a>
-</div>
-
-<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 40%;">
-    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
-</div>
-
-<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 15%;">
-    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
-</div>
-
-<!-- Existing list items (li) -->
-<ul>
-    <li><a href="test photo.html" onclick="playSound(event)"> Nuka-cade </a></li>
-    <li><a href="SILVERSHROUD.html" onclick="playSound(event)">The Silver Shroud</a></li>
-    <li><a href="Love My Baby.html" onclick="playSound(event)">I Love My Baby</a></li>
-</ul>
-
-<script>
-// All clickable areas (both <li> and <div class="clickable-area">)
-const clickableAreas = [...document.querySelectorAll('a')]; // Select all <a> links (from both <li> and <div>)
-
-let currentIndex = 0;
-
-// Double-Press Detection for Enter/Space
-let lastKeyPressTime = 0;
-const DOUBLE_PRESS_THRESHOLD = 500; // Time in milliseconds for double press (adjust as needed)
-
-// Additional keypress detection for other keys (not already handled)
-let lastOtherKeyPressTime = 0;
-
-// Function to play the click sound
-function playSound(event) {
-    event.preventDefault(); // Prevent the default link behavior until we are ready
-    var audio = document.getElementById('clickSound');
-    audio.play(); // Play the sound
-
-    // Delay opening the new page to allow the sound to play
-    setTimeout(function() {
-        window.open(event.target.href, '_blank'); // Open the link after the delay
-    }, 500); // Adjust the delay as needed
-}
-
-// Function to highlight the next clickable area
-function highlightNextArea() {
-    // Remove highlight from the current area
-    clickableAreas[currentIndex].classList.remove('highlight');
-    
-    // Increment the index (cycle back to 0 when it reaches the end)
-    currentIndex = (currentIndex + 1) % clickableAreas.length;
-
-    // Highlight the next area
-    clickableAreas[currentIndex].classList.add('highlight');
-
-    // Play the clicking sound
-    var audio = document.getElementById('clickSound');
-    audio.play();
-}
-
-// Function to highlight the previous clickable area
-function highlightPreviousArea() {
-    // Remove highlight from the current area
-    clickableAreas[currentIndex].classList.remove('highlight');
-    
-    // Decrement the index (cycle back to the end when it reaches 0)
-    currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length;
-
-    // Highlight the previous area
-    clickableAreas[currentIndex].classList.add('highlight');
-
-    // Play the clicking sound
-    var audio = document.getElementById('clickSound');
-    audio.play();
-}
-
-// Handle mouse wheel event to cycle through clickable areas (prevent scrolling)
-window.addEventListener('wheel', function(event) {
-    event.preventDefault(); // Prevent default scroll behavior
-    
-    if (event.deltaY > 0) {
-        highlightNextArea(); // Scroll down -> Next area
-    } else {
-        highlightPreviousArea(); // Scroll up -> Previous area
-    }
-}, { passive: false }); // 'passive: false' allows calling event.preventDefault()
-
-// Handle keyboard events for navigation and selection (Enter/Space to select)
+// Add event listener for keyboard input (arrow keys)
 window.addEventListener('keydown', function(event) {
     if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
         highlightPreviousArea(); // Navigate to the previous clickable area
     } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
         highlightNextArea(); // Navigate to the next clickable area
     }
-
-    // Double press detection for Enter or Space key
-    if (event.key === 'Enter' || event.key === ' ') {
-        const currentTime = new Date().getTime();
-        const timeDifference = currentTime - lastKeyPressTime;
-
-        if (timeDifference < DOUBLE_PRESS_THRESHOLD) {
-            // Double-press detected, activate the selected link
-            activateSelectedArea();
-        }
-
-        // Update the last key press time
-        lastKeyPressTime = currentTime;
-    }
-
-    // Double press detection for other keys (not already handled)
-    else {
-        const currentTime = new Date().getTime();
-        const timeDifference = currentTime - lastOtherKeyPressTime;
-
-        if (timeDifference < DOUBLE_PRESS_THRESHOLD) {
-            // Double-press detected, activate the selected link
-            activateSelectedArea();
-        }
-
-        // Update the last other key press time
-        lastOtherKeyPressTime = currentTime;
-    }
 });
-
-// Function to activate the currently highlighted area (simulate a click)
-function activateSelectedArea() {
-    const currentLink = clickableAreas[currentIndex];
-    
-    // Simulate a click on the selected link
-    currentLink.click(); // This will open the link as if the user clicked on it
-}
-
 </script>
 
 </body>
