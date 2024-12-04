@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
    <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
-   <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
+   <audio id="specialClickSound" src="load holotape.wav"></audio> <!-- New sound for 3 links -->
+   <audio id="specialPageSound" src="specialpage.wav"></audio> <!-- New sound when specific links are opened -->
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=.5">
 <style>
@@ -74,19 +75,19 @@ a:hover {
 
 <!-- Your clickable areas arranged in the correct order -->
 <div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
-    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Stat</a>
 </div>
 
 <div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Inv</a>
 </div>
 
 <div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
-    <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+    <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Data</a>
 </div>
 
 <div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 12.9%;">
-    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Radio</a>
 </div>
 
 <!-- More clickable items below -->
@@ -99,7 +100,6 @@ a:hover {
 <script>
 // All clickable areas (both <li> and <div class="clickable-area">)
 const clickableAreas = [
-    // Array representing the clickable areas in the desired order
     document.querySelector('a[href="stats.html"]'),
     document.querySelector('a[href="inv.html"]'),
     document.querySelector('a[href="data.html"]'),
@@ -119,6 +119,9 @@ function playSound(event) {
     if (event.target.innerText === "Nuka-cade" || event.target.innerText === "The Silver Shroud" || event.target.innerText === "I Love My Baby") {
         var specialAudio = document.getElementById('specialClickSound');
         specialAudio.play(); // Play the special sound
+        // Play the page open sound
+        var pageSound = document.getElementById('specialPageSound');
+        pageSound.play(); // Play a sound when these specific pages are opened
     } else {
         var audio = document.getElementById('clickSound');
         audio.play(); // Play the default click sound
