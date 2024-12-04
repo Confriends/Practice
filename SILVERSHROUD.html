@@ -72,33 +72,42 @@ a:hover {
 
 <body>
 
-<!-- Your clickable areas -->
+<!-- Your clickable areas arranged in the correct order -->
 <div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
-    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Stat</a>
 </div>
 
-<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.2%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Inv</a>
 </div>
 
 <div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
-    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+    <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Data</a>
 </div>
 
-<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 12.8%;">
-    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 12.9%;">
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Radio</a>
 </div>
 
-<!-- Existing list items (li) -->
+<!-- More clickable items below -->
 <ul>
-    <li><a href="test photo.html" onclick="playSound(event)"> Nuka-cade </a></li>
+    <li><a href="test photo.html" onclick="playSound(event)">Nuka-cade</a></li>
     <li><a href="SILVERSHROUD.html" onclick="playSound(event)">The Silver Shroud</a></li>
     <li><a href="Love My Baby.html" onclick="playSound(event)">I Love My Baby</a></li>
 </ul>
 
 <script>
 // All clickable areas (both <li> and <div class="clickable-area">)
-const clickableAreas = [...document.querySelectorAll('a')]; // Select all <a> links (from both <li> and <div>)
+const clickableAreas = [
+    // Array representing the clickable areas in the desired order
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="data.html"]'),
+    document.querySelector('a[href="radio.html"]'),
+    document.querySelector('a[href="test photo.html"]'), // Nuka-cade
+    document.querySelector('a[href="SILVERSHROUD.html"]'), // The Silver Shroud
+    document.querySelector('a[href="Love My Baby.html"]') // I Love My Baby
+];
 
 let currentIndex = 0; // Starting index
 
@@ -187,27 +196,24 @@ document.addEventListener('keydown', function(event) {
         highlightPreviousArea(); // Move backward
     }
     else if (event.key === 'Enter') {
-        activateSelectedArea(); // Select the current link
+        activateSelectedArea(); // Select the highlighted link
     }
 });
 
-// Double-tap functionality to open selected area
+// Handling double-tap logic for touch devices (if needed)
 let lastTapTime = 0;
-const DOUBLE_TAP_THRESHOLD = 500;
+const DOUBLE_TAP_THRESHOLD = 500; // Threshold for double tap
 
 document.addEventListener('touchstart', function(e) {
-    e.preventDefault(); // Prevent default scrolling behavior
+    e.preventDefault();
     const currentTime = new Date().getTime();
     const timeDifference = currentTime - lastTapTime;
 
     if (timeDifference < DOUBLE_TAP_THRESHOLD) {
-        // Trigger the link selection (double-tap detected)
         activateSelectedArea();
     } else {
-        // Regular behavior to move to the next area
         highlightNextArea();
     }
-
     lastTapTime = currentTime;
 });
 </script>
