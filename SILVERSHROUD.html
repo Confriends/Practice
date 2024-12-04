@@ -162,14 +162,12 @@ window.addEventListener('wheel', function(event) {
     }
 }, { passive: false }); // 'passive: false' allows calling event.preventDefault()
 
-// Listen for keyboard events to see which keys are being pressed by the D01 Pro
-window.addEventListener('keydown', function(event) {
-    console.log('Key pressed:', event.key); // This will log the key pressed by the device
+document.getElementById('ring-button-next').addEventListener('touchstart', function() {
+    highlightNextArea(); // Move to the next clickable area
 });
 
-// Optionally listen for touch events (if the device uses touch to interact with the ring)
-window.addEventListener('touchstart', function(event) {
-    console.log('Touch event detected:', event); // Logs touch event if it's from the ring
+document.getElementById('ring-button-prev').addEventListener('touchstart', function() {
+    highlightPreviousArea(); // Move to the previous clickable area
 });
 
 </script>
