@@ -99,6 +99,13 @@ const clickableAreas = [...document.querySelectorAll('a')]; // Select all <a> li
 
 let currentIndex = 0;
 
+// Double-Press Detection for Enter/Space
+let lastKeyPressTime = 0;
+const DOUBLE_PRESS_THRESHOLD = 500; // Time in milliseconds for double press (adjust as needed)
+
+// Additional keypress detection for other keys (not already handled)
+let lastOtherKeyPressTime = 0;
+
 // Function to play the click sound
 function playSound(event) {
     event.preventDefault(); // Prevent the default link behavior until we are ready
@@ -162,9 +169,32 @@ window.addEventListener('keydown', function(event) {
         highlightNextArea(); // Navigate to the next clickable area
     }
 
-    // Activate selected area with Enter or Space
+    // Double press detection for Enter or Space key
     if (event.key === 'Enter' || event.key === ' ') {
-        activateSelectedArea(); // Select and activate the currently highlighted area
+        const currentTime = new Date().getTime();
+        const timeDifference = currentTime - lastKeyPressTime;
+
+        if (timeDifference < DOUBLE_PRESS_THRESHOLD) {
+            // Double-press detected, activate the selected link
+            activateSelectedArea();
+        }
+
+        // Update the last key press time
+        lastKeyPressTime = currentTime;
+    }
+
+    // Double press detection for other keys (not already handled)
+    else {
+        const currentTime = new Date().getTime();
+        const timeDifference = currentTime - lastOtherKeyPressTime;
+
+        if (timeDifference < DOUBLE_PRESS_THRESHOLD) {
+            // Double-press detected, activate the selected link
+            activateSelectedArea();
+        }
+
+        // Update the last other key press time
+        lastOtherKeyPressTime = currentTime;
     }
 });
 
@@ -175,31 +205,6 @@ function activateSelectedArea() {
     // Simulate a click on the selected link
     currentLink.click(); // This will open the link as if the user clicked on it
 }
-
-// Double-Tap Logic (for touchscreen or ring controller)
-let lastTapTime = 0;
-const DOUBLE_TAP_THRESHOLD = 500; // Threshold in milliseconds
-
-document.addEventListener('touchstart', function(event) {
-    const currentTime = new Date().getTime();
-    const timeDifference = currentTime - lastTapTime;
-
-    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
-        // Trigger the link selection (double-tap detected)
-        activateSelectedArea();
-    }
-
-    // Update the last tap time
-    lastTapTime = currentTime;
-});
-
-// Add event listener for touchstart (for cycling through clickable areas)
-document.addEventListener('touchstart', function(e) {
-    e.preventDefault(); // Prevent default scrolling
-
-    // Logic to cycle through clickable areas
-    highlightNextArea();  // Move to the next clickable area
-});
 
 </script>
 
