@@ -85,7 +85,7 @@ a:hover {
     <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Data</a>
 </div>
 
-<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 12.9%;">
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 13.5%;">
     <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)">Radio</a>
 </div>
 
@@ -142,7 +142,14 @@ function highlightNextArea() {
 // Function to highlight the previous clickable area
 function highlightPreviousArea() {
     clickableAreas[currentIndex].classList.remove('highlight');
-    currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
+    
+    // Adjust the logic for going backward
+    if (currentIndex === 0) {
+        currentIndex = clickableAreas.length - 1; // Go to the last item if at the start
+    } else {
+        currentIndex -= 1; // Decrement normally otherwise
+    }
+    
     clickableAreas[currentIndex].classList.add('highlight');
     var audio = document.getElementById('clickSound');
     audio.play(); // Play click sound
