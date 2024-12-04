@@ -101,6 +101,10 @@ const clickableAreas = [...document.querySelectorAll('a')]; // Select all <a> li
 
 let currentIndex = 0;
 
+// Track the last press time and the time window for a double tap
+let lastPressedTime = 0;
+const doubleTapTimeWindow = 500; // Time window for detecting double tap in ms
+
 // Function to play the click sound
 function playSound(event) {
     event.preventDefault(); // Prevent the default link behavior until we are ready
@@ -164,11 +168,23 @@ window.addEventListener('keydown', function(event) {
         highlightNextArea(); // Navigate to the next clickable area
     }
 
-    // Activate selected area with Enter or Space
-    if (event.key === 'Enter' || event.key === ' ') {
-        activateSelectedArea(); // Select and activate the currently highlighted area
+    // Detect Enter or Space key presses for double tap simulation
+    if (event.key === 'zoom' || event.key === ' ') {
+        handleDoubleTap(); // Handle the "double tap" logic
     }
 });
+
+// Function to handle double tap behavior for the center button (Enter or Space)
+function handleDoubleTap() {
+    const currentTime = Date.now();
+    if (currentTime - lastPressedTime <= doubleTapTimeWindow) {
+        // If the time between two presses is within the double tap window, simulate the click
+        activateSelectedArea(); // Simulate a click on the selected link
+    } else {
+        // If it's too long since the last press, update the lastPressedTime
+        lastPressedTime = currentTime; // Reset the time for the next press
+    }
+}
 
 // Function to activate the currently highlighted area (simulate a click)
 function activateSelectedArea() {
@@ -177,14 +193,6 @@ function activateSelectedArea() {
     // Simulate a click on the selected link
     currentLink.click(); // This will open the link as if the user clicked on it
 }
-
-// Handle zoom-in event (using mouse wheel as an example)
-window.addEventListener('wheel', function(event) {
-    // Detect zoom-in (scrolling up)
-    if (event.deltaY < 0) {
-        activateSelectedArea(); // Trigger the link click if zooming in
-    }
-}, { passive: false }); // Prevent default scroll behavior
 
 </script>
 </body>
