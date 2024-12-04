@@ -169,7 +169,7 @@ window.addEventListener('wheel', function(event) {
 
 // Add event listener for touchstart (for cycling through clickable areas)
 document.addEventListener('touchstart', function(e) {
-    e.preventDefault(); // Prevent default scrolling
+    e.preventDefault(); // Prevent default zooming behavior
 
     // Logic to cycle through clickable areas
     highlightNextArea();  // Move to the next clickable area
@@ -204,6 +204,9 @@ document.addEventListener('touchstart', function(event) {
         const timeDifference = currentTime - lastTapTime;
 
         if (timeDifference < DOUBLE_TAP_THRESHOLD) {
+            // Prevent the default behavior (zooming in)
+            event.preventDefault();
+            
             // Trigger the link selection (double-tap detected)
             activateSelectedArea();
         }
