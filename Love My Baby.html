@@ -12,6 +12,7 @@ body {
     background-color: black;
     margin: 0;
     height: 100vh;
+    overflow: hidden; /* Prevent page scroll */
 }
 
 .video-container {
@@ -164,7 +165,7 @@ document.addEventListener('touchmove', function(e) {
 
 // Handling mouse wheel events to cycle through clickable areas
 window.addEventListener('wheel', function(event) {
-    event.preventDefault(); // Prevent default scroll behavior
+    event.preventDefault(); // Prevent default scroll behavior (no page scrolling)
     
     if (event.deltaY > 0) {
         highlightNextArea(); // Scroll down -> Move forward
