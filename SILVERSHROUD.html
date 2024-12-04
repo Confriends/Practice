@@ -65,8 +65,6 @@ a:hover {
     height: 100px;
     background-color: transparent;
 }
-
-/* Optional: Add any custom styling for clickable areas (if needed) */
 </style>
 </head>
 
@@ -94,13 +92,7 @@ a:hover {
     <li><a href="SILVERSHROUD.html" onclick="playSound(event)">The Silver Shroud</a></li>
     <li><a href="Love My Baby.html" onclick="playSound(event)">I Love My Baby</a></li>
 </ul>
-window.addEventListener('keydown', function(event) {
-    if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-        highlightPreviousArea(); // Navigate to the previous clickable area
-    } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-        highlightNextArea(); // Navigate to the next clickable area
-    }
-});
+
 <script>
 // All clickable areas (both <li> and <div class="clickable-area">)
 const clickableAreas = [...document.querySelectorAll('a')]; // Select all <a> links (from both <li> and <div>)
@@ -162,14 +154,23 @@ window.addEventListener('wheel', function(event) {
     }
 }, { passive: false }); // 'passive: false' allows calling event.preventDefault()
 
-document.getElementById('ring-button-next').addEventListener('touchstart', function() {
-    highlightNextArea(); // Move to the next clickable area
+// Add event listener for touchstart (for cycling through clickable areas)
+document.addEventListener('touchstart', function(e) {
+    e.preventDefault(); // Prevent default scrolling
+
+    // Logic to cycle through clickable areas
+    highlightNextArea();  // Move to the next clickable area
 });
 
-document.getElementById('ring-button-prev').addEventListener('touchstart', function() {
-    highlightPreviousArea(); // Move to the previous clickable area
+// Add event listener for keyboard input (arrow keys)
+window.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+        highlightPreviousArea(); // Navigate to the previous clickable area
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+        highlightNextArea(); // Navigate to the next clickable area
+    }
 });
-
 </script>
+
 </body>
 </html>
