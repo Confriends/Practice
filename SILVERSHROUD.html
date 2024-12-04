@@ -98,7 +98,6 @@ a:hover {
 <script>
 // All clickable areas (both <li> and <div class="clickable-area">)
 const clickableAreas = [
-    // Array representing the clickable areas in the desired order
     document.querySelector('a[href="stats.html"]'),
     document.querySelector('a[href="inv.html"]'),
     document.querySelector('a[href="data.html"]'),
@@ -114,7 +113,6 @@ let currentIndex = 0; // Starting index
 function playSound(event) {
     event.preventDefault(); // Prevent the default link behavior until we are ready
     
-    // Check if the clicked link is one of the three special ones
     if (event.target.innerText === "Nuka-cade" || event.target.innerText === "The Silver Shroud" || event.target.innerText === "I Love My Baby") {
         var specialAudio = document.getElementById('specialClickSound');
         specialAudio.play(); // Play the special sound
@@ -155,12 +153,13 @@ function activateSelectedArea() {
 
 // Handling touch events for swipe detection
 let touchStartY = 0; // Track the initial touch position
+let lastSwipeTime = 0; // Track the time of the last swipe
+const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
 
 document.addEventListener('touchstart', function(e) {
     touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
 });
 
-// Swipe up or swipe down (top/bottom screen actions)
 document.addEventListener('touchmove', function(e) {
     const touchEndY = e.touches[0].clientY; // Get the current touch position
     const screenHeight = window.innerHeight;
@@ -171,7 +170,18 @@ document.addEventListener('touchmove', function(e) {
     }
     // Swipe down from the bottom half of the screen (move backward)
     else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
-        highlightPreviousArea();
+        const currentTime = Date.now();
+
+        // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
+        if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+            console.log("Double back detected! Adjusting behavior...");
+            highlightPreviousArea(); // Only go back one step
+        } else {
+            highlightPreviousArea();
+        }
+
+        // Update the last swipe time to the current time
+        lastSwipeTime = currentTime;
     }
 });
 
