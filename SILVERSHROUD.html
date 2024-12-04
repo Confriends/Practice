@@ -77,7 +77,7 @@ a:hover {
 </div>
 
 <div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 32%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"onclick="playSound(event)"></a>
 </div>
 
 <div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
@@ -160,27 +160,6 @@ function activateSelectedArea() {
     currentLink.click(); // This will open the link as if the user clicked on it
 }
 
-// Swipe detection
-let touchStartY = 0; // Track the starting Y position of the touch
-
-document.addEventListener('touchstart', function(e) {
-    touchStartY = e.touches[0].clientY; // Record the starting touch position
-});
-
-document.addEventListener('touchmove', function(e) {
-    const touchEndY = e.touches[0].clientY; // Get the current touch position
-
-    // Determine if swipe is happening and from top/bottom of the screen
-    const screenHeight = window.innerHeight;
-    if (touchStartY > touchEndY && touchStartY < screenHeight / 2) {
-        // Swipe up from the top half -> move backwards
-        highlightPreviousArea();
-    } else if (touchStartY < touchEndY && touchStartY > screenHeight / 2) {
-        // Swipe down from the bottom half -> move forwards
-        highlightNextArea();
-    }
-});
-
 // Handle mouse wheel event to cycle through clickable areas (prevent scrolling)
 window.addEventListener('wheel', function(event) {
     event.preventDefault(); // Prevent default scroll behavior
@@ -192,6 +171,7 @@ window.addEventListener('wheel', function(event) {
     }
 }, { passive: false }); // 'passive: false' allows calling event.preventDefault()
 
+// Add event listeners for the device buttons (replace with the actual key codes)
 document.addEventListener('keydown', function(event) {
     // Button for Move Forward (next area)
     if (event.key === 'ArrowRight') {
@@ -207,6 +187,28 @@ document.addEventListener('keydown', function(event) {
     else if (event.key === 'Enter') {
         activateSelectedArea(); // Open the highlighted link
     }
+});
+
+// Consolidated Double-Tap Logic (for touchscreen or ring controller)
+let lastTapTime = 0;
+const DOUBLE_TAP_THRESHOLD = 500; // Threshold in milliseconds
+
+document.addEventListener('touchstart', function(e) {
+    e.preventDefault(); // Prevent default scrolling behavior
+    
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - lastTapTime;
+
+    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
+        // Trigger the link selection (double-tap detected)
+        activateSelectedArea(); // Select the highlighted link immediately
+    } else {
+        // Regular behavior to move to the next area
+        highlightNextArea();
+    }
+
+    // Update the last tap time
+    lastTapTime = currentTime;
 });
 </script>
 
