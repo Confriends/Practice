@@ -13,21 +13,26 @@
             margin: 0;
             height: 100vh;
             overflow: hidden;
+            touch-action: none;  /* Prevent zoom and other default touch behaviors */
         }
+
         ul {
             margin: 100px;
             padding: 100px;
             width: 55%;
             float: left;
         }
+
         ul {
             list-style-type: none;
             padding: 50;
         }
+
         li {
             margin-top: 0px;
             margin-bottom: 10px;
         }
+
         a {
             text-decoration: none;
             color: #000;
@@ -44,13 +49,16 @@
             font-size: 25px;
             transition: 0.2s;
         }
+
         .highlight {
             border: 3px solid #00FF00;
             background-color: rgba(0, 255, 0, 0.3);
         }
+
         a:hover {
             background-color: transparent;
         }
+
         .clickable-area {
             position: absolute;
             width: 200px;
@@ -61,6 +69,7 @@
 </head>
 <body>
 
+<!-- Clickable areas -->
 <div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 10%;">
     <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
@@ -118,39 +127,37 @@ function activateSelectedArea() {
     currentLink.click();
 }
 
-// Handle mouse wheel event to cycle through clickable areas (scroll up and down)
-window.addEventListener('wheel', function(event) {
-    event.preventDefault();
-    
-    if (event.deltaY > 0) {
-        highlightNextArea(); // Scroll down -> Next area
-    } else {
-        highlightPreviousArea(); // Scroll up -> Previous area
-    }
-}, { passive: false });
-
-// Handle button press for selecting (tap)
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        activateSelectedArea(); // Tap -> Select the current highlighted area
-    }
-});
-
-// Double-Tap Logic for touch devices
-let lastTapTime = 0;
-const DOUBLE_TAP_THRESHOLD = 500;
+// Handle touchstart and touchmove to handle ring device interactions
+let startTouch = null;
 
 document.addEventListener('touchstart', function(event) {
-    const currentTime = new Date().getTime();
-    const timeDifference = currentTime - lastTapTime;
-
-    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
-        event.preventDefault(); // Prevent zoom
-        activateSelectedArea(); // Double-tap -> Select the current highlighted area
-    }
-
-    lastTapTime = currentTime;
+    startTouch = event.touches[0].clientY; // Capture the initial touch position for scroll direction
 });
+
+document.addEventListener('touchmove', function(event) {
+    if (!startTouch) return;  // Ensure that a touchstart event has occurred first
+    const endTouch = event.touches[0].clientY;
+    const diff = startTouch - endTouch;
+
+    // If the user swiped up, go back (previous area)
+    if (diff > 30) {
+        highlightPreviousArea();
+    }
+    // If the user swiped down, go forward (next area)
+    else if (diff < -30) {
+        highlightNextArea();
+    }
+});
+
+document.addEventListener('touchend', function(event) {
+    if (startTouch) {
+        activateSelectedArea();  // When touch ends, activate the selected area (simulates tap)
+    }
+    startTouch = null;  // Reset the touch position
+});
+
+// Disable zoom behavior with touch action
+document.body.style.touchAction = 'none';  // Ensures that swipe does not zoom
 </script>
 
 </body>
