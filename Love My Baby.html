@@ -85,18 +85,18 @@ a:hover {
 </div>
 
 <div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
-    <a href="falloutplaylist.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: falloutplaylist.html -->
+    <a href="Map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: falloutplaylist.html -->
 </div>
 
 <div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.2%;">
-    <a href="brat.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: brat.html -->
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: brat.html -->
 </div>
 
 <!-- More clickable items below -->
 <ul>
-    <li><a href="falloutplaylist.html" onclick="playSound(event)">Nuka-cade</a></li> <!-- Updated link: falloutplaylist.html -->
-    <li><a href="brat.html" onclick="playSound(event)">The Silver Shroud</a></li> <!-- Updated link: brat.html -->
-    <li><a href="falloutplaylist.html" onclick="playSound(event)">I Love My Baby</a></li> <!-- Updated link: falloutplaylist.html -->
+    <li><a href="falloutplaylist.html" onclick="playSound(event)">Fallout Playlist</a></li> <!-- Updated link: falloutplaylist.html -->
+    <li><a href="brat.html" onclick="playSound(event)">BRAT</a></li> <!-- Updated link: brat.html -->
+    
 </ul>
 
 <script>
@@ -127,7 +127,231 @@ function debounceAction(callback) {
 function playSound(event) {
     event.preventDefault(); // Prevent the default link behavior until we are ready
     
-    if (event.target.innerText === "Nuka-cade" || event.target.innerText === "The Silver Shroud" || event.target.innerText === "I Love My Baby") {
+    if (event.target.innerText === "Fallout playlist" || event.target.innerText === "BRAT") {
+        var specialAudio = document.getElementById('specialClickSound');
+        specialAudio.play(); // Play the special sound
+    } else {
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play the default click sound
+    }
+
+    // Delay opening the new page to allow the sound to play
+    setTimeout(function() {
+        window.open(event.target.href, '_blank'); // Open the link after the delay
+    }, 500); // Adjust the delay as needed
+}
+
+// Function to highlight the next clickable area
+function highlightNextArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to highlight the previous clickable area
+function highlightPreviousArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to activate the currently highlighted area (simulate a click)
+function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click(); // Simulate a click on the highlighted area
+}
+
+// Handling touch events for swipe detection
+let touchStartY = 0; // Track the initial touch position
+let lastSwipeTime = 0; // Track the time of the last swipe
+const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
+
+document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
+});
+
+document.addEventListener('touchmove', function(e) {
+    const touchEndY = e.touches[0].clientY; // Get the current touch position
+    const screenHeight = window.innerHeight;
+
+    // Swipe up from the top half of the screen (move forward)
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+        highlightNextArea();
+    }
+    // Swipe down from the bottom half of the screen (move backward)
+    else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+        const currentTime = Date.now();
+
+        // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
+        if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+            console.log("Double back detected! Adjusting behavior...");
+            highlightPreviousArea(); // Only go back one step
+        } else {
+            highlightPreviousArea();
+        }
+
+        // Update the last swipe time to the current time
+        lastSwipeTime = currentTime;
+    }
+});
+
+// Handling mouse wheel events to cycle through clickable areas
+window.addEventListener('wheel', function(event) {
+    event.preventDefault(); // Prevent default scroll behavior
+    
+    if (event.deltaY > 0) {
+        highlightNextArea(); // Scroll down -> Move forward
+    } else {
+        highlightPreviousArea(); // Scroll up -> Move backward
+    }
+}, { passive: false }); // Allows calling event.preventDefault()
+
+// Add event listeners for device buttons or keyboard
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp' || event.key === 'w') {
+        highlightPreviousArea(); // Move backward
+    } else if (event.key === 'ArrowDown' || event.key === 's') {
+        highlightNextArea(); // Move forward
+    } else if (event.key === 'Enter') {
+        activateSelectedArea(); // Activate the current selection
+  <<html>
+   <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
+   <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=.5">
+<style>
+body {
+    background-image: url('inv.png'); /* replace with your image path */
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: black;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden; /* Prevent page scrolling */
+}
+
+ul {
+    margin: 100px;
+    padding: 100px;
+    width: 55%;
+    float: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 50;
+}
+
+li {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    padding: 10px;
+    display: block;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    list-style-type: none;
+    background: #228B22;
+    font-size: 25px;
+    transition: 0.2s;
+}
+
+/* Highlighted state for clickable areas */
+.highlight {
+    border: 3px solid #00FF00; /* Bright green border */
+    background-color: rgba(0, 255, 0, 0.3); /* Light green background for better visibility */
+}
+
+a:hover {
+    background-color: transparent;
+}
+
+.clickable-area {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    background-color: transparent;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Your clickable areas arranged in the correct order -->
+<div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
+    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
+    <a href="Map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: falloutplaylist.html -->
+</div>
+
+<div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.2%;">
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: brat.html -->
+</div>
+
+<!-- More clickable items below -->
+<ul>
+    <li><a href="falloutplaylist.html" onclick="playSound(event)">Fallout Playlist</a></li> <!-- Updated link: falloutplaylist.html -->
+    <li><a href="brat.html" onclick="playSound(event)">BRAT</a></li> <!-- Updated link: brat.html -->
+    
+</ul>
+
+<script>
+// All clickable areas (both <li> and <div class="clickable-area">)
+const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]') // Updated link: falloutplaylist.html
+];
+
+let currentIndex = 0; // Starting index
+
+// Debounce variables
+let debounceTimeout = null;
+const DEBOUNCE_DELAY = 300; // 300ms delay
+
+function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+}
+
+// Function to play the appropriate sound
+function playSound(event) {
+    event.preventDefault(); // Prevent the default link behavior until we are ready
+    
+    if (event.target.innerText === "Fallout playlist" || event.target.innerText === "BRAT") {
         var specialAudio = document.getElementById('specialClickSound');
         specialAudio.play(); // Play the special sound
     } else {
@@ -223,6 +447,1392 @@ document.addEventListener('keydown', function(event) {
     } else if (event.key === 'Enter') {
         activateSelectedArea(); // Activate the current selection
     }
+});
+</script>
+
+</body>
+</html>
+html>
+   <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
+   <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
+<head>
+<m<html>
+   <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
+   <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=.5">
+<style>
+body {
+    background-image: url('inv.png'); /* replace with your image path */
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: black;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden; /* Prevent page scrolling */
+}
+
+ul {
+    margin: 100px;
+    padding: 100px;
+    width: 55%;
+    float: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 50;
+}
+
+li {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    padding: 10px;
+    display: block;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    list-style-type: none;
+    background: #228B22;
+    font-size: 25px;
+    transition: 0.2s;
+}
+
+/* Highlighted state for clickable areas */
+.highlight {
+    border: 3px solid #00FF00; /* Bright green border */
+    background-color: rgba(0, 255, 0, 0.3); /* Light green background for better visibility */
+}
+
+a:hover {
+    background-color: transparent;
+}
+
+.clickable-area {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    background-color: transparent;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Your clickable areas arranged in the correct order -->
+<div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
+    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
+    <a href="Map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: falloutplaylist.html -->
+</div>
+
+<div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.2%;">
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: brat.html -->
+</div>
+
+<!-- More clickable items below -->
+<ul>
+    <li><a href="falloutplaylist.html" onclick="playSound(event)">Fallout Playlist</a></li> <!-- Updated link: falloutplaylist.html -->
+    <li><a href="brat.html" onclick="playSound(event)">BRAT</a></li> <!-- Updated link: brat.html -->
+    
+</ul>
+
+<script>
+// All clickable areas (both <li> and <div class="clickable-area">)
+const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]') // Updated link: falloutplaylist.html
+];
+
+let currentIndex = 0; // Starting index
+
+// Debounce variables
+let debounceTimeout = null;
+const DEBOUNCE_DELAY = 300; // 300ms delay
+
+function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+}
+
+// Function to play the appropriate sound
+function playSound(event) {
+    event.preventDefault(); // Prevent the default link behavior until we are ready
+    
+    if (event.target.innerText === "Fallout playlist" || event.target.innerText === "BRAT") {
+        var specialAudio = document.getElementById('specialClickSound');
+        specialAudio.play(); // Play the special sound
+    } else {
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play the default click sound
+    }
+
+    // Delay opening the new page to allow the sound to play
+    setTimeout(function() {
+        window.open(event.target.href, '_blank'); // Open the link after the delay
+    }, 500); // Adjust the delay as needed
+}
+
+// Function to highlight the next clickable area
+function highlightNextArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to highlight the previous clickable area
+function highlightPreviousArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to activate the currently highlighted area (simulate a click)
+function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click(); // Simulate a click on the highlighted area
+}
+
+// Handling touch events for swipe detection
+let touchStartY = 0; // Track the initial touch position
+let lastSwipeTime = 0; // Track the time of the last swipe
+const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
+
+document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
+});
+
+document.addEventListener('touchmove', function(e) {
+    const touchEndY = e.touches[0].clientY; // Get the current touch position
+    const screenHeight = window.innerHeight;
+
+    // Swipe up from the top half of the screen (move forward)
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+        highlightNextArea();
+    }
+    // Swipe down from the bottom half of the screen (move backward)
+    else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+        const currentTime = Date.now();
+
+        // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
+        if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+            console.log("Double back detected! Adjusting behavior...");
+            highlightPreviousArea(); // Only go back one step
+        } else {
+            highlightPreviousArea();
+        }
+
+        // Update the last swipe time to the current time
+        lastSwipeTime = currentTime;
+    }
+});
+
+// Handling mouse wheel events to cycle through clickable areas
+window.addEventListener('wheel', function(event) {
+    event.preventDefault(); // Prevent default scroll behavior
+    
+    if (event.deltaY > 0) {
+        highlightNextArea(); // Scroll down -> Move forward
+    } else {
+        highlightPreviousArea(); // Scroll up -> Move backward
+    }
+}, { passive: false }); // Allows calling event.preventDefault()
+
+// Add event listeners for device buttons or keyboard
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp' || event.key === 'w') {
+        highlightPreviousArea(); // Move backward
+    } else if (event.key === 'ArrowDown' || event.key === 's') {
+        highlightNextArea(); // Move forward
+    } else if (event.key === 'Enter') {
+        activateSelectedArea(); // Activate the current selection
+    }
+});
+</script>
+
+</body>
+</html>
+eta name="viewport" content="width=device-width, initial-scale=.5">
+<style>
+body {
+    background-image: url('inv.png'); /* replace with your image path */
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: black;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden; /* Prevent page scrolling */
+}
+
+ul {
+    margin: 100px;
+    padding: 100px;
+    width: 55%;
+    float: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 50;
+}
+
+li {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    padding: 10px;
+    display: block;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    list-style-type: none;
+    background: #228B22;
+    font-size: 25px;
+    transition: 0.2s;
+}
+
+/* Highlighted state for clickable areas */
+.highlight {
+    border: 3px solid #00FF00; /* Bright green border */
+    background-color: rgba(0, 255, 0, 0.3); /* Light green background for better visibility */
+}
+
+a:hover {
+    background-color: transparent;
+}
+
+.clickable-area {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    background-color: transparent;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Your clickable areas arranged in the correct order -->
+<div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
+    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
+    <a href="Map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: falloutplaylist.html -->
+</div>
+
+<div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.2%;">
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: brat.html -->
+</div>
+
+<!-- More clickable items below -->
+<ul>
+    <li><a href="falloutplaylist.html" onclick="playSound(event)">Fallout Playlist</a></li> <!-- Updated link: falloutplaylist.html -->
+    <li><a href="brat.html" onclick="playSound(event)">BRAT</a></li> <!-- Updated link: brat.html -->
+    
+</ul>
+
+<script>
+// All clickable areas (both <li> and <div class="clickable-area">)
+const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]') // Updated link: falloutplaylist.html
+];
+
+let currentIndex = 0; // Starting index
+
+// Debounce variables
+let debounceTimeout = null;
+const DEBOUNCE_DELAY = 300; // 300ms delay
+
+function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+}
+
+// Function to play the appropriate sound
+function playSound(event) {
+    event.preventDefault(); // Prevent the default link behavior until we are ready
+    
+    if (event.target.innerText === "Fallout playlist" || event.target.innerText === "BRAT") {
+        var specialAudio = document.getElementById('specialClickSound');
+        specialAudio.play(); // Play the special sound
+    } else {
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play the default click sound
+    }
+
+    // Delay opening the new page to allow the sound to play
+    setTimeout(function() {
+        window.open(event.target.href, '_blank'); // Open the link after the delay
+    }, 500); // Adjust the delay as needed
+}
+
+// Function to highlight the next clickable area
+function highlightNextArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to highlight the previous clickable area
+function highlightPreviousArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to activate the currently highlighted area (simulate a click)
+function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click(); // Simulate a click on the highlighted area
+}
+
+// Handling touch events for swipe detection
+let touchStartY = 0; // Track the initial touch position
+let lastSwipeTime = 0; // Track the time of the last swipe
+const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
+
+document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
+});
+
+document.addEventListener('touchmove', function(e) {
+    const touchEndY = e.touches[0].clientY; // Get the current touch position
+    const screenHeight = window.innerHeight;
+
+    // Swipe up from the top half of the screen (move forward)
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+        highlightNextArea();
+    }
+    // Swipe down from the bottom half of the screen (move backward)
+    else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+        const currentTime = Date.now();
+
+        // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
+        if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+            console.log("Double back detected! Adjusting behavior...");
+            highlightPreviousArea(); // Only go back one step
+        } else {
+            highlightPreviousArea();
+        }
+
+        // Update the last swipe time to the current time
+        lastSwipeTime = currentTime;
+    }
+});
+
+// Handling mouse wheel events to cycle through clickable areas
+window.addEventListener('wheel', function(event) {
+    event.preventDefault(); // Prevent default scroll behavior
+    
+    if (event.deltaY > 0) {
+        highlightNextArea(); // Scroll down -> Move forward
+    } else {
+        highlightPreviousArea(); // Scroll up -> Move backward
+    }
+}, { passive: false }); // Allows calling event.preventDefault()
+
+// Add event listeners for device buttons or keyboard
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp' || event.key === 'w') {
+        highlightPreviousArea(); // Move backward
+    } else if (event.key === 'ArrowDown' || event.key === 's') {
+        highlightNextArea(); // Move forward
+    } else if (event.key === 'Enter') {
+        activateSelectedArea(); // Activate the current selection
+    }
+});<html>
+   <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
+   <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=.5">
+<style>
+body {
+    background-image: url('inv.png'); /* replace with your image path */
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: black;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden; /* Prevent page scrolling */
+}
+
+ul {
+    margin: 100px;
+    padding: 100px;
+    width: 55%;
+    float: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 50;
+}
+
+li {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    padding: 10px;
+    display: block;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    list-style-type: none;
+    background: #228B22;
+    font-size: 25px;
+    transition: 0.2s;
+}
+
+/* Highlighted state for clickable areas */
+.highlight {
+    border: 3px solid #00FF00; /* Bright green border */
+    background-color: rgba(0, 255, 0, 0.3); /* Light green background for better visibility */
+}
+
+a:hover {
+    background-color: transparent;
+}
+
+.clickable-area {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    background-color: transparent;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Your clickable areas arranged in the correct order -->
+<div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
+    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
+    <a href="Map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: falloutplaylist.html -->
+</div>
+
+<div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.2%;">
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: brat.html -->
+</div>
+
+<!-- More clickable items below -->
+<ul>
+    <li><a href="falloutplaylist.html" onclick="playSound(event)">Fallout Playlist</a></li> <!-- Updated link: falloutplaylist.html -->
+    <li><a href="brat.html" onclick="playSound(event)">BRAT</a></li> <!-- Updated link: brat.html -->
+    
+</ul>
+
+<script>
+// All clickable areas (both <li> and <div class="clickable-area">)
+const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]') // Updated link: falloutplaylist.html
+];
+
+let currentIndex = 0; // Starting index
+
+// Debounce variables
+let debounceTimeout = null;
+const DEBOUNCE_DELAY = 300; // 300ms delay
+
+function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+}
+
+// Function to play the appropriate sound
+function playSound(event) {
+    event.preventDefault(); // Prevent the default link behavior until we are ready
+    
+    if (event.target.innerText === "Fallout playlist" || event.target.innerText === "BRAT") {
+        var specialAudio = document.getElementById('specialClickSound');
+        specialAudio.play(); // Play the special sound
+    } else {
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play the default click sound
+    }
+
+    // Delay opening the new page to allow the sound to play
+    setTimeout(function() {
+        window.open(event.target.href, '_blank'); // Open the link after the delay
+    }, 500); // Adjust the delay as needed
+}
+
+// Function to highlight the next clickable area
+function highlightNextArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to highlight the previous clickable area
+function highlightPreviousArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to activate the currently highlighted area (simulate a click)
+function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click(); // Simulate a click on the highlighted area
+}
+
+// Handling touch events for swipe detection
+let touchStartY = 0; // Track the initial touch position
+let lastSwipeTime = 0; // Track the time of the last swipe
+const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
+
+document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
+});
+
+document.addEventListener('touchmove', function(e) {
+    const touchEndY = e.touches[0].clientY; // Get the current touch position
+    const screenHeight = window.innerHeight;
+
+    // Swipe up from the top half of the screen (move forward)
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+        highlightNextArea();
+    }
+    // Swipe down from the bottom half of the screen (move backward)
+    else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+        const currentTime = Date.now();
+
+        // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
+        if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+            console.log("Double back detected! Adjusting behavior...");
+            highlightPreviousArea(); // Only go back one step
+        } else {
+            highlightPreviousArea();
+        }
+
+        // Update the last swipe time to the current time
+        lastSwipeTime = currentTime;
+    }
+});
+
+// Handling mouse wheel events to cycle through clickable areas
+window.addEventListener('wheel', function(event) {
+    event.preventDefault(); // Prevent default scroll behavior
+    
+    if (event.deltaY > 0) {
+        highlightNextArea(); // Scroll down -> Move forward
+    } else {
+        highlightPreviousArea(); // Scroll up -> Move backward
+    }
+}, { passive: false }); // Allows calling event.preventDefault()
+
+// Add event listeners for device buttons or keyboard
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp' || event.key === 'w') {
+        highlightPreviousArea(); // Move backward
+    } else if (event.key === 'ArrowDown' || event.key === 's') {
+        highlightNextArea(); // Move forward
+    } else if (event.key === 'Enter') {
+        activateSelectedArea(); // Activate the current selection
+  <<html>
+   <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
+   <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=.5">
+<style>
+body {
+    background-image: url('inv.png'); /* replace with your image path */
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: black;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden; /* Prevent page scrolling */
+}
+
+ul {
+    margin: 100px;
+    padding: 100px;
+    width: 55%;
+    float: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 50;
+}
+
+li {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    padding: 10px;
+    display: block;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    list-style-type: none;
+    background: #228B22;
+    font-size: 25px;
+    transition: 0.2s;
+}
+
+/* Highlighted state for clickable areas */
+.highlight {
+    border: 3px solid #00FF00; /* Bright green border */
+    background-color: rgba(0, 255, 0, 0.3); /* Light green background for better visibility */
+}
+
+a:hover {
+    background-color: transparent;
+}
+
+.clickable-area {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    background-color: transparent;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Your clickable areas arranged in the correct order -->
+<div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
+    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
+    <a href="Map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: falloutplaylist.html -->
+</div>
+
+<div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.2%;">
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: brat.html -->
+</div>
+
+<!-- More clickable items below -->
+<ul>
+    <li><a href="falloutplaylist.html" onclick="playSound(event)">Fallout Playlist</a></li> <!-- Updated link: falloutplaylist.html -->
+    <li><a href="brat.html" onclick="playSound(event)">BRAT</a></li> <!-- Updated link: brat.html -->
+    
+</ul>
+
+<script>
+// All clickable areas (both <li> and <div class="clickable-area">)
+const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]') // Updated link: falloutplaylist.html
+];
+
+let currentIndex = 0; // Starting index
+
+// Debounce variables
+let debounceTimeout = null;
+const DEBOUNCE_DELAY = 300; // 300ms delay
+
+function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+}
+
+// Function to play the appropriate sound
+function playSound(event) {
+    event.preventDefault(); // Prevent the default link behavior until we are ready
+    
+    if (event.target.innerText === "Fallout playlist" || event.target.innerText === "BRAT") {
+        var specialAudio = document.getElementById('specialClickSound');
+        specialAudio.play(); // Play the special sound
+    } else {
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play the default click sound
+    }
+
+    // Delay opening the new page to allow the sound to play
+    setTimeout(function() {
+        window.open(event.target.href, '_blank'); // Open the link after the delay
+    }, 500); // Adjust the delay as needed
+}
+
+// Function to highlight the next clickable area
+function highlightNextArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to highlight the previous clickable area
+function highlightPreviousArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to activate the currently highlighted area (simulate a click)
+function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click(); // Simulate a click on the highlighted area
+}
+
+// Handling touch events for swipe detection
+let touchStartY = 0; // Track the initial touch position
+let lastSwipeTime = 0; // Track the time of the last swipe
+const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
+
+document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
+});
+
+document.addEventListener('touchmove', function(e) {
+    const touchEndY = e.touches[0].clientY; // Get the current touch position
+    const screenHeight = window.innerHeight;
+
+    // Swipe up from the top half of the screen (move forward)
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+        highlightNextArea();
+    }
+    // Swipe down from the bottom half of the screen (move backward)
+    else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+        const currentTime = Date.now();
+
+        // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
+        if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+            console.log("Double back detected! Adjusting behavior...");
+            highlightPreviousArea(); // Only go back one step
+        } else {
+            highlightPreviousArea();
+        }
+
+        // Update the last swipe time to the current time
+        lastSwipeTime = currentTime;
+    }
+});
+
+// Handling mouse wheel events to cycle through clickable areas
+window.addEventListener('wheel', function(event) {
+    event.preventDefault(); // Prevent default scroll behavior
+    
+    if (event.deltaY > 0) {
+        highlightNextArea(); // Scroll down -> Move forward
+    } else {
+        highlightPreviousArea(); // Scroll up -> Move backward
+    }
+}, { passive: false }); // Allows calling event.preventDefault()
+
+// Add event listeners for device buttons or keyboard
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp' || event.key === 'w') {
+        highlightPreviousArea(); // Move backward
+    } else if (event.key === 'ArrowDown' || event.key === 's') {
+        highlightNextArea(); // Move forward
+    } else if (event.key === 'Enter') {
+        activateSelectedArea(); // Activate the current selection
+    }
+});
+</script>
+
+</body>
+</html>
+html>
+   <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
+   <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
+<head>
+<m<html>
+   <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
+   <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=.5">
+<style>
+body {
+    background-image: url('inv.png'); /* replace with your image path */
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: black;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden; /* Prevent page scrolling */
+}
+
+ul {
+    margin: 100px;
+    padding: 100px;
+    width: 55%;
+    float: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 50;
+}
+
+li {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    padding: 10px;
+    display: block;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    list-style-type: none;
+    background: #228B22;
+    font-size: 25px;
+    transition: 0.2s;
+}
+
+/* Highlighted state for clickable areas */
+.highlight {
+    border: 3px solid #00FF00; /* Bright green border */
+    background-color: rgba(0, 255, 0, 0.3); /* Light green background for better visibility */
+}
+
+a:hover {
+    background-color: transparent;
+}
+
+.clickable-area {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    background-color: transparent;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Your clickable areas arranged in the correct order -->
+<div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
+    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
+    <a href="Map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: falloutplaylist.html -->
+</div>
+
+<div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.2%;">
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: brat.html -->
+</div>
+
+<!-- More clickable items below -->
+<ul>
+    <li><a href="falloutplaylist.html" onclick="playSound(event)">Fallout Playlist</a></li> <!-- Updated link: falloutplaylist.html -->
+    <li><a href="brat.html" onclick="playSound(event)">BRAT</a></li> <!-- Updated link: brat.html -->
+    
+</ul>
+
+<script>
+// All clickable areas (both <li> and <div class="clickable-area">)
+const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]') // Updated link: falloutplaylist.html
+];
+
+let currentIndex = 0; // Starting index
+
+// Debounce variables
+let debounceTimeout = null;
+const DEBOUNCE_DELAY = 300; // 300ms delay
+
+function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+}
+
+// Function to play the appropriate sound
+function playSound(event) {
+    event.preventDefault(); // Prevent the default link behavior until we are ready
+    
+    if (event.target.innerText === "Fallout playlist" || event.target.innerText === "BRAT") {
+        var specialAudio = document.getElementById('specialClickSound');
+        specialAudio.play(); // Play the special sound
+    } else {
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play the default click sound
+    }
+
+    // Delay opening the new page to allow the sound to play
+    setTimeout(function() {
+        window.open(event.target.href, '_blank'); // Open the link after the delay
+    }, 500); // Adjust the delay as needed
+}
+
+// Function to highlight the next clickable area
+function highlightNextArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to highlight the previous clickable area
+function highlightPreviousArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to activate the currently highlighted area (simulate a click)
+function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click(); // Simulate a click on the highlighted area
+}
+
+// Handling touch events for swipe detection
+let touchStartY = 0; // Track the initial touch position
+let lastSwipeTime = 0; // Track the time of the last swipe
+const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
+
+document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
+});
+
+document.addEventListener('touchmove', function(e) {
+    const touchEndY = e.touches[0].clientY; // Get the current touch position
+    const screenHeight = window.innerHeight;
+
+    // Swipe up from the top half of the screen (move forward)
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+        highlightNextArea();
+    }
+    // Swipe down from the bottom half of the screen (move backward)
+    else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+        const currentTime = Date.now();
+
+        // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
+        if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+            console.log("Double back detected! Adjusting behavior...");
+            highlightPreviousArea(); // Only go back one step
+        } else {
+            highlightPreviousArea();
+        }
+
+        // Update the last swipe time to the current time
+        lastSwipeTime = currentTime;
+    }
+});
+
+// Handling mouse wheel events to cycle through clickable areas
+window.addEventListener('wheel', function(event) {
+    event.preventDefault(); // Prevent default scroll behavior
+    
+    if (event.deltaY > 0) {
+        highlightNextArea(); // Scroll down -> Move forward
+    } else {
+        highlightPreviousArea(); // Scroll up -> Move backward
+    }
+}, { passive: false }); // Allows calling event.preventDefault()
+
+// Add event listeners for device buttons or keyboard
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp' || event.key === 'w') {
+        highlightPreviousArea(); // Move backward
+    } else if (event.key === 'ArrowDown' || event.key === 's') {
+        highlightNextArea(); // Move forward
+    } else if (event.key === 'Enter') {
+        activateSelectedArea(); // Activate the current selection
+    }
+});
+</script>
+
+</body>
+</html>
+eta name="viewport" content="width=device-width, initial-scale=.5">
+<style>
+body {
+    background-image: url('inv.png'); /* replace with your image path */
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: black;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden; /* Prevent page scrolling */
+}
+
+ul {
+    margin: 100px;
+    padding: 100px;
+    width: 55%;
+    float: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 50;
+}
+
+li {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    padding: 10px;
+    display: block;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    list-style-type: none;
+    background: #228B22;
+    font-size: 25px;
+    transition: 0.2s;
+}
+
+/* Highlighted state for clickable areas */
+.highlight {
+    border: 3px solid #00FF00; /* Bright green border */
+    background-color: rgba(0, 255, 0, 0.3); /* Light green background for better visibility */
+}
+
+a:hover {
+    background-color: transparent;
+}
+
+.clickable-area {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    background-color: transparent;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Your clickable areas arranged in the correct order -->
+<div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
+    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
+    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
+    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
+    <a href="Map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: falloutplaylist.html -->
+</div>
+
+<div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.2%;">
+    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a> <!-- Updated link: brat.html -->
+</div>
+
+<!-- More clickable items below -->
+<ul>
+    <li><a href="falloutplaylist.html" onclick="playSound(event)">Fallout Playlist</a></li> <!-- Updated link: falloutplaylist.html -->
+    <li><a href="brat.html" onclick="playSound(event)">BRAT</a></li> <!-- Updated link: brat.html -->
+    
+</ul>
+
+<script>
+// All clickable areas (both <li> and <div class="clickable-area">)
+const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]'), // Updated link: falloutplaylist.html
+    document.querySelector('a[href="brat.html"]'), // Updated link: brat.html
+    document.querySelector('a[href="falloutplaylist.html"]') // Updated link: falloutplaylist.html
+];
+
+let currentIndex = 0; // Starting index
+
+// Debounce variables
+let debounceTimeout = null;
+const DEBOUNCE_DELAY = 300; // 300ms delay
+
+function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+}
+
+// Function to play the appropriate sound
+function playSound(event) {
+    event.preventDefault(); // Prevent the default link behavior until we are ready
+    
+    if (event.target.innerText === "Fallout playlist" || event.target.innerText === "BRAT") {
+        var specialAudio = document.getElementById('specialClickSound');
+        specialAudio.play(); // Play the special sound
+    } else {
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play the default click sound
+    }
+
+    // Delay opening the new page to allow the sound to play
+    setTimeout(function() {
+        window.open(event.target.href, '_blank'); // Open the link after the delay
+    }, 500); // Adjust the delay as needed
+}
+
+// Function to highlight the next clickable area
+function highlightNextArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to highlight the previous clickable area
+function highlightPreviousArea() {
+    debounceAction(() => {
+        clickableAreas[currentIndex].classList.remove('highlight');
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
+        clickableAreas[currentIndex].classList.add('highlight');
+        var audio = document.getElementById('clickSound');
+        audio.play(); // Play click sound
+    });
+}
+
+// Function to activate the currently highlighted area (simulate a click)
+function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click(); // Simulate a click on the highlighted area
+}
+
+// Handling touch events for swipe detection
+let touchStartY = 0; // Track the initial touch position
+let lastSwipeTime = 0; // Track the time of the last swipe
+const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
+
+document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
+});
+
+document.addEventListener('touchmove', function(e) {
+    const touchEndY = e.touches[0].clientY; // Get the current touch position
+    const screenHeight = window.innerHeight;
+
+    // Swipe up from the top half of the screen (move forward)
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+        highlightNextArea();
+    }
+    // Swipe down from the bottom half of the screen (move backward)
+    else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+        const currentTime = Date.now();
+
+        // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
+        if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+            console.log("Double back detected! Adjusting behavior...");
+            highlightPreviousArea(); // Only go back one step
+        } else {
+            highlightPreviousArea();
+        }
+
+        // Update the last swipe time to the current time
+        lastSwipeTime = currentTime;
+    }
+});
+
+// Handling mouse wheel events to cycle through clickable areas
+window.addEventListener('wheel', function(event) {
+    event.preventDefault(); // Prevent default scroll behavior
+    
+    if (event.deltaY > 0) {
+        highlightNextArea(); // Scroll down -> Move forward
+    } else {
+        highlightPreviousArea(); // Scroll up -> Move backward
+    }
+}, { passive: false }); // Allows calling event.preventDefault()
+
+// Add event listeners for device buttons or keyboard
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp' || event.key === 'w') {
+        highlightPreviousArea(); // Move backward
+    } else if (event.key === 'ArrowDown' || event.key === 's') {
+        highlightNextArea(); // Move forward
+    } else if (event.key === 'Enter') {
+        activateSelectedArea(); // Activate the current selection
+    }
+});
+</script>
+
+</body>
+</html>
+  }
+});
+</script>
+
+</body>
+</html>
+
+</script>
+
+</body>
+</html>
+  }
 });
 </script>
 
