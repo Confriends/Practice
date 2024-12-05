@@ -84,8 +84,8 @@ a:hover {
     <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
-<!-- Add the MAP link before the Radio link -->
-<div class="clickable-area" id="area5" style="position: absolute; top: 20px; left: 58.5%;">
+<!-- New MAP link placed before radio -->
+<div class="clickable-area" id="area5" style="position: absolute; top: 20px; left: 59%;">
     <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
@@ -106,7 +106,7 @@ const clickableAreas = [
     document.querySelector('a[href="stats.html"]'),
     document.querySelector('a[href="inv.html"]'),
     document.querySelector('a[href="data.html"]'),
-    document.querySelector('a[href="map.html"]'),  // Add the new MAP link before radio
+    document.querySelector('a[href="map.html"]'),  // Add MAP link before radio
     document.querySelector('a[href="radio.html"]'),
     document.querySelector('a[href="test photo.html"]'), // Nuka-cade
     document.querySelector('a[href="SILVERSHROUD.html"]'), // The Silver Shroud
@@ -217,13 +217,30 @@ window.addEventListener('wheel', function(event) {
 
 // Keyboard navigation for Arrow keys (Up, Down, Left, Right)
 window.addEventListener('keydown', function(event) {
-    if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
         highlightNextArea(); // Arrow Down or Arrow Right -> Move forward
-    } else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
         highlightPreviousArea(); // Arrow Up or Arrow Left -> Move backward
-    } else if (event.key === "Enter") {
+    } else if (event.key === 'Enter') {
         activateSelectedArea(); // Press Enter to activate the highlighted area
     }
+});
+
+// Handling double-tap logic for touch devices (if needed)
+let lastTapTime = 0;
+const DOUBLE_TAP_THRESHOLD = 500; // Threshold for double tap
+
+document.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - lastTapTime;
+
+    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
+        activateSelectedArea();
+    } else {
+        highlightNextArea();
+    }
+    lastTapTime = currentTime;
 });
 </script>
 
