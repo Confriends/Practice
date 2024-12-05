@@ -1,4 +1,3 @@
-
 <html>
    <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
    <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
@@ -85,6 +84,11 @@ a:hover {
     <a href="data.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
+<!-- Add the MAP link before the Radio link -->
+<div class="clickable-area" id="area5" style="position: absolute; top: 20px; left: 58.5%;">
+    <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
 <div class="clickable-area" id="area4" style="position: absolute; top: 20px; right: 13.2%;">
     <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
@@ -102,6 +106,7 @@ const clickableAreas = [
     document.querySelector('a[href="stats.html"]'),
     document.querySelector('a[href="inv.html"]'),
     document.querySelector('a[href="data.html"]'),
+    document.querySelector('a[href="map.html"]'),  // Add the new MAP link before radio
     document.querySelector('a[href="radio.html"]'),
     document.querySelector('a[href="test photo.html"]'), // Nuka-cade
     document.querySelector('a[href="SILVERSHROUD.html"]'), // The Silver Shroud
@@ -208,36 +213,17 @@ window.addEventListener('wheel', function(event) {
     } else {
         highlightPreviousArea(); // Scroll up -> Move backward
     }
-}, { passive: false }); // Allows calling event.preventDefault()
+}, { passive: false }); // Allows calling
 
-// Add event listeners for device buttons or keyboard
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-        highlightNextArea(); // Move forward (Right/Down)
+// Keyboard navigation for Arrow keys (Up, Down, Left, Right)
+window.addEventListener('keydown', function(event) {
+    if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+        highlightNextArea(); // Arrow Down or Arrow Right -> Move forward
+    } else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+        highlightPreviousArea(); // Arrow Up or Arrow Left -> Move backward
+    } else if (event.key === "Enter") {
+        activateSelectedArea(); // Press Enter to activate the highlighted area
     }
-    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-        highlightPreviousArea(); // Move backward (Left/Up)
-    }
-    else if (event.key === 'Enter') {
-        activateSelectedArea(); // Select the highlighted link
-    }
-});
-
-// Handling double-tap logic for touch devices (if needed)
-let lastTapTime = 0;
-const DOUBLE_TAP_THRESHOLD = 500; // Threshold for double tap
-
-document.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    const currentTime = new Date().getTime();
-    const timeDifference = currentTime - lastTapTime;
-
-    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
-        activateSelectedArea();
-    } else {
-        highlightNextArea();
-    }
-    lastTapTime = currentTime;
 });
 </script>
 
