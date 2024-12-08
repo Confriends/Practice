@@ -15,11 +15,27 @@ body {
     height: 100vh;
     overflow: hidden; /* Prevent page scrolling */
 }
+        /* Your CSS styles go here */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            margin-top: 70px;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 15%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
 
 ul {
     margin: 100px;
     padding: 100px;
     width: 55%;
+    top: 10%
     float: left;
 }
 
@@ -32,23 +48,21 @@ li {
     margin-top: 0px;
     margin-bottom: 10px;
 }
-
-a {
-    text-decoration: none;
-    color: #000;
-    padding: 10px;
-    display: block;
-    border: 1px solid transparent;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-    cursor: pointer;
-    position: relative;
-    padding: 12px 8px 12px 40px;
-    list-style-type: none;
-    background: #228B22;
-    font-size: 25px;
-    transition: 0.2s;
-}
+        /* Your CSS styles go here */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            margin-top: 70px;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 10%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
 
 /* Highlighted state for clickable areas */
 .highlight {
@@ -62,42 +76,40 @@ a:hover {
 
 .clickable-area {
     position: absolute;
-    width: 200px;
-    height: 100px;
+    width: 250px;
+    height: 150px;
     background-color: transparent;
 }
 </style>
 </head>
 
 <body>
+   <div class="video-container">
+     <iframe width="560" height="315" src="https://www.youtube.com/embed/_MT5-Z0rI_Y?si=0KNgm9dnGhTyjYps&amp;start=72" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
 
 <!-- Your clickable areas arranged in the correct order -->
 <div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
     <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
-<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%;"> 
+<a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
-<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 45%;">
-    <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+
+<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 44%;">
+    <a href="index.html" style="display: block; width: 55%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
    <div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
     <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
-<div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.2%;">
-    <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+<div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.3%;">
+    <a href="radio.html" style="display: block; width: 60%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
-<!-- More clickable items below -->
-<ul>
-    <li><a href="test photo.html" onclick="playSound(event)">Nuka-cade</a></li>
-    <li><a href="SILVERSHROUD.html" onclick="playSound(event)">The Silver Shroud</a></li>
-    <li><a href="Love My Baby.html" onclick="playSound(event)">I Love My Baby</a></li>
-</ul>
 
 <script>
 // All clickable areas (both <li> and <div class="clickable-area">)
@@ -107,9 +119,6 @@ const clickableAreas = [
     document.querySelector('a[href="index.html"]'),
     document.querySelector('a[href="map.html"]'),
     document.querySelector('a[href="radio.html"]'),
-    document.querySelector('a[href="test photo.html"]'), // Nuka-cade
-    document.querySelector('a[href="SILVERSHROUD.html"]'), // The Silver Shroud
-    document.querySelector('a[href="Love My Baby.html"]') // I Love My Baby
 ];
 
 let currentIndex = 0; // Starting index
@@ -127,7 +136,7 @@ function debounceAction(callback) {
 function playSound(event) {
     event.preventDefault(); // Prevent the default link behavior until we are ready
     
-    if (event.target.innerText === "Nuka-cade" || event.target.innerText === "The Silver Shroud" || event.target.innerText === "I Love My Baby") {
+    if (event.target.innerText === "Fallout Radio" || event.target.innerText === "BRAT" || event.target.innerText === "Station 3") {
         var specialAudio = document.getElementById('specialClickSound');
         specialAudio.play(); // Play the special sound
     } else {
