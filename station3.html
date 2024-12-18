@@ -94,13 +94,6 @@ a:hover {
     <a href="radio.html" style="display: block; width: 60%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
-<!-- More clickable items below -->
-<ul>
-    <li><a href="falloutplaylist.html" onclick="playSound(event)">Fallout Radio</a></li>
-    <li><a href="brat.html" onclick="playSound(event)">BRAT</a></li>
-    <li><a href="station3.html" onclick="playSound(event)">Station 3</a></li>
-</ul>
-
 <script>
 // All clickable areas (both <li> and <div class="clickable-area">)
 const clickableAreas = [
@@ -109,9 +102,6 @@ const clickableAreas = [
     document.querySelector('a[href="index.html"]'),
     document.querySelector('a[href="map.html"]'),
     document.querySelector('a[href="radio.html"]'),
-    document.querySelector('a[href="falloutplaylist.html"]'), // Fallout Radio
-    document.querySelector('a[href="brat.html"]'), // BRAT
-    document.querySelector('a[href="station3.html"]') // Station 3
 ];
 
 let currentIndex = 0; // Starting index
@@ -128,11 +118,7 @@ function debounceAction(callback) {
 // Function to play the appropriate sound
 function playSound(event) {
     event.preventDefault(); // Prevent the default link behavior until we are ready
-    
-    if (event.target.innerText === "Fallout Radio" || event.target.innerText === "BRAT" || event.target.innerText === "Station 3") {
-        var specialAudio = document.getElementById('specialClickSound');
-        specialAudio.play(); // Play the special sound
-    } else {
+ {
         var audio = document.getElementById('clickSound');
         audio.play(); // Play the default click sound
     }
