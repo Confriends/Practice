@@ -1,4 +1,3 @@
-
 <html>
    <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
    <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
@@ -51,7 +50,32 @@ a {
     font-size: 25px;
     transition: 0.2s;
 }
+/* Container for scrolling images */
+.image-gallery {
+  display: flex;
+  overflow-x: scroll; /* Enables horizontal scrolling */
+  gap: 10px; /* Adds space between images */
+  margin-top: 70px;
+  padding-bottom: 20px;
+}
 
+/* Image container */
+.image-container {
+  flex-shrink: 0; /* Prevent images from shrinking */
+  position: relative;
+  width: 100%; /* Make the image container take full width available */
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.image-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 /* Highlighted state for clickable areas */
 .highlight {
     border: 3px solid #00FF00; /* Bright green border */
@@ -72,6 +96,28 @@ a:hover {
 </head>
 
 <body>
+ <!-- Image gallery container with scroll -->
+    <div class="image-gallery">
+        <!-- Image 1 -->
+        <div class="image-container">
+            <img src="ScreenShot537.png" alt="Image 1 Description" />
+        </div>
+
+        <!-- Image 2 -->
+        <div class="image-container">
+            <img src="ScreenShot539.png" alt="Image 2 Description" />
+        </div>
+
+        <!-- Image 3 -->
+        <div class="image-container">
+            <img src="ScreenShot540.png" alt="Image 3 Description" />
+        </div>
+
+
+        <!-- Image 3 -->
+        <div class="image-container">
+            <img src="ScreenShot534.png" alt="Image 3 Description" />
+        </div>
 
 <!-- Your clickable areas arranged in the correct order -->
 <div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
