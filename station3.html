@@ -55,7 +55,7 @@
                 display: flex;
                 overflow-x: scroll; /* Enables horizontal scrolling */
                 gap: 10px; /* Adds space between images */
-                margin-top: 10%;
+                margin-top: 13%; /* Adjust this to 13% from the top */
                 padding-bottom: 20px;
             }
 
@@ -71,9 +71,9 @@
 
             .image-container img {
                 position: absolute;
-                top: 0;
+                top: 0; /* No need to adjust top */
                 left: 0;
-                width: 100%;
+                width: 100%; /* Make the image fill the container */
                 height: 100%;
                 border: 3px solid transparent; /* Default border */
             }
@@ -86,7 +86,7 @@
 
             .highlight img {
                 border: 3px solid #00FF00; /* Highlighted border for images */
-                transform: scale(1); /* Ensure image doesn't scale */
+                transform: none; /* Ensure image doesn't scale */
             }
 
             a:hover {
@@ -187,15 +187,16 @@
                 }, 500); // Adjust the delay as needed
             }
 
+            // Function to remove highlight from all elements
+            function removeHighlight() {
+                clickableAreas.forEach(area => area.classList.remove('highlight'));
+                imageElements.forEach(img => img.classList.remove('highlight'));
+            }
+
             // Function to highlight the next clickable area
             function highlightNextArea() {
                 debounceAction(() => {
-                    if (currentIndex < clickableAreas.length) {
-                        clickableAreas[currentIndex].classList.remove('highlight');
-                    } else {
-                        imageElements[currentIndex - clickableAreas.length].classList.remove('highlight');
-                    }
-
+                    removeHighlight();
                     currentIndex = (currentIndex + 1) % (clickableAreas.length + imageElements.length); // Increment index
 
                     if (currentIndex < clickableAreas.length) {
@@ -214,12 +215,7 @@
             // Function to highlight the previous clickable area
             function highlightPreviousArea() {
                 debounceAction(() => {
-                    if (currentIndex < clickableAreas.length) {
-                        clickableAreas[currentIndex].classList.remove('highlight');
-                    } else {
-                        imageElements[currentIndex - clickableAreas.length].classList.remove('highlight');
-                    }
-
+                    removeHighlight();
                     currentIndex = (currentIndex - 1 + (clickableAreas.length + imageElements.length)) % (clickableAreas.length + imageElements.length); // Decrement index
 
                     if (currentIndex < clickableAreas.length) {
@@ -321,6 +317,15 @@
 
             // Initial highlight
             clickableAreas[currentIndex].classList.add('highlight');
+
+            // Add event listeners to images and links
+            clickableAreas.forEach(area => {
+                area.addEventListener('mouseover', removeHighlight);
+            });
+
+            imageElements.forEach(img => {
+                img.addEventListener('mouseover', removeHighlight);
+            });
         </script>
     </body>
 </html>
