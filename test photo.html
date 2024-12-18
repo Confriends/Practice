@@ -1,86 +1,331 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=.5">
-<style>
-body {
-  background-image: url('inv.png'); /* replace with your image path */
-    background-size: cover; /* Ensures the image covers the entire screen */
-    background-position: center top; /* Aligns the image to the top-center */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
-    background-attachment: fixed; /* Keeps the background fixed while scrolling */
-    background-color: black; /* Fills empty space with black */
-    margin: 0; /* Removes default margin */
-    height: 100vh; /* Ensures the body takes the full height of the screen */
-}
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=.5">
+        <style>
+            body {
+                background-image: url('inv.png'); /* replace with your image path */
+                background-size: cover;
+                background-position: center top;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-color: black;
+                margin: 0;
+                height: 100vh;
+                overflow: hidden; /* Prevent page scrolling */
+            }
 
-/* Container for scrolling images */
-.image-gallery {
-  display: flex;
-  overflow-x: scroll; /* Enables horizontal scrolling */
-  gap: 10px; /* Adds space between images */
-  margin-top: 70px;
-  padding-bottom: 20px;
-}
+            ul {
+                margin: 100px;
+                padding: 100px;
+                width: 55%;
+                top: 10%;
+                float: left;
+            }
 
-/* Image container */
-.image-container {
-  flex-shrink: 0; /* Prevent images from shrinking */
-  position: relative;
-  width: 100%; /* Make the image container take full width available */
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
-  height: 0;
-  overflow: hidden;
-}
+            ul {
+                list-style-type: none;
+                padding: 50;
+            }
 
-.image-container img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-</style>
-</head>
-<body>
-    <h1></h1>
+            li {
+                margin-top: 0px;
+                margin-bottom: 10px;
+            }
 
-    <!-- Image gallery container with scroll -->
-    <div class="image-gallery">
-        <!-- Image 1 -->
-        <div class="image-container">
-            <img src="ScreenShot537.png" alt="Image 1 Description" />
+            a {
+                text-decoration: none;
+                color: #000;
+                padding: 10px;
+                display: block;
+                border: 1px solid transparent;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+                cursor: pointer;
+                position: relative;
+                padding: 12px 8px 12px 40px;
+                list-style-type: none;
+                background: #228B22;
+                font-size: 25px;
+                transition: 0.2s;
+            }
+
+            /* Container for scrolling images */
+            .image-gallery {
+                display: flex;
+                overflow-x: scroll; /* Enables horizontal scrolling */
+                gap: 10px; /* Adds space between images */
+                margin-top: 13%; /* Adjust this to 13% from the top */
+                padding-bottom: 20px;
+            }
+
+            /* Image container */
+            .image-container {
+                flex-shrink: 0; /* Prevent images from shrinking */
+                position: relative;
+                width: 90%; /* Make the image container take full width available */
+                padding-bottom: 56.25%; /* 16:9 aspect ratio */
+                height: 0;
+                overflow: hidden;
+            }
+
+            .image-container img {
+                position: absolute;
+                top: 0; /* No need to adjust top */
+                left: 0;
+                width: 100%; /* Make the image fill the container */
+                height: 100%;
+                border: 3px solid transparent; /* Default border */
+            }
+
+            /* Highlighted state for clickable areas */
+            .highlight {
+                border: 3px solid #00FF00; /* Bright green border */
+                background-color: rgba(0, 255, 0, 0.3); /* Light green background for better visibility */
+            }
+
+            .highlight img {
+                border: 3px solid #00FF00; /* Highlighted border for images */
+                transform: none; /* Ensure image doesn't scale */
+            }
+
+            a:hover {
+                background-color: transparent;
+            }
+
+            .clickable-area {
+                position: absolute;
+                width: 200px;
+                height: 100px;
+                background-color: transparent;
+            }
+        </style>
+    </head>
+
+    <body>
+        <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
+        <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
+
+        <!-- Image gallery container with scroll -->
+        <div class="image-gallery">
+            <!-- Image 1 -->
+            <div class="image-container">
+                <img src="ScreenShot537.png" alt="Image 1 Description" />
+            </div>
+
+            <!-- Image 2 -->
+            <div class="image-container">
+                <img src="ScreenShot539.png" alt="Image 2 Description" />
+            </div>
+
+            <!-- Image 3 -->
+            <div class="image-container">
+                <img src="ScreenShot540.png" alt="Image 3 Description" />
+            </div>
+
+            <!-- Image 4 -->
+            <div class="image-container">
+                <img src="ScreenShot534.png" alt="Image 4 Description" />
+            </div>
         </div>
 
-        <!-- Image 2 -->
-        <div class="image-container">
-            <img src="ScreenShot539.png" alt="Image 2 Description" />
+        <!-- Your clickable areas arranged in the correct order -->
+        <div class="clickable-area" id="area1" style="position: fixed; top: 5%; left: 18%;">
+            <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
         </div>
 
-        <!-- Image 3 -->
-        <div class="image-container">
-            <img src="ScreenShot540.png" alt="Image 3 Description" />
+        <div class="clickable-area" id="area2" style="position: fixed; top: 5%; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
+            <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
         </div>
 
-
-        <!-- Image 3 -->
-        <div class="image-container">
-            <img src="ScreenShot534.png" alt="Image 3 Description" />
+        <div class="clickable-area" id="area3" style="position: fixed; top: 5%; left: 44%;">
+            <a href="index.html" style="display: block; width: 55%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
         </div>
 
-        <!-- Add more images as needed -->
-    </div>
+        <div class="clickable-area" id="area4" style="position: fixed; top: 5%; left: 58.5%;">
+            <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+        </div>
 
-<div class="clickable-area" style="position: absolute; top: 20px; left: 350px; width: 200px; height: 100px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
-</div>
-  <div class="clickable-area" style="position: absolute; top: 20px; left: 42%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="index.html" style="display: block; width: 100%; height: 100%;"></a>
-</div> 
-<div class="clickable-area" style="position: absolute; top: 20px; left: 10%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
-      <div class="clickable-area" style="position: absolute; top: 20px; right: 15%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="radio.html" style="display: block; width: 100%; height: 100%;"></a>
-</div>
-</body>
+        <div class="clickable-area" id="area5" style="position: fixed; top: 5%; right: 13.3%;">
+            <a href="radio.html" style="display: block; width: 60%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+        </div>
+
+        <script>
+            // All clickable areas (both <li> and <div class="clickable-area">, and images)
+            const clickableAreas = [
+                document.querySelector('a[href="stats.html"]'),
+                document.querySelector('a[href="inv.html"]'),
+                document.querySelector('a[href="index.html"]'),
+                document.querySelector('a[href="map.html"]'),
+                document.querySelector('a[href="radio.html"]')
+            ];
+
+            const imageElements = [...document.querySelectorAll('.image-container img')];
+
+            let currentIndex = 0; // Starting index
+
+            // Debounce variables
+            let debounceTimeout = null;
+            const DEBOUNCE_DELAY = 300; // 300ms delay
+
+            function debounceAction(callback) {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+            }
+
+            // Function to play the appropriate sound
+            function playSound(event) {
+                event.preventDefault(); // Prevent the default link behavior until we are ready
+                {
+                    var audio = document.getElementById('clickSound');
+                    audio.play(); // Play the default click sound
+                }
+
+                // Delay opening the new page to allow the sound to play
+                setTimeout(function() {
+                    window.open(event.target.href, '_blank'); // Open the link after the delay
+                }, 500); // Adjust the delay as needed
+            }
+
+            // Function to remove highlight from all elements
+            function removeHighlight() {
+                clickableAreas.forEach(area => area.classList.remove('highlight'));
+                imageElements.forEach(img => img.classList.remove('highlight'));
+            }
+
+            // Function to highlight the next clickable area
+            function highlightNextArea() {
+                debounceAction(() => {
+                    removeHighlight();
+                    currentIndex = (currentIndex + 1) % (clickableAreas.length + imageElements.length); // Increment index
+
+                    if (currentIndex < clickableAreas.length) {
+                        clickableAreas[currentIndex].classList.add('highlight');
+                    } else {
+                        const imgIndex = currentIndex - clickableAreas.length;
+                        imageElements[imgIndex].classList.add('highlight');
+                        imageElements[imgIndex].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                    }
+
+                    var audio = document.getElementById('clickSound');
+                    audio.play(); // Play click sound
+                });
+            }
+
+            // Function to highlight the previous clickable area
+            function highlightPreviousArea() {
+                debounceAction(() => {
+                    removeHighlight();
+                    currentIndex = (currentIndex - 1 + (clickableAreas.length + imageElements.length)) % (clickableAreas.length + imageElements.length); // Decrement index
+
+                    if (currentIndex < clickableAreas.length) {
+                        clickableAreas[currentIndex].classList.add('highlight');
+                    } else {
+                        const imgIndex = currentIndex - clickableAreas.length;
+                        imageElements[imgIndex].classList.add('highlight');
+                        imageElements[imgIndex].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                    }
+
+                    var audio = document.getElementById('clickSound');
+                    audio.play(); // Play click sound
+                });
+            }
+
+            // Function to activate the currently highlighted area (simulate a click)
+            function activateSelectedArea() {
+                const currentElement = currentIndex < clickableAreas.length ? clickableAreas[currentIndex] : imageElements[currentIndex - clickableAreas.length];
+                if (currentElement.tagName === 'IMG') {
+                    // Handle image clicks (e.g., open a larger view or perform another action)
+                    console.log('Image clicked: ' + currentElement.alt);
+                } else {
+                    currentElement.click(); // Simulate a click on the highlighted area
+                }
+            }
+
+            // Handling touch events for swipe detection
+            let touchStartY = 0; // Track the initial touch position
+            let lastSwipeTime = 0; // Track the time of the last swipe
+            const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
+
+            document.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
+            });
+
+            document.addEventListener('touchmove', function(e) {
+                const touchEndY = e.touches[0].clientY; // Get the current touch position
+                const screenHeight = window.innerHeight;
+
+                // Swipe up from the top half of the screen (move forward)
+                if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+                    highlightNextArea();
+                }
+                // Swipe down from the bottom half of the screen (move backward)
+                else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+                    const currentTime = Date.now();
+
+                    // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
+                    if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+                        console.log("Double back detected! Adjusting behavior...");
+                        highlightPreviousArea(); // Only go back one step
+                    } else {
+                        highlightPreviousArea();
+                    }
+
+                    // Update the last swipe time to the current time
+                    lastSwipeTime = currentTime;
+                }
+            });
+
+            // Handling mouse wheel events to cycle through clickable areas
+            window.addEventListener('wheel', function(event) {
+                event.preventDefault(); // Prevent default scroll behavior
+
+                if (event.deltaY > 0) {
+                    highlightNextArea(); // Scroll down -> Move forward
+                } else {
+                    highlightPreviousArea(); // Scroll up -> Move backward
+                }
+            }, { passive: false }); // Allows calling event.preventDefault()
+
+            // Add event listeners for device buttons or keyboard
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+                    highlightNextArea(); // Move forward (Right/Down)
+                } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+                    highlightPreviousArea(); // Move backward (Left/Up)
+                } else if (event.key === 'Enter') {
+                    activateSelectedArea(); // Select the highlighted link
+                }
+            });
+
+            // Handling double-tap logic for touch devices (if needed)
+            let lastTapTime = 0;
+            const DOUBLE_TAP_THRESHOLD = 500; // Threshold for double tap
+
+            document.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                const currentTime = new Date().getTime();
+                const timeDifference = currentTime - lastTapTime;
+
+                if (timeDifference < DOUBLE_TAP_THRESHOLD) {
+                    activateSelectedArea();
+                } else {
+                    highlightNextArea();
+                }
+                lastTapTime = currentTime;
+            });
+
+            // Initial highlight
+            clickableAreas[currentIndex].classList.add('highlight');
+
+            // Add event listeners to images and links
+            clickableAreas.forEach(area => {
+                area.addEventListener('mouseover', removeHighlight);
+            });
+
+            imageElements.forEach(img => {
+                img.addEventListener('mouseover', removeHighlight);
+            });
+        </script>
+    </body>
 </html>
