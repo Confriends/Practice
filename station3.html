@@ -55,7 +55,7 @@
                 display: flex;
                 overflow-x: scroll; /* Enables horizontal scrolling */
                 gap: 10px; /* Adds space between images */
-                margin-top: 20%;
+                margin-top: 15%;
                 padding-bottom: 20px;
             }
 
@@ -71,16 +71,21 @@
 
             .image-container img {
                 position: absolute;
-                top: 0;
+                top: 0%;
                 left: 0;
                 width: 100%;
                 height: 100%;
+                border: 3px solid transparent; /* Default border */
             }
 
             /* Highlighted state for clickable areas */
             .highlight {
                 border: 3px solid #00FF00; /* Bright green border */
                 background-color: rgba(0, 255, 0, 0.3); /* Light green background for better visibility */
+            }
+
+            .highlight img {
+                border: 3px solid #00FF00; /* Highlighted border for images */
             }
 
             a:hover {
@@ -188,6 +193,11 @@
                     clickableAreas[currentIndex].classList.add('highlight');
                     var audio = document.getElementById('clickSound');
                     audio.play(); // Play click sound
+
+                    // Scroll the image gallery if the highlighted item is an image
+                    if (clickableAreas[currentIndex].tagName === 'IMG') {
+                        clickableAreas[currentIndex].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                    }
                 });
             }
 
@@ -199,6 +209,11 @@
                     clickableAreas[currentIndex].classList.add('highlight');
                     var audio = document.getElementById('clickSound');
                     audio.play(); // Play click sound
+
+                    // Scroll the image gallery if the highlighted item is an image
+                    if (clickableAreas[currentIndex].tagName === 'IMG') {
+                        clickableAreas[currentIndex].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                    }
                 });
             }
 
@@ -262,11 +277,9 @@
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
                     highlightNextArea(); // Move forward (Right/Down)
-                }
-                else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+                } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
                     highlightPreviousArea(); // Move backward (Left/Up)
-                }
-                else if (event.key === 'Enter') {
+                } else if (event.key === 'Enter') {
                     activateSelectedArea(); // Select the highlighted link
                 }
             });
