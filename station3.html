@@ -55,7 +55,7 @@
                 display: flex;
                 overflow-x: scroll; /* Enables horizontal scrolling */
                 gap: 10px; /* Adds space between images */
-                margin-top: 15%;
+                margin-top: 10%;
                 padding-bottom: 20px;
             }
 
@@ -71,10 +71,10 @@
 
             .image-container img {
                 position: absolute;
-                top: 0%;
+                top: 0;
                 left: 0;
-                width: 100%;
-                height: 100%;
+                width: 90%;
+                height: 90%;
                 border: 3px solid transparent; /* Default border */
             }
 
@@ -129,23 +129,23 @@
         </div>
 
         <!-- Your clickable areas arranged in the correct order -->
-        <div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
+        <div class="clickable-area" id="area1" style="position: fixed; top: 5%; left: 18%;">
             <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
         </div>
 
-        <div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
+        <div class="clickable-area" id="area2" style="position: fixed; top: 5%; left: 31.5%; width: 200px; height: 100px; background-color: transparent;">
             <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
         </div>
 
-        <div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 44%;">
+        <div class="clickable-area" id="area3" style="position: fixed; top: 5%; left: 44%;">
             <a href="index.html" style="display: block; width: 55%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
         </div>
 
-        <div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
+        <div class="clickable-area" id="area4" style="position: fixed; top: 5%; left: 58.5%;">
             <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
         </div>
 
-        <div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.3%;">
+        <div class="clickable-area" id="area5" style="position: fixed; top: 5%; right: 13.3%;">
             <a href="radio.html" style="display: block; width: 60%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
         </div>
 
@@ -300,6 +300,9 @@
                 }
                 lastTapTime = currentTime;
             });
+
+            // Initial highlight
+            clickableAreas[currentIndex].classList.add('highlight');
         </script>
     </body>
 </html>
