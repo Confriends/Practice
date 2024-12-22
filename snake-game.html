@@ -14,11 +14,11 @@
         }
 
         #menu {
-            margin-top: 20%;
+            margin-top: 12%;
         }
 
         #gameContainer {
-            margin: 20% auto 0 auto; /* 20% from the top */
+            margin: 12% auto 0 auto; /* 20% from the top */
             width: 600px;
             height: 400px;
             position: relative;
@@ -63,7 +63,7 @@
         document.addEventListener('keydown', startGame);
         canvas.addEventListener('touchstart', handleTouchStart, false);
         canvas.addEventListener('touchmove', handleTouchMove, false);
-        canvas.addEventListener('wheel', handleScroll);
+        canvas.addEventListener('wheel', handleScroll, { passive: false });
 
         let xDown = null;
         let yDown = null;
