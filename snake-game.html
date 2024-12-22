@@ -20,7 +20,7 @@
         #gameContainer {
             margin: 10% auto 0 auto; /* 20% from the top */
             width: 100;
-            height: 40%;
+            height: 30%;
             position: relative;
         }
 
@@ -143,16 +143,16 @@
             if (event.deltaY < 0) {
                 scrollUpCount++;
                 if (scrollUpCount % 2 === 1) {
-                    direction = { x: 0, y: snakeBlock }; // Move down on single scroll up
+                    direction = { x: 0, y: -snakeBlock }; // Move up on single scroll up
                 } else {
-                    direction = { x: snakeBlock, y: 0 }; // Move right on double scroll up
+                    direction = { x: -snakeBlock, y: 0 }; // Move left on double scroll up
                 }
             } else {
                 scrollDownCount++;
                 if (scrollDownCount % 2 === 1) {
-                    direction = { x: 0, y: -snakeBlock }; // Move up on single scroll down
+                    direction = { x: 0, y: snakeBlock }; // Move down on single scroll down
                 } else {
-                    direction = { x: -snakeBlock, y: 0 }; // Move left on double scroll down
+                    direction = { x: snakeBlock, y: 0 }; // Move right on double scroll down
                 }
             }
             startGame(event);
@@ -243,7 +243,7 @@
 
             if (keyPressed === 'ArrowUp') {
                 if (lastKeyPress.key === 'ArrowUp' && currentTime - lastKeyPress.time < 500) {
-                    direction = { x: snakeBlock, y: 0 }; // Double press up to go right
+                    direction = { x: -snakeBlock, y: 0 }; // Double press up to go left
                 } else {
                     direction = { x: 0, y: -snakeBlock }; // Single press up to go up
                 }
@@ -251,7 +251,7 @@
 
             if (keyPressed === 'ArrowDown') {
                 if (lastKeyPress.key === 'ArrowDown' && currentTime - lastKeyPress.time < 500) {
-                    direction = { x: -snakeBlock, y: 0 }; // Double press down to go left
+                    direction = { x: snakeBlock, y: 0 }; // Double press down to go right
                 } else {
                     direction = { x: 0, y: snakeBlock }; // Single press down to go down
                 }
