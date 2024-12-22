@@ -17,7 +17,7 @@
         }
 
         #gameContainer {
-            margin: 0 auto;
+            margin: 20% auto 0 auto; /* 20% from the top */
             width: 600px;
             height: 400px;
             position: relative;
@@ -53,7 +53,7 @@
         document.getElementById('startButton').addEventListener('click', function() {
             document.getElementById('menu').style.display = 'none';
             document.getElementById('gameContainer').style.display = 'block';
-            placeFood();
+            initializeGame();
         });
 
         document.addEventListener('keydown', changeDirection);
@@ -109,6 +109,14 @@
             yDown = null;
         }
 
+        function initializeGame() {
+            snake = [{ x: canvas.width / 2, y: canvas.height / 2 }];
+            direction = { x: 0, y: 0 };
+            score = 0;
+            placeFood();
+            isGameStarted = false;
+        }
+
         function startGame(e) {
             if (!isGameStarted && (e.key === 'Enter' || e.type === 'click' || e.type === 'touchstart' || e.type === 'wheel')) {
                 isGameStarted = true;
@@ -127,6 +135,7 @@
                     playSound('highscore.mp3');
                     drawConfetti();
                 }
+                setTimeout(initializeGame, 2000); // Restart game after 2 seconds
                 return;
             }
 
