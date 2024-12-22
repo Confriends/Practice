@@ -20,7 +20,7 @@
         #gameContainer {
             margin: 10% auto 0 auto; /* 20% from the top */
             width: 100;
-            height: 90%;
+            height: 70%;
             position: relative;
         }
 
@@ -52,6 +52,7 @@
         let isGameStarted = false;
         let scrollUpCount = 0;
         let scrollDownCount = 0;
+        let lastKeyPress = { key: '', time: 0 };
 
         document.getElementById('startButton').addEventListener('click', function() {
             document.getElementById('menu').style.display = 'none';
@@ -213,23 +214,37 @@
 
         function changeDirection(event) {
             const keyPressed = event.key;
+            const currentTime = Date.now();
+
+            if (keyPressed === 'ArrowUp') {
+                if (lastKeyPress.key === 'ArrowUp' && currentTime - lastKeyPress.time < 500) {
+                    direction = { x: snakeBlock, y: 0 }; // Double press up to go right
+                } else {
+                    direction = { x: 0, y: -snakeBlock }; // Single press up to go up
+                }
+            }
+
+            if (keyPressed === 'ArrowDown') {
+                if (lastKeyPress.key === 'ArrowDown' && currentTime - lastKeyPress.time < 500) {
+                    direction = { x: -snakeBlock, y: 0 }; // Double press down to go left
+                } else {
+                    direction = { x: 0, y: snakeBlock }; // Single press down to go down
+                }
+            }
+
             const goingUp = direction.y === -snakeBlock;
             const goingDown = direction.y === snakeBlock;
             const goingRight = direction.x === snakeBlock;
             const goingLeft = direction.x === -snakeBlock;
 
-            if (keyPressed === 'ArrowUp' && !goingDown) {
-                direction = { x: 0, y: -snakeBlock };
-            }
-            if (keyPressed === 'ArrowDown' && !goingUp) {
-                direction = { x: 0, y: snakeBlock };
-            }
             if (keyPressed === 'ArrowLeft' && !goingRight) {
                 direction = { x: -snakeBlock, y: 0 };
             }
             if (keyPressed === 'ArrowRight' && !goingLeft) {
                 direction = { x: snakeBlock, y: 0 };
             }
+
+            lastKeyPress = { key: keyPressed, time: currentTime };
         }
 
         function isGameOver() {
