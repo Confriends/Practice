@@ -117,7 +117,7 @@ function isGameOver() {
 }
 
 function playSound() {
-    const sound = new Audio('highscore.mp3');
+    const sound = new Audio('confetti.wav');
     sound.play();
 }
 
