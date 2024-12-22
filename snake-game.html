@@ -76,7 +76,7 @@
                 if (score > highScore) {
                     highScore = score;
                     localStorage.setItem('highScore', highScore);
-                    playSound('highscore.mp3');
+                    playSound('confetti.wav');
                     drawConfetti();
                 }
                 return;
@@ -112,7 +112,7 @@
 
             if (head.x === food.x && head.y === food.y) {
                 score++;
-                playSound('coin.mp3');
+                playSound('click.wav');
                 placeFood();
             } else {
                 snake.pop();
