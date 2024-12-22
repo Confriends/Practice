@@ -3,18 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Themed Snake Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Main Menu</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas"></canvas>
-        <div id="scoreboard">
-            <div id="currentScore">Score: 0</div>
-            <div id="highScore">High Score: 0</div>
-        </div>
+    <div id="menu">
+        <h1>Welcome to the Web Game</h1>
+        <button id="startButton">Start Snake Game</button>
     </div>
-    <audio id="highScoreSound" src="highscore.mp3"></audio>
-    <script src="script.js"></script>
+    <div id="gameContainer" style="display:none;">
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+    </div>
+    <script src="snake_game.js"></script>
+    <script>
+        document.getElementById('startButton').addEventListener('click', function() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'block';
+            startGame();
+        });
+    </script>
 </body>
 </html>
