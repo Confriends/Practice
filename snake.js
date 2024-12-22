@@ -4,8 +4,8 @@ let canvas = document.getElementById('gameCanvas');
 let ctx = canvas.getContext('2d');
 
 const snakeBlock = 10;
-let snakeSpeed = 15;
-let snake = [{ x: canvas.width / 2, y: canvas.height * 0.2 }];
+let snakeSpeed = 100;  // in milliseconds
+let snake = [{ x: canvas.width / 2, y: canvas.height / 2 }];
 let direction = { x: 0, y: 0 };
 let food = { x: 0, y: 0 };
 let score = 0;
@@ -15,7 +15,7 @@ document.addEventListener('keydown', changeDirection);
 document.addEventListener('keydown', startGame);
 
 function startGame(e) {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' || e.type === 'click') {
         document.removeEventListener('keydown', startGame);
         main();
         placeFood();
@@ -27,7 +27,7 @@ function main() {
         if (score > highScore) {
             highScore = score;
             localStorage.setItem('highScore', highScore);
-            playSound();
+            playSound('confetti.wav');
             drawConfetti();
         }
         return;
@@ -39,7 +39,7 @@ function main() {
         moveSnake();
         drawSnake();
         main();
-    }, 1000 / snakeSpeed);
+    }, snakeSpeed);
 }
 
 function clearCanvas() {
@@ -63,6 +63,7 @@ function moveSnake() {
 
     if (head.x === food.x && head.y === food.y) {
         score++;
+        playSound('coin.wav');
         placeFood();
     } else {
         snake.pop();
@@ -70,7 +71,7 @@ function moveSnake() {
 }
 
 function drawSnake() {
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = 'lime';
     snake.forEach(part => {
         ctx.fillRect(part.x, part.y, snakeBlock, snakeBlock);
     });
@@ -116,8 +117,8 @@ function isGameOver() {
     return hitLeftWall || hitRightWall || hitTopWall || hitBottomWall;
 }
 
-function playSound() {
-    const sound = new Audio('confetti.wav');
+function playSound(filename) {
+    const sound = new Audio(filename);
     sound.play();
 }
 
