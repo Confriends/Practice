@@ -58,8 +58,56 @@
 
         document.addEventListener('keydown', changeDirection);
         document.addEventListener('keydown', startGame);
-        canvas.addEventListener('touchstart', startGame);
+        canvas.addEventListener('touchstart', handleTouchStart, false);
+        canvas.addEventListener('touchmove', handleTouchMove, false);
         canvas.addEventListener('wheel', startGame);
+
+        let xDown = null;
+        let yDown = null;
+
+        function getTouches(evt) {
+            return evt.touches || evt.originalEvent.touches;
+        }
+
+        function handleTouchStart(evt) {
+            const firstTouch = getTouches(evt)[0];
+            xDown = firstTouch.clientX;
+            yDown = firstTouch.clientY;
+            startGame(evt);
+        }
+
+        function handleTouchMove(evt) {
+            if (!xDown || !yDown) {
+                return;
+            }
+
+            let xUp = evt.touches[0].clientX;
+            let yUp = evt.touches[0].clientY;
+
+            let xDiff = xDown - xUp;
+            let yDiff = yDown - yUp;
+
+            if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                if (xDiff > 0) {
+                    // Left swipe
+                    direction = { x: -snakeBlock, y: 0 };
+                } else {
+                    // Right swipe
+                    direction = { x: snakeBlock, y: 0 };
+                }
+            } else {
+                if (yDiff > 0) {
+                    // Up swipe
+                    direction = { x: 0, y: -snakeBlock };
+                } else {
+                    // Down swipe
+                    direction = { x: 0, y: snakeBlock };
+                }
+            }
+
+            xDown = null;
+            yDown = null;
+        }
 
         function startGame(e) {
             if (!isGameStarted && (e.key === 'Enter' || e.type === 'click' || e.type === 'touchstart' || e.type === 'wheel')) {
@@ -76,7 +124,7 @@
                 if (score > highScore) {
                     highScore = score;
                     localStorage.setItem('highScore', highScore);
-                    playSound('confetti.wav');
+                    playSound('highscore.mp3');
                     drawConfetti();
                 }
                 return;
@@ -112,7 +160,7 @@
 
             if (head.x === food.x && head.y === food.y) {
                 score++;
-                playSound('click.wav');
+                playSound('coin.mp3');
                 placeFood();
             } else {
                 snake.pop();
