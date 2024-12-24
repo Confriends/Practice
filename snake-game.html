@@ -25,7 +25,7 @@
             position: absolute;
             bottom: 1%;
             width: 100%;
-            height: 70%; /* Take up the bottom 40% of the screen */
+            height: 70%; /* Take up the bottom 70% of the screen */
             display: flex;
             justify-content: center;
         }
@@ -51,7 +51,7 @@
         let ctx = canvas.getContext('2d');
 
         const snakeBlock = 10;
-        let snakeSpeed = 100;  // in milliseconds
+        let snakeSpeed = 200;  // in milliseconds, increased to slow down the movement
         let snake = [{ x: canvas.width / 2, y: canvas.height / 2 }];
         let direction = { x: 0, y: 0 };
         let food = { x: 0, y: 0 };
@@ -130,10 +130,10 @@
             } else {
                 if (yDiff > 0) {
                     // Up swipe
-                    direction = { x: 0, y: snakeBlock }; // Swiping up moves the snake down
+                    direction = { x: 0, y: -snakeBlock }; // Swiping up moves the snake up
                 } else {
                     // Down swipe
-                    direction = { x: 0, y: -snakeBlock }; // Swiping down moves the snake up
+                    direction = { x: 0, y: snakeBlock }; // Swiping down moves the snake down
                 }
             }
 
@@ -236,6 +236,7 @@
             const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
             snake.unshift(head);
 
+            // Ensure the head's position matches exactly with the food's position
             if (head.x === food.x && head.y === food.y) {
                 score++;
                 playSound('coin.mp3');
