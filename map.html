@@ -6,16 +6,16 @@
     <title>2025 Calendar</title>
     <style>
         body {
-    background-image: url('inv.png'); /* replace with your image path */
-    background-size: cover;
-    background-position: center top;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: black;
-    margin: 0;
-    height: 100vh;
-    overflow: hidden; /* Prevent page scrolling */
-}
+            background-image: url('inv.png'); /* replace with your image path */
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-color: black;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden; /* Prevent page scrolling */
+        }
 
         .calendar-container {
             overflow: hidden;
@@ -47,6 +47,7 @@
             border-bottom: 2px solid lime;
             padding-bottom: 5px;
             margin-bottom: 5px;
+            color: lime; /* Changed text color to lime */
         }
 
         .week-day {
@@ -64,6 +65,7 @@
             vertical-align: top;
             position: relative;
             height: 54px; /* Reduced height by 10% */
+            color: lime; /* Changed text color to lime */
         }
 
         .day-number {
@@ -71,12 +73,13 @@
             top: 5px;
             left: 5px;
             font-size: 12px;
+            color: lime; /* Changed text color to lime */
         }
 
         .day input {
             background: transparent;
             border: none;
-            color: yellow; /* Changed text color to yellow */
+            color: lime; /* Changed text color to lime */
             text-align: left;
             width: 100%;
             height: 100%;
@@ -131,7 +134,7 @@
             months.forEach((month, index) => {
                 const monthDiv = document.createElement("div");
                 monthDiv.className = "month";
-                monthDiv.innerHTML = `<h2>${month}</h2>`;
+                monthDiv.innerHTML = `<h2 style="color: lime;">${month}</h2>`; // Changed text color to lime
 
                 // Add week days header
                 const weekDaysDiv = document.createElement("div");
