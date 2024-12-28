@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 Calendar</title>
+    <style>
+        body {
+            background-color: black;
+            color: lime;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .calendar-container {
+            overflow: hidden;
+            width: 90%;
+            height: 90%;
+            border: 2px solid lime;
+        }
+
+        .calendar {
+            display: flex;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .month {
+            min-width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+            border-right: 2px solid lime;
+        }
+
+        .month:last-child {
+            border-right: none;
+        }
+
+        .day {
+            border: 1px solid lime;
+            padding: 10px;
+            margin: 5px;
+            width: calc(14.28% - 12px);
+            box-sizing: border-box;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .day input {
+            background: transparent;
+            border: none;
+            color: lime;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <div class="calendar" id="calendar"></div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const calendar = document.getElementById("calendar");
+            const months = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            // Create months
+            months.forEach((month, index) => {
+                const monthDiv = document.createElement("div");
+                monthDiv.className = "month";
+                monthDiv.innerHTML = `<h2>${month}</h2>`;
+
+                const daysInMonth = new Date(2025, index + 1, 0).getDate();
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayDiv = document.createElement("div");
+                    dayDiv.className = "day";
+                    const dayInput = document.createElement("input");
+                    dayInput.type = "text";
+                    dayInput.value = day;
+
+                    // Load saved data
+                    const savedData = localStorage.getItem(`2025-${index + 1}-${day}`);
+                    if (savedData) {
+                        dayInput.value = savedData;
+                    }
+
+                    // Save data on change
+                    dayInput.addEventListener("input", () => {
+                        localStorage.setItem(`2025-${index + 1}-${day}`, dayInput.value);
+                    });
+
+                    dayDiv.appendChild(dayInput);
+                    monthDiv.appendChild(dayDiv);
+                }
+
+                calendar.appendChild(monthDiv);
+            });
+
+            // Side scrolling functionality
+            let currentMonth = 0;
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "ArrowRight") {
+                    currentMonth = (currentMonth + 1) % 12;
+                } else if (e.key === "ArrowLeft") {
+                    currentMonth = (currentMonth - 1 + 12) % 12;
+                }
+                calendar.style.transform = `translateX(-${currentMonth * 100}%)`;
+            });
+        });
+    </script>
+</body>
+</html>
