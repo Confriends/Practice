@@ -53,7 +53,11 @@
         .week-day {
             width: 13%;
             text-align: center;
-            margin-left:0px 
+        }
+
+        .days {
+            display: flex;
+            flex-wrap: wrap;
         }
 
         .day {
@@ -148,6 +152,10 @@
                 });
                 monthDiv.appendChild(weekDaysDiv);
 
+                // Create days container
+                const daysDiv = document.createElement("div");
+                daysDiv.className = "days";
+
                 // Get the first day of the month
                 const firstDay = new Date(2025, index, 1).getDay();
                 // Get the number of days in the month
@@ -157,7 +165,7 @@
                 for (let i = 0; i < firstDay; i++) {
                     const blankDayDiv = document.createElement("div");
                     blankDayDiv.className = "day";
-                    monthDiv.appendChild(blankDayDiv);
+                    daysDiv.appendChild(blankDayDiv);
                 }
 
                 // Add days
@@ -184,9 +192,10 @@
 
                     dayDiv.appendChild(dayNumberDiv);
                     dayDiv.appendChild(dayInput);
-                    monthDiv.appendChild(dayDiv);
+                    daysDiv.appendChild(dayDiv);
                 }
 
+                monthDiv.appendChild(daysDiv);
                 calendar.appendChild(monthDiv);
             });
 
