@@ -18,14 +18,16 @@
 
         .calendar-container {
             overflow: hidden;
-            width: 100%;
-            height: 100%;
+            width: 80%;
+            height: 80%;
             border: 2px solid lime;
+            position: relative;
         }
 
         .calendar {
             display: flex;
             transition: transform 0.3s ease-in-out;
+            width: 1200%; /* 12 months */
         }
 
         .month {
@@ -61,7 +63,7 @@
             display: inline-block;
             vertical-align: top;
             position: relative;
-            height: 54px; /* Reduced height by 10% */
+            height: 54px;
         }
 
         .day-number {
@@ -74,11 +76,11 @@
         .day input {
             background: transparent;
             border: none;
-            color: yellow; /* Changed text color to yellow */
+            color: yellow;
             text-align: left;
             width: 100%;
             height: 100%;
-            padding-top: 20px; /* To avoid overlap with day number */
+            padding-top: 20px;
             box-sizing: border-box;
             resize: none;
             overflow: hidden;
@@ -86,13 +88,34 @@
 
         .day input:focus {
             outline: none;
-            height: auto; /* Allow height to auto-expand when focused */
+            height: auto;
+        }
+
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: lime;
+            color: black;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .prev-button {
+            left: 10px;
+        }
+
+        .next-button {
+            right: 10px;
         }
     </style>
 </head>
 <body>
     <div class="calendar-container">
+        <button class="nav-button prev-button">Previous</button>
         <div class="calendar" id="calendar"></div>
+        <button class="nav-button next-button">Next</button>
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -164,14 +187,30 @@
 
             // Side scrolling functionality
             let currentMonth = 0;
+            const updateCalendarTransform = () => {
+                calendar.style.transform = `translateX(-${currentMonth * 100}%)`;
+            };
+
+            document.querySelector('.prev-button').addEventListener('click', () => {
+                currentMonth = (currentMonth - 1 + 12) % 12;
+                updateCalendarTransform();
+            });
+
+            document.querySelector('.next-button').addEventListener('click', () => {
+                currentMonth = (currentMonth + 1) % 12;
+                updateCalendarTransform();
+            });
+
             document.addEventListener("keydown", (e) => {
                 if (e.key === "ArrowRight") {
                     currentMonth = (currentMonth + 1) % 12;
                 } else if (e.key === "ArrowLeft") {
                     currentMonth = (currentMonth - 1 + 12) % 12;
                 }
-                calendar.style.transform = `translateX(-${currentMonth * 100}%)`;
+                updateCalendarTransform();
             });
+
+            updateCalendarTransform();
         });
     </script>
 </body>
