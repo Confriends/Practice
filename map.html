@@ -47,7 +47,7 @@
             border-bottom: 2px solid lime;
             padding-bottom: 5px;
             margin-bottom: 5px;
-            color: lime; /* Week days text color */
+            color: lime; /* Changed text color to lime */
         }
 
         .week-day {
@@ -59,13 +59,13 @@
             border: 1px solid lime;
             padding: 5px;
             margin: 2px;
-            width: calc(14.28% - 6px - 5%); /* Reduced width by 5% */
+            width: calc(14.28% - 6px);
             box-sizing: border-box;
             display: inline-block;
             vertical-align: top;
             position: relative;
             height: 54px; /* Reduced height by 10% */
-            color: lime; /* Day number text color */
+            color: lime; /* Changed text color to lime */
         }
 
         .day-number {
@@ -73,13 +73,13 @@
             top: 5px;
             left: 5px;
             font-size: 12px;
-            color: lime; /* Day number text color */
+            color: lime; /* Changed text color to lime */
         }
 
         .day input {
             background: transparent;
             border: none;
-            color: yellow; /* Input text color */
+            color: lime; /* Changed text color to lime */
             text-align: left;
             width: 100%;
             height: 100%;
@@ -134,7 +134,7 @@
             months.forEach((month, index) => {
                 const monthDiv = document.createElement("div");
                 monthDiv.className = "month";
-                monthDiv.innerHTML = `<h2 style="color: lime;">${month}</h2>`; // Month title text color
+                monthDiv.innerHTML = `<h2 style="color: lime;">${month}</h2>`; // Changed text color to lime
 
                 // Add week days header
                 const weekDaysDiv = document.createElement("div");
