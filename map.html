@@ -133,12 +133,11 @@
     </style>
 </head>
 <body>
-    <div class="calendar" id="calendar">
-            <button class="nav-button prev-button">&#10094;</button>
-     
-    <div class="calendar" id="calendar">
-             <button class="nav-button next-button">&#10095;</button>
-      </div>
+    <div class="calendar-container">
+        <button class="nav-button prev-button">&#10094;</button>
+        <div class="calendar" id="calendar"></div>
+        <button class="nav-button next-button">&#10095;</button>
+    </div>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const calendar = document.getElementById("calendar");
@@ -221,7 +220,7 @@
             let currentMonth = 0;
             function updateMonth(direction) {
                 currentMonth = (currentMonth + direction + 12) % 12;
-                calendar.style.transform = `translateX(-${currentMonth * 99}%)`;
+                calendar.style.transform = `translateX(-${currentMonth * 100}%)`;
             }
 
             document.querySelector(".prev-button").addEventListener("click", () => updateMonth(-1));
