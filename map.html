@@ -111,7 +111,6 @@
             background-color: lime;
             color: black;
             border: none;
-            padding: 10px;
             cursor: pointer;
             font-size: 18px;
         }
@@ -219,7 +218,7 @@
             let currentMonth = 0;
             function updateMonth(direction) {
                 currentMonth = (currentMonth + direction + 12) % 12;
-                calendar.style.transform = `translateX(-${currentMonth * 99}%)`;
+                calendar.style.transform = `translateX(-${currentMonth * 100}%)`;
             }
 
             document.querySelector(".prev-button").addEventListener("click", () => updateMonth(-1));
