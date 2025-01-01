@@ -59,13 +59,12 @@
         .days {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center; /* Center the day squares horizontally */
         }
 
         .day {
             border: 1px solid lime;
             padding: 5px;
-            margin: 5px; /* Add margin around day squares */
+            margin: 2px;
             width: 13%;
             box-sizing: border-box;
             display: inline-block;
@@ -120,6 +119,11 @@
         .next-button {
             right: 0px; /* Move closer to the right edge */
         }
+
+        /* New CSS rule for moving full months */
+        .full-month {
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -132,8 +136,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             const calendar = document.getElementById("calendar");
             const months = [
-                "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
+                "January", "March", "May", "July", "August", "October", "December"
             ];
             const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -141,6 +144,12 @@
             months.forEach((month, index) => {
                 const monthDiv = document.createElement("div");
                 monthDiv.className = "month";
+
+                // Add the full-month class to the months with 31 days
+                if (["January", "March", "May", "July", "August", "October", "December"].includes(month)) {
+                    monthDiv.classList.add("full-month");
+                }
+
                 monthDiv.innerHTML = `<h2 style="color: lime;">${month}</h2>`; // Changed text color to lime
 
                 // Add week days header
