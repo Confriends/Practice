@@ -44,28 +44,32 @@
 
         .week-days {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between; /* Ensure even spacing between week days */
             border-bottom: 2px solid lime;
             padding-bottom: 5px;
             margin-bottom: 5px;
+            margin-left: 20px; /* Add margin to the left */
+            margin-right: 20px; /* Add margin to the right */
             color: lime; /* Changed text color to lime */
         }
 
         .week-day {
-            width: 13%;
-            text-align: left 20px right 20px;
+            width: calc(100% / 7 - 20px); /* Ensures each day fits within the calendar with some margin */
+            text-align: center; /* Center align the text */
         }
 
         .days {
             display: flex;
             flex-wrap: wrap;
+            margin-left: 20px; /* Add margin to the left */
+            margin-right: 20px; /* Add margin to the right */
         }
 
         .day {
             border: 1px solid lime;
             padding: 5px;
             margin: 2px;
-            width: 13%;
+            width: calc(100% / 7 - 10px); /* Ensures each day fits within the calendar with some margin */
             box-sizing: border-box;
             display: inline-block;
             vertical-align: top;
