@@ -20,13 +20,13 @@
         .calendar-container {
             overflow: hidden;
             width: 99%;
-            height: 99%;
+            height: 100%;
             border: 2px solid lime;
-            position: fixed; /* Needed for navigation buttons positioning */
+            position: relative; /* Needed for navigation buttons positioning */
         }
 
         .calendar {
-            display: fixed;
+            display: flex;
             transition: transform 0.3s ease-in-out;
         }
 
@@ -219,7 +219,7 @@
             let currentMonth = 0;
             function updateMonth(direction) {
                 currentMonth = (currentMonth + direction + 12) % 12;
-                calendar.style.transform = `translateX(-${currentMonth * 100}%)`;
+                calendar.style.transform = `translateX(-${currentMonth * 99}%)`;
             }
 
             document.querySelector(".prev-button").addEventListener("click", () => updateMonth(-1));
