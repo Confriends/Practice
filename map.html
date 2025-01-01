@@ -15,7 +15,7 @@
             margin: 0;
             height: 100vh;
             overflow: hidden; /* Prevent page scrolling */
-        }
+        } 
 
         .calendar-container {
             overflow: hidden;
@@ -23,24 +23,25 @@
             height: 100%;
             border: 2px solid lime;
             position: relative; /* Needed for navigation buttons positioning */
-        }
+        } 
 
         .calendar {
             display: flex;
             transition: transform 0.3s ease-in-out;
-        }
+            width: 1200%; /* 12 months, each taking up 100% of the view width */
+        } 
 
         .month {
-            min-width: 100%;
+            flex: 0 0 100%; /* Ensure each month takes up 100% of the viewport width */
             box-sizing: border-box;
             padding: 10px;
             border-right: 2px solid lime;
-        }
+        } 
 
         .month:last-child {
             border-right: 20px;
             border-left: 20px;
-        }
+        } 
 
         .week-days {
             display: flex;
@@ -51,19 +52,19 @@
             margin-left: 20px; /* Add margin to the left */
             margin-right: 20px; /* Add margin to the right */
             color: lime; /* Changed text color to lime */
-        }
+        } 
 
         .week-day {
             width: calc(100% / 7 - 20px); /* Ensures each day fits within the calendar with some margin */
             text-align: center; /* Center align the text */
-        }
+        } 
 
         .days {
             display: flex;
             flex-wrap: wrap;
             margin-left: 20px; /* Add margin to the left */
             margin-right: 20px; /* Add margin to the right */
-        }
+        } 
 
         .day {
             border: 1px solid lime;
@@ -76,7 +77,7 @@
             position: relative;
             height: 54px; /* Reduced height by 10% */
             color: lime; /* Changed text color to lime */
-        }
+        } 
 
         .day-number {
             position: absolute;
@@ -84,7 +85,7 @@
             left: 5px;
             font-size: 12px;
             color: lime; /* Changed text color to lime */
-        }
+        } 
 
         .day input {
             background: transparent;
@@ -97,12 +98,12 @@
             box-sizing: border-box;
             resize: none;
             overflow: hidden;
-        }
+        } 
 
         .day input:focus {
             outline: none;
             height: auto; /* Allow height to auto-expand when focused */
-        }
+        } 
 
         .nav-button {
             position: absolute;
@@ -114,15 +115,15 @@
             padding: 10px;
             cursor: pointer;
             font-size: 18px;
-        }
+        } 
 
         .prev-button {
             left: 0px; /* Move closer to the left edge */
-        }
+        } 
 
         .next-button {
             right: 0px; /* Move closer to the right edge */
-        }
+        } 
 
         /* New CSS rule for moving full months */
         .full-month {
@@ -141,21 +142,17 @@
         document.addEventListener("DOMContentLoaded", function () {
             const calendar = document.getElementById("calendar");
             const months = [
-                "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
             ];
-            const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; 
 
             // Create months
             months.forEach((month, index) => {
                 const monthDiv = document.createElement("div");
-                monthDiv.className = "month";
+                monthDiv.className = "month"; 
 
-                // Add the full-month class to the months with 31 days
-                if (["January", "March", "May", "July", "August", "October", "December"].includes(month)) {
-                    monthDiv.classList.add("full-month");
-                }
-
-                monthDiv.innerHTML = `<h2 style="color: lime;">${month}</h2>`; // Changed text color to lime
+                monthDiv.innerHTML = `<h2 style="color: lime;">${month}</h2>`; // Changed text color to lime 
 
                 // Add week days header
                 const weekDaysDiv = document.createElement("div");
@@ -166,23 +163,23 @@
                     weekDayDiv.textContent = day;
                     weekDaysDiv.appendChild(weekDayDiv);
                 });
-                monthDiv.appendChild(weekDaysDiv);
+                monthDiv.appendChild(weekDaysDiv); 
 
                 // Create days container
                 const daysDiv = document.createElement("div");
-                daysDiv.className = "days";
+                daysDiv.className = "days"; 
 
                 // Get the first day of the month
                 const firstDay = new Date(2025, index, 1).getDay();
                 // Get the number of days in the month
-                const daysInMonth = new Date(2025, index + 1, 0).getDate();
+                const daysInMonth = new Date(2025, index + 1, 0).getDate(); 
 
                 // Add blank days for the first week
                 for (let i = 0; i < firstDay; i++) {
                     const blankDayDiv = document.createElement("div");
                     blankDayDiv.className = "day";
                     daysDiv.appendChild(blankDayDiv);
-                }
+                } 
 
                 // Add days
                 for (let day = 1; day <= daysInMonth; day++) {
@@ -190,40 +187,40 @@
                     dayDiv.className = "day";
                     const dayNumberDiv = document.createElement("div");
                     dayNumberDiv.className = "day-number";
-                    dayNumberDiv.textContent = day;
+                    dayNumberDiv.textContent = day; 
 
                     const dayInput = document.createElement("input");
-                    dayInput.type = "text";
+                    dayInput.type = "text"; 
 
                     // Load saved data
                     const savedData = localStorage.getItem(`2025-${index + 1}-${day}`);
                     if (savedData) {
                         dayInput.value = savedData;
-                    }
+                    } 
 
                     // Save data on change
                     dayInput.addEventListener("input", () => {
                         localStorage.setItem(`2025-${index + 1}-${day}`, dayInput.value);
-                    });
+                    }); 
 
                     dayDiv.appendChild(dayNumberDiv);
                     dayDiv.appendChild(dayInput);
                     daysDiv.appendChild(dayDiv);
-                }
+                } 
 
                 monthDiv.appendChild(daysDiv);
                 calendar.appendChild(monthDiv);
-            });
+            }); 
 
             // Side scrolling functionality
             let currentMonth = 0;
             function updateMonth(direction) {
                 currentMonth = (currentMonth + direction + 12) % 12;
                 calendar.style.transform = `translateX(-${currentMonth * 100}%)`;
-            }
+            } 
 
             document.querySelector(".prev-button").addEventListener("click", () => updateMonth(-1));
-            document.querySelector(".next-button").addEventListener("click", () => updateMonth(1));
+            document.querySelector(".next-button").addEventListener("click", () => updateMonth(1)); 
 
             document.addEventListener("keydown", (e) => {
                 if (e.key === "ArrowRight") {
