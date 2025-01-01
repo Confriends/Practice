@@ -70,7 +70,7 @@
             border: 1px solid lime;
             padding: 5px;
             margin: 2px;
-            width: calc(100% / 7 - 5px); /* Ensures each day fits within the calendar with some margin */
+            width: calc(100% / 7 - 5px);; /* Ensures each day fits within the calendar with some margin */
             box-sizing: border-box;
             display: inline-block;
             vertical-align: top;
@@ -142,7 +142,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             const calendar = document.getElementById("calendar");
             const months = [
-                "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+                "January", "March", "May", "July", "August", "October", "December"
             ];
             const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -220,7 +220,7 @@
             let currentMonth = 0;
             function updateMonth(direction) {
                 currentMonth = (currentMonth + direction + 12) % 12;
-                calendar.style.transform = `translateX(-${currentMonth * 100}%)`;
+                calendar.style.transform = `translateX(-${currentMonth * 99}%)`;
             }
 
             document.querySelector(".prev-button").addEventListener("click", () => updateMonth(-1));
