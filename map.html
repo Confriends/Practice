@@ -26,7 +26,7 @@
         }
 
         .calendar {
-            display: flex;
+            display: fixed;
             transition: transform 0.3s ease-in-out;
         }
 
@@ -54,7 +54,7 @@
         }
 
         .week-day {
-            width: 100%; /* Ensures each day fits within the calendar with some margin */
+            width: calc(100% / 7 - 20px); /* Ensures each day fits within the calendar with some margin */
             text-align: center; /* Center align the text */
         }
 
@@ -69,7 +69,7 @@
             border: 1px solid lime;
             padding: 5px;
             margin: 2px;
-            width: 100%; /* uEnsures each day fits within the calendar with some margin */
+            width: calc(100% / 7 - 10px); /* Ensures each day fits within the calendar with some margin */
             box-sizing: border-box;
             display: inline-block;
             vertical-align: top;
