@@ -133,16 +133,15 @@
     </style>
 </head>
 <body>
-    <div class="calendar-container">
+    <div class="calendar" id="calendar">
         <button class="nav-button prev-button">&#10094;</button>
-        <div class="calendar" id="calendar"></div>
         <button class="nav-button next-button">&#10095;</button>
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const calendar = document.getElementById("calendar");
             const months = [
-                "January", "March", "May", "July", "August", "October", "December"
+                "January", "February", "March", "April", "May", "June", "July", "August","September", "October","November", "December"
             ];
             const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
