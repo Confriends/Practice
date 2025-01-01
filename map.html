@@ -28,6 +28,7 @@
         .calendar {
             display: flex;
             transition: transform 0.3s ease-in-out;
+            width: 1200%; /* 12 months, each taking 100% of the container */
         }
 
         .month {
@@ -38,8 +39,7 @@
         }
 
         .month:last-child {
-            border-right: 20px;
-            border-left: 20px;
+            border-right: none;
         }
 
         .week-days {
@@ -141,7 +141,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             const calendar = document.getElementById("calendar");
             const months = [
-                "January", "March", "May", "July", "August", "October", "December"
+                "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
             ];
             const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
