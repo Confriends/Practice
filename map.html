@@ -218,8 +218,8 @@
             // Side scrolling functionality
             let currentMonth = 0;
             function updateMonth(direction) {
-                currentMonth = (currentMonth + direction;
-                calendar.style.transform = `translateX(-${currentMonth * 100}%)`;
+                currentMonth = (currentMonth + direction + 12) % 12;
+                calendar.style.transform = `translateX(-${currentMonth * 99}%)`;
             }
 
             document.querySelector(".prev-button").addEventListener("click", () => updateMonth(-1));
