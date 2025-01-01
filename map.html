@@ -20,7 +20,7 @@
         .calendar-container {
             overflow: hidden;
             width: 99%;
-            height: 99%;
+            height: 100%;
             border: 2px solid lime;
             position: relative; /* Needed for navigation buttons positioning */
         }
@@ -69,7 +69,7 @@
             border: 1px solid lime;
             padding: 5px;
             margin: 2px;
-            width: calc(100% / 7 - 20px); /* Ensures each day fits within the calendar with some margin */
+            width: calc(100% / 7 - 10px); /* Ensures each day fits within the calendar with some margin */
             box-sizing: border-box;
             display: inline-block;
             vertical-align: top;
@@ -126,8 +126,8 @@
 
         /* New CSS rule for moving full months */
         .full-month {
-            margin-left: 0px;
-            margin-right: 0px;
+            margin-left: 20px;
+            margin-right: 20px;
         }
     </style>
 </head>
@@ -219,7 +219,7 @@
             let currentMonth = 0;
             function updateMonth(direction) {
                 currentMonth = (currentMonth + direction + 12) % 12;
-                calendar.style.transform = `translateX(-${currentMonth * 100}%)`;
+                calendar.style.transform = `translateX(-${currentMonth * 99}%)`;
             }
 
             document.querySelector(".prev-button").addEventListener("click", () => updateMonth(-1));
