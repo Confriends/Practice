@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prize Submission</title>
+    <style>
+        body {
+            background-color: pink;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .container input {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+        }
+        .container button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff69b4;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .container button:hover {
+            background-color: #ff1493;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #ff69b4;
+        }
+        .confetti {
+            font-size: 100px;
+            animation: explode 1s ease-out forwards;
+        }
+        .large-emoji {
+            font-size: 200px;
+        }
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Submit to Win a Prize!</h1>
+        <input type="text" id="inputBox" placeholder="Enter something...">
+        <button onclick="submitForm()">Submit</button>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        function submitForm() {
+            const inputBox = document.getElementById('inputBox');
+            const message = document.getElementById('message');
+            const inputValue = inputBox.value.trim().toLowerCase();
+
+            // Define a list of descriptions and their emoji representations
+            const emojiDescriptions = {
+                'head': '🧑',
+                'eyes': '👀',
+                'ears': '👂',
+                'nose': '👃',
+                'mouth': '👄',
+                'tongue': '👅',
+                'teeth': '🦷',
+                'neck': '🧑‍🦲',
+                'shoulders': '🤷',
+                'arms': '💪',
+                'wrists': '👋',
+                'hands': '👐',
+                'fingers': '🤌',
+                'thumb': '👍',
+                'index finger': '☝️',
+                'middle finger': '🖕',
+                'ring finger': '💍',
+                'little finger': '🤞',
+                'chest': '🦵',
+                'back': '🏋️',
+                'stomach': '👯',
+                'hips': '🩰',
+                'legs': '🦵',
+                'knees': '🦵',
+                'ankles': '🦶',
+                'feet': '🦶',
+                'toes': '🦶',
+                'ice cream': '🍦',
+                'birthday cake': '🎂',
+                'party popper': '🎉',
+                'heart': '❤️',
+                'smile': '😊',
+                'sun': '☀️',
+                'moon': '🌙',
+                'star': '⭐',
+                'fire': '🔥',
+                'water': '💧',
+                'tree': '🌳',
+                'flower': '🌸',
+                'dog': '🐶',
+                'cat': '🐱',
+                'bird': '🐦',
+                'fish': '🐟',
+                'car': '🚗',
+                'bicycle': '🚲',
+                'airplane': '✈️',
+                'house': '🏠',
+                'computer': '💻',
+                'phone': '📱',
+            };
+
+            if (emojiDescriptions[inputValue]) {
+                const emoji = emojiDescriptions[inputValue];
+                const isLargeEmoji = inputValue === 'toes' ? ' large-emoji' : '';
+                message.innerHTML = `You win a prize! <span class="confetti${isLargeEmoji}">${emoji}</span>`;
+            } else {
+                message.textContent = 'Please enter a valid description to win a prize!';
+            }
+        }
+    </script>
+</body>
+</html>
