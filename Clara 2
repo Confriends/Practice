@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kicking Ball Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #87CEEB; /* Sky blue background */
+        }
+
+        #gameCanvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .arrow {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+        }
+
+        .arrow.up {
+            background: url('up-arrow.png') no-repeat center center;
+        }
+
+        .arrow.down {
+            background: url('down-arrow.png') no-repeat center center;
+        }
+
+        .arrow.left {
+            background: url('left-arrow.png') no-repeat center center;
+        }
+
+        .arrow.right {
+            background: url('right-arrow.png') no-repeat center center;
+        }
+
+        .ball {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: url('ball.png') no-repeat center center;
+            background-size: contain;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            animation: fall 2s linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(200vh);
+                opacity: 0;
+            }
+        }
+
+        @keyframes flash {
+            0%, 100% {
+                background-color: darkred;
+            }
+            50% {
+                background-color: red;
+            }
+        }
+
+        .flash {
+            animation: flash 0.5s infinite;
+        }
+
+        #foot {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            font-size: 50px;
+            line-height: 50px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="foot">👟</div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const foot = document.getElementById('foot');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let ball, goal, obstacles, timeout, clickCount, gameOver;
+        const confettiColors = ['#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#4B0082', '#EE82EE'];
+
+        function resetGame() {
+            ball = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                radius: 25,
+                dx: 0,
+                dy: 0
+            };
+
+            goal = {
+                x: canvas.width - 80,
+                y: canvas.height / 2 - 25,
+                width: 80,
+                height: 50
+            };
+
+            obstacles = [];
+            for (let i = 0; i < 5; i++) {
+                obstacles.push({
+                    x: Math.random() * (canvas.width - 100) + 50,
+                    y: Math.random() * (canvas.height - 50) + 25,
+                    width: 25,
+                    height: 25
+                });
+            }
+
+            clickCount = 0;
+            gameOver = false;
+            document.body.classList.remove('flash');
+            clearTimeout(timeout);
+            timeout = setTimeout(startFlashing, 30000);
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#FF4500'; // Ball color
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawGoal() {
+            ctx.fillStyle = '#FFD700'; // Goal color
+            ctx.fillRect(goal.x, goal.y, goal.width, goal.height);
+        }
+
+        function drawObstacles() {
+            ctx.fillStyle = '#8B0000'; // Obstacle color
+            obstacles.forEach(obstacle => {
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            });
+        }
+
+        function updateBall() {
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Bounce off the walls
+            if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+                ball.dx = -ball.dx;
+            }
+            if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+                ball.dy = -ball.dy;
+            }
+
+            // Check for collision with obstacles
+            obstacles.forEach(obstacle => {
+                if (ball.x + ball.radius > obstacle.x && ball.x - ball.radius < obstacle.x + obstacle.width &&
+                    ball.y + ball.radius > obstacle.y && ball.y - ball.radius < obstacle.y + obstacle.height) {
+                    ball.dx = -ball.dx;
+                    ball.dy = -ball.dy;
+                }
+            });
+
+            // Check for goal
+            if (ball.x + ball.radius > goal.x && ball.y > goal.y && ball.y < goal.y + goal.height) {
+                ball.dx = 0;
+                ball.dy = 0;
+                clearTimeout(timeout);
+                confettiBlast();
+            }
+        }
+
+        function drawArrows() {
+            const directions = ['up', 'down', 'left', 'right'];
+            directions.forEach(direction => {
+                const arrow = document.createElement('div');
+                arrow.className = `arrow ${direction}`;
+                if (direction === 'up') {
+                    arrow.style.top = '10px';
+                    arrow.style.left = `${canvas.width / 2 - 25}px`;
+                } else if (direction === 'down') {
+                    arrow.style.bottom = '10px';
+                    arrow.style.left = `${canvas.width / 2 - 25}px`;
+                } else if (direction === 'left') {
+                    arrow.style.left = '10px';
+                    arrow.style.top = `${canvas.height / 2 - 25}px`;
+                } else if (direction === 'right') {
+                    arrow.style.right = '10px';
+                    arrow.style.top = `${canvas.height / 2 - 25}px`;
+                }
+                document.body.appendChild(arrow);
+            });
+        }
+
+        function moveFoot(event) {
+            const x = event.clientX || event.touches[0].clientX;
+            const y = event.clientY || event.touches[0].clientY;
+            foot.style.left = `${x - 25}px`;
+            foot.style.top = `${y - 25}px`;
+        }
+
+        function kickBall(event) {
+            if (gameOver) {
+                clickCount += 1;
+                if (clickCount >= 4) {
+                    resetGame();
+                }
+            } else {
+                const x = event.clientX || event.touches[0].clientX;
+                const y = event.clientY || event.touches[0].clientY;
+                const angle = Math.atan2(y - ball.y, x - ball.x);
+                const speed = 10;
+                ball.dx = speed * Math.cos(angle);
+                ball.dy = speed * Math.sin(angle);
+            }
+        }
+
+        function confettiBlast() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = confettiColors[i % confettiColors.length];
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = `${Math.random() * 100}vh`;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 2000);
+            }
+        }
+
+        function startFlashing() {
+            document.body.classList.add('flash');
+            gameOver = true;
+        }
+
+        canvas.addEventListener('mousemove', moveFoot);
+        canvas.addEventListener('touchmove', moveFoot);
+        canvas.addEventListener('click', kickBall);
+        canvas.addEventListener('touchstart', kickBall);
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            updateBall();
+            drawBall();
+            drawGoal();
+            drawObstacles();
+            requestAnimationFrame(gameLoop);
+        }
+
+        drawArrows();
+        resetGame();
+        gameLoop();
+    </script>
+</body>
+</html>
