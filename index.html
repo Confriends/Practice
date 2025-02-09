@@ -1,450 +1,428 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="icon" href="data new.png" type="image/png">
-    <link rel="shortcut icon" href="path/to/your/icon.ico" type="image/x-icon">
+    <link rel="icon" href="data new.png" type="image/png">
+    <link rel="shortcut icon" href="path/to/your/icon.ico" type="image/x-icon">
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=.5">
 <style>
-body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-#video-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: black;
-    z-index: 10;
-}
-
-#video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-#start-button {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px 20px;
-    background-color: limegreen;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    z-index: 20;
-}
-
-#content {
-    display: none;
-}
-
 body {
-    background-image: url('fo4quest2.jpg'); /* replace with your image path */
-    background-size: cover; /* Ensures the image covers the entire screen */
-    background-position: center top; /* Aligns the image to the top-center */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
-    background-attachment: fixed; /* Keeps the background fixed while scrolling */
-    background-color: black; /* Fills empty space with black */
-    margin: 0; /* Removes default margin */
-    height: 100vh; /* Ensures the body takes the full height of the screen */
-} 
+    background-image: url('fo4quest2.jpg'); /* replace with your image path */
+    background-size: cover; /* Ensures the image covers the entire screen */
+    background-position: center top; /* Aligns the image to the top-center */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-attachment: fixed; /* Keeps the background fixed while scrolling */
+    background-color: black; /* Fills empty space with black */
+    margin: 0; /* Removes default margin */
+    height: 100vh; /* Ensures the body takes the full height of the screen */
+}
+
+/* Preloader styles */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#preloader video {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Hide the main content initially */
+#main-content {
+    display: none;
+}
 
 /* Include the padding and border in an element's total width and height */
 * {
-  box-sizing: border-box;
-} 
+  box-sizing: border-box;
+}
 
 /* Remove margins and padding from the list */
 ul {
-  margin: 0;
-  padding: 0;
-  width: 55%;
-  float: left;
-} 
+  margin: 0;
+  padding: 0;
+  width: 55%;
+  float: left;
+}
 
 /* Style the list items */
 ul li {
-  position: fixed;
-  top: 55%;
-  left: 0;
-  cursor: pointer;
-  position: relative;
-  padding: 12px 8px 12px 40px;
-  list-style-type: none;
-  background: #228B22;
-  font-size: 20px;
-  transition: 0.2s;
-  
-  /* make the list items unselectable */
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-} 
+  position: fixed;
+  top: 55%;
+  left: 0;
+  cursor: pointer;
+  position: relative;
+  padding: 12px 8px 12px 40px;
+  list-style-type: none;
+  background: #228B22;
+  font-size: 20px;
+  transition: 0.2s;
+  
+  /* make the list items unselectable */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 
 /* Set all odd list items to a different color (zebra-stripes) */
 ul li:nth-child(odd) {
-  background: limegreen;
-} 
+  background: limegreen;
+}
 
 /* Darker background-color on hover */
 ul li:hover {
-  background: #4F7942;
-} 
+  background: #4F7942;
+}
 
 /* When clicked on, add a background color and strike out text */
 ul li.checked {
-  background: #4F7942;
-  color: #fff;
-  text-decoration: line-through;
-} 
+  background: #4F7942;
+  color: #fff;
+  text-decoration: line-through;
+}
 
 /* Add a "checked" mark when clicked on */
 ul li.checked::before {
-  content: '';
-  position: absolute;
-  border-color: #fff;
-  border-style: solid;
-  border-width: 0 2px 2px 0;
-  top: 10px;
-  left: 16px;
-  transform: rotate(45deg);
-  height: 15px;
-  width: 7px;
-} 
+  content: '';
+  position: absolute;
+  border-color: #fff;
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  top: 10px;
+  left: 16px;
+  transform: rotate(45deg);
+  height: 15px;
+  width: 7px;
+}
 
 /* Style the close button */
 .close {
-  position: absolute;
-  right: 0;
-  top: 0;
-  padding: 12px 16px 12px 16px;
-} 
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 12px 16px 12px 16px;
+}
 
 .close:hover {
-  background-color: #f44336;
-  color: white;
-} 
+  background-color: #f44336;
+  color: white;
+}
 
 /* Style the header */
 .header {
-  background-color: ;
-  padding: 140px 0px;
-  color: white;
-  text-align: center;
-  margin-bottom: -70px;
-} 
+  background-color: ;
+  padding: 140px 0px;
+  color: white;
+  text-align: center;
+  margin-bottom: -70px;
+}
 
 /* Clear floats after the header */
 .header:after {
-  content: "";
-  display: table;
-  clear: both;
-} 
+  content: "";
+  display: table;
+  clear: both;
+}
 
 /* Style the input */
 input {
-  position: fixed;
-  top: 25%;
-  left: 0;
-  margin: 0;
-  border: none;
-  border-radius: 0;
-  width: 37%;
-  padding: 10px;
-  float: left;
-  font-size: 20px;
-  background-color: limegreen;
-} 
+  position: fixed;
+  top: 25%;
+  left: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  width: 37%;
+  padding: 10px;
+  float: left;
+  font-size: 20px;
+  background-color: limegreen;
+}
 
 /* Style the "Add" button */
 .addBtn {
-  position: fixed;
-  top: 25%;
-  left: 37%;
-  padding: 10px;
-  width: 18%;
-  background: #4CBB17;
-  color: #355E3B;
-  float: left;
-  text-align: center;
-  font-size: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-  border-radius: 0;
-} 
+  position: fixed;
+  top: 25%;
+  left: 37%;
+  padding: 10px;
+  width: 18%;
+  background: #4CBB17;
+  color: #355E3B;
+  float: left;
+  text-align: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+  border-radius: 0;
+}
 
 .addBtn:hover {
-  background-color: #008000;
+  background-color: #008000;
 }
 .status-bar {
-  position: fixed;
-  bottom: 10%;
-  left: 0;
-  width: 60%;
-  height: 30px;
-  background-color: #D3FFBD;
-  border-top: 30px solid lime;
-  text-align: center;
-  line-height: 30px;
-  color: lime;
-  font-weight: bold;
-} 
+  position: fixed;
+  bottom: 10%;
+  left: 0;
+  width: 60%;
+  height: 30px;
+  background-color: #D3FFBD;
+  border-top: 30px solid lime;
+  text-align: center;
+  line-height: 30px;
+  color: lime;
+  font-weight: bold;
+}
 
 /* Lime green date/time display */
 .time-display {
-  position: fixed;
-  bottom: 1%;
-  right: 10px;
-  padding: 10px;
-  font-size: 25px;
-  color: lime;
-  font-family: Arial, sans-serif;
-  text-align: right;
-} 
+  position: fixed;
+  bottom: 1%;
+  right: 10px;
+  padding: 10px;
+  font-size: 25px;
+  color: lime;
+  font-family: Arial, sans-serif;
+  text-align: right;
+}
 
 /* Style for the reset button */
 .resetBtn {
-  padding: 10px;
-  width: 5%;
-  background: #008000; 
-  color: #fff;
-  float: left;
-  text-align: center;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.3s;
-  border-radius: 0;
-} 
+  padding: 10px;
+  width: 5%;
+  background: #008000; 
+  color: #fff;
+  float: left;
+  text-align: center;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+  border-radius: 0;
+}
 
 .resetBtn:hover {
-  background-color: #ff4500;
+  background-color: #ff4500;
 }
-</style> 
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 </head>
-<body> 
+<body>
 
-<div id="video-container">
-    <video id="video" src="your-video-file.mp4" preload="auto"></video>
-    <button id="start-button">Start</button>
+<!-- Preloader -->
+<div id="preloader">
+    <video id="preloader-video" autoplay>
+        <source src="startup.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 </div>
 
-<div id="content">
-    <div id="myDIV" class="header">
-        <h2 style="margin:5px"></h2>
-        <input type="text" id="myInput" placeholder="Title...">
-        <span onclick="newElement()" class="addBtn">Add</span>
-    </div> 
+<!-- Main content -->
+<div id="main-content">
+    <div id="myDIV" class="header">
+      <h2 style="margin:5px"></h2>
+      <input type="text" id="myInput" placeholder="Title...">
+      <span onclick="newElement()" class="addBtn">Add</span>
+    </div>
 
-    <ul id="myUL"></ul> 
+    <ul id="myUL">
+    </ul>
 
-    <div id="statusBar" class="status-bar">0%</div> 
+    <div id="statusBar" class="status-bar">0%</div>
 
-    <div id="timeDisplay" class="time-display"></div> 
+    <div id="timeDisplay" class="time-display"></div>
 
-    <span onclick="resetTasks()" class="resetBtn">Reset</span> 
+    <span onclick="resetTasks()" class="resetBtn">Reset</span>
 
-    <audio id="confettiSound" src="confetti.wav" preload="auto"></audio>
-    <audio id="statusCompleteSound" src="level up.wav" preload="auto"></audio> 
+    <audio id="confettiSound" src="confetti.wav" preload="auto"></audio>
+    <audio id="statusCompleteSound" src="level up.wav" preload="auto"></audio>
 
-    <script>
-    // Load the saved progress from localStorage if available
-    function loadProgress() {
-        const savedProgress = localStorage.getItem('progress');
-        const savedTasks = JSON.parse(localStorage.getItem('tasks')) || []; 
-
-        if (savedProgress) {
-            document.getElementById("statusBar").style.width = savedProgress + "%";
-            document.getElementById("statusBar").textContent = Math.round(savedProgress) + "%";
-        } 
-
-        const ul = document.getElementById("myUL");
-        savedTasks.forEach(task => {
-            const li = document.createElement("li");
-            li.textContent = task.text;
-            if (task.checked) {
-                li.classList.add("checked");
-            }
-            ul.appendChild(li);
-            addCloseButton(li); 
-
-            li.addEventListener('click', function() {
-                this.classList.toggle('checked');
-                updateStatusBar();
-                if (this.classList.contains('checked')) {
-                    triggerConfetti(); 
-                }
-            });
-        });
-        updateStatusBar();
-    } 
-
-    // Add a "close" button to a list item
-    function addCloseButton(li) {
-        var span = document.createElement("SPAN");
-        var txt = document.createTextNode("\u00D7");
-        span.className = "close";
-        span.appendChild(txt);
-        li.appendChild(span);
-        
-        span.onclick = function() {
-            var div = this.parentElement;
-            div.style.display = "none";
-            updateStatusBar();
-        }
-    } 
-
-    // Save tasks and progress to localStorage
-    function saveProgress() {
-        const tasks = [];
-        const taskItems = document.querySelectorAll("ul li"); 
-
-        taskItems.forEach(task => {
-            tasks.push({
-                text: task.textContent.replace("\u00D7", "").trim(),
-                checked: task.classList.contains("checked")
-            });
-        }); 
-
-        const completedTasks = document.querySelectorAll("ul li.checked");
-        const progress = (completedTasks.length / taskItems.length) * 100; 
-
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        localStorage.setItem('progress', progress);
-    } 
-
-    // Update the status bar based on completed tasks
-    function updateStatusBar() {
-        const tasks = document.querySelectorAll("ul li");
-        const completedTasks = document.querySelectorAll("ul li.checked");
-        const percentage = (completedTasks.length / tasks.length) * 100; 
-
-        document.getElementById("statusBar").style.width = percentage + "%";
-        document.getElementById("statusBar").textContent = Math.round(percentage) + "%"; // Show percentage text
-        saveProgress();  
-
-        if (percentage === 100) {
-            document.getElementById("statusCompleteSound").play();
-        }
-    } 
-
-    function triggerConfetti() {
-        const sound = document.getElementById("confettiSound");
-        sound.play();
-        
-        confetti({
-            particleCount: 50,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#ff0', '#ff0', '#0f0', '#00f', '#f0f'],
-        });
-    } 
-
-    document.getElementById("myInput").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            newElement();
-        }
-    }); 
-
-    function newElement() {
-        var li = document.createElement("li");
-        var inputValue = document.getElementById("myInput").value;
-        var t = document.createTextNode(inputValue);
-        li.appendChild(t); 
-
-        if (inputValue === '') {
-            alert("You must write something!");
-        } else {
-            document.getElementById("myUL").appendChild(li);
-        }
-        document.getElementById("myInput").value = ""; 
-
-        addCloseButton(li);  
-
-        li.addEventListener('click', function() {
-            this.classList.toggle('checked');
-            updateStatusBar();
-            if (this.classList.contains('checked')) {
-                triggerConfetti();
-            }
-        }); 
-
-        updateStatusBar();
-    } 
-
-    function resetTasks() {
-        const ul = document.getElementById("myUL");
-        ul.innerHTML = ""; 
-
-        document.getElementById("statusBar").style.width = "0%";
-        document.getElementById("statusBar").textContent = "0%"; 
-
-        localStorage.removeItem('tasks');
-        localStorage.removeItem('progress');
-    } 
-
-    setInterval(updateClock, 1000); 
-
-    function updateClock() {
-        const timeDisplay = document.getElementById("timeDisplay");
-        const now = new Date();
-        
-        const day = now.getDate();
-        const month = now.toLocaleString('default', { month: 'short' });
-        const year = now.getFullYear();
-        
-        let hours = now.getHours();
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; 
-        
-        timeDisplay.textContent = `${month} ${day}, ${year} ${hours}:${minutes} ${ampm}`;
-    } 
-
-    window.onload = loadProgress; // Ensure that the progress is loaded when the page is loaded
-    </script>
-    <div class="clickable-area" style="position: absolute; top: 20px; left: 10%; width: 200px; height: 100px; background-color: transparent;">
-        <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
-    </div>
-    <div class="clickable-area" style="position: absolute; top: 20px; left: 25%; width: 200px; height: 100px; background-color: transparent;">
-        <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
-    </div>
-    <div class="clickable-area" style="position: absolute; top: 20px; right: 15%; width: 200px; height: 100px; background-color: transparent;">
-        <a href="radio.html" style="display: block; width: 100%; height: 100%;"></a>
-    </div>
+    <div class="clickable-area" style="position: absolute; top: 20px; left: 10%; width: 200px; height: 100px; background-color: transparent;">
+        <a href="stats.html" style="display: block; width: 100%; height: 100%;"></a>
+    </div>
+    <div class="clickable-area" style="position: absolute; top: 20px; left: 25%; width: 200px; height: 100px; background-color: transparent;">
+        <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
+    </div>
+    <div class="clickable-area" style="position: absolute; top: 20px; right: 15%; width: 200px; height: 100px; background-color: transparent;">
+        <a href="radio.html" style="display: block; width: 100%; height: 100%;"></a>
+    </div>
 </div>
 
 <script>
-const videoContainer = document.getElementById('video-container');
-const video = document.getElementById('video');
-const startButton = document.getElementById('start-button');
-const content = document.getElementById('content');
+// Load the saved progress from localStorage if available
+function loadProgress() {
+  const savedProgress = localStorage.getItem('progress');
+  const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
-startButton.addEventListener('click', () => {
-    video.play();
-    video.onended = () => {
-        videoContainer.style.display = 'none';
-        content.style.display = 'block';
-        document.body.style.overflow = 'auto';
-    };
+  if (savedProgress) {
+    document.getElementById("statusBar").style.width = savedProgress + "%";
+    document.getElementById("statusBar").textContent = Math.round(savedProgress) + "%";
+  }
+
+  const ul = document.getElementById("myUL");
+  savedTasks.forEach(task => {
+    const li = document.createElement("li");
+    li.textContent = task.text;
+    if (task.checked) {
+      li.classList.add("checked");
+    }
+    ul.appendChild(li);
+    addCloseButton(li);
+
+    li.addEventListener('click', function() {
+      this.classList.toggle('checked');
+      updateStatusBar();
+      if (this.classList.contains('checked')) {
+        triggerConfetti(); 
+      }
+    });
+  });
+  updateStatusBar();
+}
+
+// Add a "close" button to a list item
+function addCloseButton(li) {
+  var span = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  span.className = "close";
+  span.appendChild(txt);
+  li.appendChild(span);
+  
+  span.onclick = function() {
+    var div = this.parentElement;
+    div.style.display = "none";
+    updateStatusBar();
+  }
+}
+
+// Save tasks and progress to localStorage
+function saveProgress() {
+  const tasks = [];
+  const taskItems = document.querySelectorAll("ul li");
+
+  taskItems.forEach(task => {
+    tasks.push({
+      text: task.textContent.replace("\u00D7", "").trim(),
+      checked: task.classList.contains("checked")
+    });
+  });
+
+  const completedTasks = document.querySelectorAll("ul li.checked");
+  const progress = (completedTasks.length / taskItems.length) * 100;
+
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+  localStorage.setItem('progress', progress);
+}
+
+// Update the status bar based on completed tasks
+function updateStatusBar() {
+  const tasks = document.querySelectorAll("ul li");
+  const completedTasks = document.querySelectorAll("ul li.checked");
+  const percentage = (completedTasks.length / tasks.length) * 100;
+
+  document.getElementById("statusBar").style.width = percentage + "%";
+  document.getElementById("statusBar").textContent = Math.round(percentage) + "%"; // Show percentage text
+  saveProgress();  
+
+  if (percentage === 100) {
+    document.getElementById("statusCompleteSound").play();
+  }
+}
+
+function triggerConfetti() {
+  const sound = document.getElementById("confettiSound");
+  sound.play();
+  
+  confetti({
+    particleCount: 50,
+    spread: 70,
+    origin: { y: 0.6 },
+    colors: ['#ff0', '#ff0', '#0f0', '#00f', '#f0f'],
+  });
+}
+
+document.getElementById("myInput").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+      newElement();
+  }
 });
+
+function newElement() {
+  var li = document.createElement("li");
+  var inputValue = document.getElementById("myInput").value;
+  var t = document.createTextNode(inputValue);
+  li.appendChild(t);
+
+  if (inputValue === '') {
+    alert("You must write something!");
+  } else {
+    document.getElementById("myUL").appendChild(li);
+  }
+  document.getElementById("myInput").value = "";
+
+  addCloseButton(li);  
+
+  li.addEventListener('click', function() {
+    this.classList.toggle('checked');
+    updateStatusBar();
+    if (this.classList.contains('checked')) {
+      triggerConfetti();
+    }
+  });
+
+  updateStatusBar();
+}
+
+function resetTasks() {
+  const ul = document.getElementById("myUL");
+  ul.innerHTML = "";
+
+  document.getElementById("statusBar").style.width = "0%";
+  document.getElementById("statusBar").textContent = "0%";
+
+  localStorage.removeItem('tasks');
+  localStorage.removeItem('progress');
+}
+
+setInterval(updateClock, 1000);
+
+function updateClock() {
+  const timeDisplay = document.getElementById("timeDisplay");
+  const now = new Date();
+  
+  const day = now.getDate();
+  const month = now.toLocaleString('default', { month: 'short' });
+  const year = now.getFullYear();
+  
+  let hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; 
+  
+  timeDisplay.textContent = `${month} ${day}, ${year} ${hours}:${minutes} ${ampm}`;
+}
+
+window.onload = function() {
+    loadProgress(); // Ensure that the progress is loaded when the page is loaded
+    
+    // Hide the preloader and show the main content when the video ends
+    document.getElementById('preloader-video').addEventListener('ended', function() {
+        document.getElementById('preloader').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+    });
+};
 </script>
+
 </body>
 </html>
