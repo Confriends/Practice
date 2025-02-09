@@ -212,6 +212,26 @@ input {
 .resetBtn:hover {
   background-color: #ff4500;
 }
+
+/* Play button styles */
+.play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: limegreen;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 30px;
+  padding: 10px 20px;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+.play-button:hover {
+  background-color: #4F7942;
+}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
@@ -220,10 +240,11 @@ input {
 
 <!-- Preloader -->
 <div id="preloader">
-    <video id="preloader-video" autoplay>
+    <video id="preloader-video">
         <source src="startup.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
+    <button id="play-button" class="play-button">▶</button>
 </div>
 
 <!-- Main content -->
@@ -420,6 +441,14 @@ window.onload = function() {
     document.getElementById('preloader-video').addEventListener('ended', function() {
         document.getElementById('preloader').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
+    });
+
+    // Play video with sound when play button is clicked
+    document.getElementById('play-button').addEventListener('click', function() {
+        var video = document.getElementById('preloader-video');
+        video.play();
+        video.muted = false; // Ensure the video plays with sound
+        this.style.display = 'none'; // Hide the play button
     });
 };
 </script>
