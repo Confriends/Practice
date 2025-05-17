@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Map: Marker, Search, Directions</title>
+  <title>Google Map with Background</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       width: 100%;
+      box-sizing: border-box;
       background: black;
     }
     body {
-      background-image: url('inv.png'); /* Your background */
+      /* Background image already set by you, just update the url if needed */
+      background-image: url('inv.png');
       background-size: cover;
       background-position: center top;
       background-repeat: no-repeat;
@@ -22,39 +24,6 @@
       width: 100vw;
       overflow: hidden;
     }
-    .controls {
-      position: absolute;
-      top: 21vh;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 5;
-      background: rgba(0,0,0,0.7);
-      padding: 12px 18px;
-      border-radius: 10px;
-      border: 1.5px solid lime;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-      font-family: monospace;
-    }
-    .controls input, .controls button {
-      border: 1px solid #0f0;
-      border-radius: 5px;
-      padding: 5px 10px;
-      font-size: 1em;
-      background: #222;
-      color: #0f0;
-      outline: none;
-      margin: 0 3px;
-    }
-    .controls button {
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .controls button:hover {
-      background: #003300;
-    }
     .map-container {
       position: absolute;
       top: 20vh;
@@ -62,33 +31,23 @@
       width: 100vw;
       height: 80vh;
       z-index: 1;
+      /* Optional: border or shadow if you want distinction from bg */
+      /* border: 2px solid lime; */
+      /* box-shadow: 0 0 10px #0f0; */
     }
     #map {
       width: 100%;
       height: 100%;
       border: none;
-    }
-    @media (max-width: 800px) {
-      .controls {
-        flex-direction: column;
-        gap: 5px;
-        width: 90vw;
-      }
+      box-sizing: border-box;
     }
   </style>
 </head>
 <body>
-  <div class="controls">
-    <input id="search-box" type="text" placeholder="Search for a place..." autocomplete="off">
-    <input id="dir-from" type="text" placeholder="Directions: From" autocomplete="off">
-    <input id="dir-to" type="text" placeholder="Directions: To" autocomplete="off">
-    <button id="dir-btn">Show Route</button>
-    <button id="clear-btn">Clear Route</button>
-  </div>
   <div class="map-container">
     <div id="map"></div>
   </div>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY&libraries=places"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY"></script>
   <script>
     // Custom map style array
     const mapStyle = [
@@ -123,80 +82,32 @@
       {"featureType":"water","elementType":"labels.text","stylers":[{"color":"#008909"}]}
     ];
 
-    let map, marker, autocomplete, directionsService, directionsRenderer;
-
     function initMap() {
-      // Empire State Building as example marker
-      const defaultLocation = { lat: 40.748817, lng: -73.985428 };
-
-      map = new google.maps.Map(document.getElementById('map'), {
-        center: defaultLocation,
-        zoom: 13,
+      const defaultCenter = { lat: 40.7128, lng: -74.0060 }; // New York fallback
+      const map = new google.maps.Map(document.getElementById('map'), {
+        center: defaultCenter,
+        zoom: 12,
         styles: mapStyle
       });
 
-      // Marker at Empire State Building
-      marker = new google.maps.Marker({
-        position: defaultLocation,
-        map: map,
-        title: "Empire State Building",
-        draggable: false
-      });
-
-      // Search Box
-      const input = document.getElementById('search-box');
-      autocomplete = new google.maps.places.Autocomplete(input);
-      autocomplete.setFields(["geometry", "name"]);
-      autocomplete.bindTo("bounds", map);
-
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        if (!place.geometry) return;
-        map.panTo(place.geometry.location);
-        map.setZoom(15);
-        marker.setPosition(place.geometry.location);
-        marker.setTitle(place.name || "");
-      });
-
-      // Directions services
-      directionsService = new google.maps.DirectionsService();
-      directionsRenderer = new google.maps.DirectionsRenderer({
-        map: map,
-        suppressMarkers: false,
-        polylineOptions: { strokeColor: "#00ff1c", strokeWeight: 5 }
-      });
-
-      document.getElementById('dir-btn').onclick = showRoute;
-      document.getElementById('clear-btn').onclick = clearRoute;
-    }
-
-    async function showRoute() {
-      const from = document.getElementById('dir-from').value;
-      const to = document.getElementById('dir-to').value;
-      if (!from || !to) {
-        alert("Please enter both start and end locations.");
-        return;
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const userPos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            map.setCenter(userPos);
+            new google.maps.Marker({
+              position: userPos,
+              map,
+              title: "You are here!"
+            });
+          }
+        );
       }
-      directionsService.route({
-        origin: from,
-        destination: to,
-        travelMode: 'DRIVING'
-      }, (result, status) => {
-        if (status === 'OK') {
-          directionsRenderer.setDirections(result);
-        } else {
-          alert("Could not find directions: " + status);
-        }
-      });
     }
 
-    function clearRoute() {
-      directionsRenderer.set('directions', null);
-      document.getElementById('dir-from').value = '';
-      document.getElementById('dir-to').value = '';
-    }
-
-    // Load map when ready
     window.onload = initMap;
   </script>
 </body>
