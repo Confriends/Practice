@@ -30,6 +30,8 @@
       width: 100vw;
       height: 80vh;
       z-index: 1;
+      /* Needed so we can detect touches specifically */
+      touch-action: auto !important;
     }
     #map {
       width: 100%;
@@ -44,6 +46,8 @@
       height: 80px;
       background-color: transparent;
       z-index: 10;
+      /* Prevent map events from bubbling into nav buttons */
+      touch-action: manipulation;
     }
     .highlight {
       border: 3px solid #00FF00;
@@ -81,7 +85,7 @@
 </div>
 
 <!-- Map container -->
-<div class="map-container">
+<div class="map-container" id="mapContainer">
   <div id="map"></div>
 </div>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY"></script>
@@ -190,14 +194,41 @@
     const currentLink = clickableAreas[currentIndex];
     currentLink.click();
   }
-  // Touch events (swipe logic)
+
+  // --- Modified touch events (swipe logic) ---
   let touchStartY = 0;
   let lastSwipeTime = 0;
   const DOUBLE_SWIPE_THRESHOLD = 500;
+
+  // Only attach swipe events to the document for navigation if NOT touching the map
+  // We'll attach swipe navigation listeners to the document, but ignore events that start on the map
+
+  let isTouchingMap = false;
+
+  // When touching the map, set flag and don't trigger navigation touch logic
+  document.getElementById('mapContainer').addEventListener('touchstart', function(e) {
+    isTouchingMap = true;
+    // Do not call preventDefault here, allow map to handle touch
+  }, { passive: true }); // Allow map to handle zoom/pan
+
+  document.getElementById('mapContainer').addEventListener('touchend', function(e) {
+    isTouchingMap = false;
+  }, { passive: true });
+
+  // Navigation touch logic (only when not touching map)
   document.addEventListener('touchstart', function(e) {
+    // If the touch is on the map container or a child, ignore the nav logic
+    if (e.target.closest('#mapContainer')) {
+      return;
+    }
     touchStartY = e.touches[0].clientY;
-  });
+  }, { passive: true });
+
   document.addEventListener('touchmove', function(e) {
+    if (isTouchingMap || e.target.closest('#mapContainer')) {
+      // Let the map handle panning/zooming
+      return;
+    }
     const touchEndY = e.touches[0].clientY;
     const screenHeight = window.innerHeight;
     if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
@@ -211,9 +242,12 @@
       }
       lastSwipeTime = currentTime;
     }
-  });
+  }, { passive: false });
+
   // Mouse wheel navigation
   window.addEventListener('wheel', function(event) {
+    // Ignore if the mouse is over the map
+    if (event.target.closest('#mapContainer')) return;
     event.preventDefault();
     if (event.deltaY > 0) {
       highlightNextArea();
@@ -221,6 +255,7 @@
       highlightPreviousArea();
     }
   }, { passive: false });
+
   // Keyboard navigation
   document.addEventListener('keydown', function(event) {
     if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
@@ -233,10 +268,15 @@
       activateSelectedArea();
     }
   });
-  // Double-tap logic
+
+  // Double-tap logic for nav (disable if tapping map)
   let lastTapTime = 0;
   const DOUBLE_TAP_THRESHOLD = 500;
   document.addEventListener('touchstart', function(e) {
+    if (e.target.closest('#mapContainer')) {
+      // Let map handle double-tap
+      return;
+    }
     e.preventDefault();
     const currentTime = new Date().getTime();
     const timeDifference = currentTime - lastTapTime;
@@ -246,7 +286,8 @@
       highlightNextArea();
     }
     lastTapTime = currentTime;
-  });
+  }, { passive: false });
+
   // Initial highlight
   window.onload = function() {
     initMap();
