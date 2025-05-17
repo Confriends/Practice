@@ -1,239 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 Calendar</title>
-    <style>
-body {
-    background-image: url('inv.png'); /* replace with your image path */
-    background-size: cover;
-    background-position: center top;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: black;
-    margin: 0;
-    height: 100vh;
-    overflow: hidden; /* Prevent page scrolling */
-}
-
-        .calendar-container {
-            overflow: hidden;
-            width: 100%;
-            height: 99%;
-            border: 2px solid lime;
-            position: fixed; /* Needed for navigation buttons positioning */
-        }
-
-        .calendar {
-            display: flex;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .month {
-            min-width: 99%;
-            box-sizing: border-box;
-            padding: 20px;
-            border-right: 2px solid lime;
-        }
-
-        .month:last-child {
-            border-right: 0px;
-            border-left: 0px;
-        }
-
-        .week-days {
-            display: flex;
-            width: 90%;
-            justify-content: space-between; /* Ensure even spacing between week days */
-            border-bottom: 2px solid lime;
-            padding-bottom: 5px;
-            margin-bottom: 5px;
-            margin-left: 20px; /* Add margin to the left */
-            margin-right: 20px; /* Add margin to the right */
-            color: lime; /* Changed text color to lime */
-        }
-
-        .week-day {
-            width: calc(100% / 7 - 10px); /* Ensures each day fits within the calendar with some margin */
-            text-align: center; /* Center align the text */
-        }
-
-        .days {
-            display: flex;
-            flex-wrap: wrap;
-            margin-left: 20px; /* Add margin to the left */
-            margin-right: 20px; /* Add margin to the right */
-        }
-
-        .day {
-            border: 1px solid lime;
-            padding: 5px;
-            margin: 2px;
-            width: calc(100% / 7 - 5px);; /* Ensures each day fits within the calendar with some margin */
-            box-sizing: border-box;
-            display: inline-block;
-            vertical-align: top;
-            position: relative;
-            height: 40px; /* Reduced height by 10% */
-            color: lime; /* Changed text color to lime */
-        }
-
-        .day-number {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            font-size: 12px;
-            color: lime; /* Changed text color to lime */
-        }
-
-        .day input {
-            background: transparent;
-            border: none;
-            color: yellow;
-            text-align: left;
-            width: 100%;
-            height: 100%;
-            padding-top: 20px; /* To avoid overlap with day number */
-            box-sizing: border-box;
-            resize: none;
-            overflow: hidden;
-        }
-
-        .day input:focus {
-            outline: none;
-            height: auto; /* Allow height to auto-expand when focused */
-        }
-
-        .nav-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: lime;
-            color: black;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        .prev-button {
-            left: 0px; /* Move closer to the left edge */
-        }
-
-        .next-button {
-            right: 0px; /* Move closer to the right edge */
-        }
-
-        /* New CSS rule for moving full months */
-        .full-month {
-            margin-left: 0px;
-            margin-right: 0px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map: Marker, Search, Directions</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: black;
+    }
+    body {
+      background-image: url('inv.png'); /* Your background */
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+    .controls {
+      position: absolute;
+      top: 21vh;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      background: rgba(0,0,0,0.7);
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1.5px solid lime;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      font-family: monospace;
+    }
+    .controls input, .controls button {
+      border: 1px solid #0f0;
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-size: 1em;
+      background: #222;
+      color: #0f0;
+      outline: none;
+      margin: 0 3px;
+    }
+    .controls button {
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .controls button:hover {
+      background: #003300;
+    }
+    .map-container {
+      position: absolute;
+      top: 20vh;
+      left: 0;
+      width: 100vw;
+      height: 80vh;
+      z-index: 1;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    @media (max-width: 800px) {
+      .controls {
+        flex-direction: column;
+        gap: 5px;
+        width: 90vw;
+      }
+    }
+  </style>
 </head>
 <body>
-        <div class="calendar-container">
-        <div class="calendar" id="calendar"></div>
-        <button class="nav-button prev-button">&#10094;</button>
-        <button class="nav-button next-button">&#10095;</button>
-    </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const calendar = document.getElementById("calendar");
-            const months = [
-                "January", "February", "March", "April", "May", "June", "July", "August","September", "October", "November", "December"
-            ];
-            const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  <div class="controls">
+    <input id="search-box" type="text" placeholder="Search for a place..." autocomplete="off">
+    <input id="dir-from" type="text" placeholder="Directions: From" autocomplete="off">
+    <input id="dir-to" type="text" placeholder="Directions: To" autocomplete="off">
+    <button id="dir-btn">Show Route</button>
+    <button id="clear-btn">Clear Route</button>
+  </div>
+  <div class="map-container">
+    <div id="map"></div>
+  </div>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY&libraries=places"></script>
+  <script>
+    // Custom map style array
+    const mapStyle = [
+      {"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},
+      {"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},
+      {"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"off"}]},
+      {"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#002b08"},{"lightness":"1"}]},
+      {"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#005919"},{"lightness":"0"},{"weight":1.2}]},
+      {"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#00ff3c"}]},
+      {"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#ff0000"}]},
+      {"featureType":"landscape","elementType":"labels.text.fill","stylers":[{"color":"#00ff1c"}]},
+      {"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"color":"#005a02"}]},
+      {"featureType":"landscape.natural","elementType":"geometry","stylers":[{"color":"#0c5116"}]},
+      {"featureType":"poi","elementType":"geometry","stylers":[{"color":"#007a12"},{"lightness":"-26"},{"saturation":"-27"}]},
+      {"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#00ff12"}]},
+      {"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#025201"}]},
+      {"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#006317"},{"lightness":"-8"},{"saturation":"-20"}]},
+      {"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#008d15"},{"lightness":17},{"weight":"1.75"}]},
+      {"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":"-4"},{"weight":"1.10"}]},
+      {"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"weight":"7.53"},{"color":"#000000"}]},
+      {"featureType":"road.highway","elementType":"labels.text.stroke","stylers":[{"color":"#03a100"},{"weight":"3.02"}]},
+      {"featureType":"road.arterial","elementType":"geometry","stylers":[{"lightness":18}]},
+      {"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#00ff1c"},{"weight":"1.64"}]},
+      {"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"weight":"2.70"},{"saturation":"32"},{"lightness":"-6"},{"visibility":"on"}]},
+      {"featureType":"road.arterial","elementType":"labels.text","stylers":[{"visibility":"on"},{"color":"#211010"}]},
+      {"featureType":"road.arterial","elementType":"labels.text.fill","stylers":[{"color":"#000000"}]},
+      {"featureType":"road.arterial","elementType":"labels.text.stroke","stylers":[{"color":"#007803"}]},
+      {"featureType":"road.local","elementType":"geometry","stylers":[{"lightness":16},{"visibility":"on"},{"color":"#000000"},{"weight":"0.65"}]},
+      {"featureType":"road.local","elementType":"labels","stylers":[{"visibility":"off"}]},
+      {"featureType":"transit","elementType":"geometry","stylers":[{"color":"#003503"},{"lightness":"1"}]},
+      {"featureType":"water","elementType":"geometry","stylers":[{"color":"#001f00"},{"lightness":"2"}]},
+      {"featureType":"water","elementType":"labels.text","stylers":[{"color":"#008909"}]}
+    ];
 
-            // Create months
-            months.forEach((month, index) => {
-                const monthDiv = document.createElement("div");
-                monthDiv.className = "month";
+    let map, marker, autocomplete, directionsService, directionsRenderer;
 
-                // Add the full-month class to the months with 31 days
-                if (["January", "March", "May", "July", "August", "October", "December"].includes(month)) {
-                    monthDiv.classList.add("full-month");
-                }
+    function initMap() {
+      // Empire State Building as example marker
+      const defaultLocation = { lat: 40.748817, lng: -73.985428 };
 
-                monthDiv.innerHTML = `<h2 style="color: lime;">${month}</h2>`; // Changed text color to lime
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: defaultLocation,
+        zoom: 13,
+        styles: mapStyle
+      });
 
-                // Add week days header
-                const weekDaysDiv = document.createElement("div");
-                weekDaysDiv.className = "week-days";
-                weekDays.forEach(day => {
-                    const weekDayDiv = document.createElement("div");
-                    weekDayDiv.className = "week-day";
-                    weekDayDiv.textContent = day;
-                    weekDaysDiv.appendChild(weekDayDiv);
-                });
-                monthDiv.appendChild(weekDaysDiv);
+      // Marker at Empire State Building
+      marker = new google.maps.Marker({
+        position: defaultLocation,
+        map: map,
+        title: "Empire State Building",
+        draggable: false
+      });
 
-                // Create days container
-                const daysDiv = document.createElement("div");
-                daysDiv.className = "days";
+      // Search Box
+      const input = document.getElementById('search-box');
+      autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.setFields(["geometry", "name"]);
+      autocomplete.bindTo("bounds", map);
 
-                // Get the first day of the month
-                const firstDay = new Date(2025, index, 1).getDay();
-                // Get the number of days in the month
-                const daysInMonth = new Date(2025, index + 1, 0).getDate();
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry) return;
+        map.panTo(place.geometry.location);
+        map.setZoom(15);
+        marker.setPosition(place.geometry.location);
+        marker.setTitle(place.name || "");
+      });
 
-                // Add blank days for the first week
-                for (let i = 0; i < firstDay; i++) {
-                    const blankDayDiv = document.createElement("div");
-                    blankDayDiv.className = "day";
-                    daysDiv.appendChild(blankDayDiv);
-                }
+      // Directions services
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer({
+        map: map,
+        suppressMarkers: false,
+        polylineOptions: { strokeColor: "#00ff1c", strokeWeight: 5 }
+      });
 
-                // Add days
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dayDiv = document.createElement("div");
-                    dayDiv.className = "day";
-                    const dayNumberDiv = document.createElement("div");
-                    dayNumberDiv.className = "day-number";
-                    dayNumberDiv.textContent = day;
+      document.getElementById('dir-btn').onclick = showRoute;
+      document.getElementById('clear-btn').onclick = clearRoute;
+    }
 
-                    const dayInput = document.createElement("input");
-                    dayInput.type = "text";
+    async function showRoute() {
+      const from = document.getElementById('dir-from').value;
+      const to = document.getElementById('dir-to').value;
+      if (!from || !to) {
+        alert("Please enter both start and end locations.");
+        return;
+      }
+      directionsService.route({
+        origin: from,
+        destination: to,
+        travelMode: 'DRIVING'
+      }, (result, status) => {
+        if (status === 'OK') {
+          directionsRenderer.setDirections(result);
+        } else {
+          alert("Could not find directions: " + status);
+        }
+      });
+    }
 
-                    // Load saved data
-                    const savedData = localStorage.getItem(`2025-${index + 1}-${day}`);
-                    if (savedData) {
-                        dayInput.value = savedData;
-                    }
+    function clearRoute() {
+      directionsRenderer.set('directions', null);
+      document.getElementById('dir-from').value = '';
+      document.getElementById('dir-to').value = '';
+    }
 
-                    // Save data on change
-                    dayInput.addEventListener("input", () => {
-                        localStorage.setItem(`2025-${index + 1}-${day}`, dayInput.value);
-                    });
-
-                    dayDiv.appendChild(dayNumberDiv);
-                    dayDiv.appendChild(dayInput);
-                    daysDiv.appendChild(dayDiv);
-                }
-
-                monthDiv.appendChild(daysDiv);
-                calendar.appendChild(monthDiv);
-            });
-
-            // Side scrolling functionality
-            let currentMonth = 0;
-            function updateMonth(direction) {
-                currentMonth = (currentMonth + direction + 12) % 12;
-                calendar.style.transform = `translateX(-${currentMonth * 99}%)`;
-            }
-
-            document.querySelector(".prev-button").addEventListener("click", () => updateMonth(-1));
-            document.querySelector(".next-button").addEventListener("click", () => updateMonth(1));
-
-            document.addEventListener("keydown", (e) => {
-                if (e.key === "ArrowRight") {
-                    updateMonth(1);
-                } else if (e.key === "ArrowLeft") {
-                    updateMonth(-1);
-                }
-            });
-        });
-    </script>
+    // Load map when ready
+    window.onload = initMap;
+  </script>
 </body>
 </html>
