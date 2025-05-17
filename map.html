@@ -40,8 +40,8 @@
     /* Navigation clickable area styles */
     .clickable-area {
       position: absolute;
-      width: 175px;
-      height: 75px;
+      width: 200px;
+      height: 50px;
       background-color: transparent;
       z-index: 10;
     }
@@ -184,6 +184,33 @@
       clickableAreas[currentIndex].classList.add('highlight');
       var audio = document.getElementById('clickSound');
       audio.play();
+    });
+  }
+  function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click();
+  }
+  // Touch events (swipe logic)
+  let touchStartY = 0;
+  let lastSwipeTime = 0;
+  const DOUBLE_SWIPE_THRESHOLD = 500;
+  document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY;
+  });
+  document.addEventListener('touchmove', function(e) {
+    const touchEndY = e.touches[0].clientY;
+    const screenHeight = window.innerHeight;
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+      highlightNextArea();
+    } else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+      const currentTime = Date.now();
+      if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+        highlightPreviousArea();
+      } else {
+        highlightPreviousArea();
+      }
+      lastSwipeTime = currentTime;
+    }
   });
   // Mouse wheel navigation
   window.addEventListener('wheel', function(event) {
