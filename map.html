@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Map with Background</title>
+  <title>Google Map with Background and Navigation</title>
   <style>
     html, body {
       margin: 0;
@@ -14,8 +14,7 @@
       background: black;
     }
     body {
-      /* Background image already set by you, just update the url if needed */
-      background-image: url('inv.png');
+      background-image: url('map.png');
       background-size: cover;
       background-position: center top;
       background-repeat: no-repeat;
@@ -31,9 +30,6 @@
       width: 100vw;
       height: 80vh;
       z-index: 1;
-      /* Optional: border or shadow if you want distinction from bg */
-      /* border: 2px solid lime; */
-      /* box-shadow: 0 0 10px #0f0; */
     }
     #map {
       width: 100%;
@@ -41,74 +37,235 @@
       border: none;
       box-sizing: border-box;
     }
+    /* Navigation clickable area styles */
+    .clickable-area {
+      position: absolute;
+      width: 200px;
+      height: 100px;
+      background-color: transparent;
+      z-index: 10;
+    }
+    a {
+      text-decoration: none;
+      color: #000;
+      padding: 10px;
+      display: block;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      cursor: pointer;
+      position: relative;
+      padding: 12px 8px 12px 40px;
+      background: #228B22;
+      font-size: 25px;
+      transition: background-color 0.3s, border 0.3s;
+    }
+    .highlight {
+      border: 3px solid #00FF00;
+      background-color: rgba(0, 255, 0, 0.3);
+    }
+    a:hover {
+      background-color: transparent;
+    }
+    /* Hide scrollbar for the body */
+    ::-webkit-scrollbar {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <div class="map-container">
-    <div id="map"></div>
-  </div>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY"></script>
-  <script>
-    // Custom map style array
-    const mapStyle = [
-      {"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},
-      {"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},
-      {"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"off"}]},
-      {"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#002b08"},{"lightness":"1"}]},
-      {"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#005919"},{"lightness":"0"},{"weight":1.2}]},
-      {"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#00ff3c"}]},
-      {"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#ff0000"}]},
-      {"featureType":"landscape","elementType":"labels.text.fill","stylers":[{"color":"#00ff1c"}]},
-      {"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"color":"#005a02"}]},
-      {"featureType":"landscape.natural","elementType":"geometry","stylers":[{"color":"#0c5116"}]},
-      {"featureType":"poi","elementType":"geometry","stylers":[{"color":"#007a12"},{"lightness":"-26"},{"saturation":"-27"}]},
-      {"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#00ff12"}]},
-      {"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#025201"}]},
-      {"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#006317"},{"lightness":"-8"},{"saturation":"-20"}]},
-      {"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#008d15"},{"lightness":17},{"weight":"1.75"}]},
-      {"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":"-4"},{"weight":"1.10"}]},
-      {"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"weight":"7.53"},{"color":"#000000"}]},
-      {"featureType":"road.highway","elementType":"labels.text.stroke","stylers":[{"color":"#03a100"},{"weight":"3.02"}]},
-      {"featureType":"road.arterial","elementType":"geometry","stylers":[{"lightness":18}]},
-      {"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#00ff1c"},{"weight":"1.64"}]},
-      {"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"weight":"2.70"},{"saturation":"32"},{"lightness":"-6"},{"visibility":"on"}]},
-      {"featureType":"road.arterial","elementType":"labels.text","stylers":[{"visibility":"on"},{"color":"#211010"}]},
-      {"featureType":"road.arterial","elementType":"labels.text.fill","stylers":[{"color":"#000000"}]},
-      {"featureType":"road.arterial","elementType":"labels.text.stroke","stylers":[{"color":"#007803"}]},
-      {"featureType":"road.local","elementType":"geometry","stylers":[{"lightness":16},{"visibility":"on"},{"color":"#000000"},{"weight":"0.65"}]},
-      {"featureType":"road.local","elementType":"labels","stylers":[{"visibility":"off"}]},
-      {"featureType":"transit","elementType":"geometry","stylers":[{"color":"#003503"},{"lightness":"1"}]},
-      {"featureType":"water","elementType":"geometry","stylers":[{"color":"#001f00"},{"lightness":"2"}]},
-      {"featureType":"water","elementType":"labels.text","stylers":[{"color":"#008909"}]}
-    ];
 
-    function initMap() {
-      const defaultCenter = { lat: 40.7128, lng: -74.0060 }; // New York fallback
-      const map = new google.maps.Map(document.getElementById('map'), {
-        center: defaultCenter,
-        zoom: 12,
-        styles: mapStyle
-      });
+<!-- Click sound -->
+<audio id="clickSound" src="click.wav"></audio>
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          position => {
-            const userPos = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            };
-            map.setCenter(userPos);
-            new google.maps.Marker({
-              position: userPos,
-              map,
-              title: "You are here!"
-            });
-          }
-        );
-      }
+<!-- Navigation clickable areas -->
+<div class="clickable-area" id="area1" style="top: 20px; left: 18%;">
+  <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area2" style="top: 20px; left: 31.5%;">
+  <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area3" style="top: 20px; left: 45%;">
+  <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area4" style="top: 20px; left: 58.5%;">
+  <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area5" style="top: 20px; right: 13.2%;">
+  <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<!-- Map container -->
+<div class="map-container">
+  <div id="map"></div>
+</div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY"></script>
+<script>
+  // Google Map custom style
+  const mapStyle = [
+    {"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},
+    {"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},
+    {"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"off"}]},
+    {"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#002b08"},{"lightness":"1"}]},
+    {"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#005919"},{"lightness":"0"},{"weight":1.2}]},
+    {"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#00ff3c"}]},
+    {"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#ff0000"}]},
+    {"featureType":"landscape","elementType":"labels.text.fill","stylers":[{"color":"#00ff1c"}]},
+    {"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"color":"#005a02"}]},
+    {"featureType":"landscape.natural","elementType":"geometry","stylers":[{"color":"#0c5116"}]},
+    {"featureType":"poi","elementType":"geometry","stylers":[{"color":"#007a12"},{"lightness":"-26"},{"saturation":"-27"}]},
+    {"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#00ff12"}]},
+    {"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#025201"}]},
+    {"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#006317"},{"lightness":"-8"},{"saturation":"-20"}]},
+    {"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#008d15"},{"lightness":17},{"weight":"1.75"}]},
+    {"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":"-4"},{"weight":"1.10"}]},
+    {"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"weight":"7.53"},{"color":"#000000"}]},
+    {"featureType":"road.highway","elementType":"labels.text.stroke","stylers":[{"color":"#03a100"},{"weight":"3.02"}]},
+    {"featureType":"road.arterial","elementType":"geometry","stylers":[{"lightness":18}]},
+    {"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#00ff1c"},{"weight":"1.64"}]},
+    {"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"weight":"2.70"},{"saturation":"32"},{"lightness":"-6"},{"visibility":"on"}]},
+    {"featureType":"road.arterial","elementType":"labels.text","stylers":[{"visibility":"on"},{"color":"#211010"}]},
+    {"featureType":"road.arterial","elementType":"labels.text.fill","stylers":[{"color":"#000000"}]},
+    {"featureType":"road.arterial","elementType":"labels.text.stroke","stylers":[{"color":"#007803"}]},
+    {"featureType":"road.local","elementType":"geometry","stylers":[{"lightness":16},{"visibility":"on"},{"color":"#000000"},{"weight":"0.65"}]},
+    {"featureType":"road.local","elementType":"labels","stylers":[{"visibility":"off"}]},
+    {"featureType":"transit","elementType":"geometry","stylers":[{"color":"#003503"},{"lightness":"1"}]},
+    {"featureType":"water","elementType":"geometry","stylers":[{"color":"#001f00"},{"lightness":"2"}]},
+    {"featureType":"water","elementType":"labels.text","stylers":[{"color":"#008909"}]}
+  ];
+  function initMap() {
+    const defaultCenter = { lat: 40.7128, lng: -74.0060 };
+    const map = new google.maps.Map(document.getElementById('map'), {
+      center: defaultCenter,
+      zoom: 12,
+      styles: mapStyle
+    });
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const userPos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          map.setCenter(userPos);
+          new google.maps.Marker({
+            position: userPos,
+            map,
+            title: "You are here!"
+          });
+        }
+      );
     }
+  }
+  window.onload = initMap;
 
-    window.onload = initMap;
-  </script>
+  // --- Navigation logic from your original code ---
+  // All clickable areas (the <a> tags for navigation)
+  const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="map.html"]'),
+    document.querySelector('a[href="radio.html"]'),
+  ];
+  let currentIndex = 0;
+  let debounceTimeout = null;
+  const DEBOUNCE_DELAY = 300;
+  function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+  }
+  function playSound(event) {
+    event.preventDefault();
+    var audio = document.getElementById('clickSound');
+    audio.play();
+    setTimeout(function() {
+      window.location.href = event.target.href;
+    }, 500);
+  }
+  function highlightNextArea() {
+    debounceAction(() => {
+      clickableAreas[currentIndex].classList.remove('highlight');
+      currentIndex = (currentIndex + 1) % clickableAreas.length;
+      clickableAreas[currentIndex].classList.add('highlight');
+      var audio = document.getElementById('clickSound');
+      audio.play();
+    });
+  }
+  function highlightPreviousArea() {
+    debounceAction(() => {
+      clickableAreas[currentIndex].classList.remove('highlight');
+      currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length;
+      clickableAreas[currentIndex].classList.add('highlight');
+      var audio = document.getElementById('clickSound');
+      audio.play();
+    });
+  }
+  function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click();
+  }
+  // Touch events (swipe logic)
+  let touchStartY = 0;
+  let lastSwipeTime = 0;
+  const DOUBLE_SWIPE_THRESHOLD = 500;
+  document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY;
+  });
+  document.addEventListener('touchmove', function(e) {
+    const touchEndY = e.touches[0].clientY;
+    const screenHeight = window.innerHeight;
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+      highlightNextArea();
+    } else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+      const currentTime = Date.now();
+      if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+        highlightPreviousArea();
+      } else {
+        highlightPreviousArea();
+      }
+      lastSwipeTime = currentTime;
+    }
+  });
+  // Mouse wheel navigation
+  window.addEventListener('wheel', function(event) {
+    event.preventDefault();
+    if (event.deltaY > 0) {
+      highlightNextArea();
+    } else {
+      highlightPreviousArea();
+    }
+  }, { passive: false });
+  // Keyboard navigation
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      highlightNextArea();
+    }
+    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      highlightPreviousArea();
+    }
+    else if (event.key === 'Enter') {
+      activateSelectedArea();
+    }
+  });
+  // Double-tap logic
+  let lastTapTime = 0;
+  const DOUBLE_TAP_THRESHOLD = 500;
+  document.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - lastTapTime;
+    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
+      activateSelectedArea();
+    } else {
+      highlightNextArea();
+    }
+    lastTapTime = currentTime;
+  });
+  // Initial highlight
+  window.onload = function() {
+    initMap();
+    clickableAreas[currentIndex].classList.add('highlight');
+  }
+</script>
 </body>
 </html>
