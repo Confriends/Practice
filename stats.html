@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pip-Boy</title>
   <style>
-    /* Fullscreen background image */
     body {
       background-image: url('fo4status2.jpg');
       background-size: cover;
@@ -20,7 +19,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      z-index: 20; /* Place content in front of the gif */
+      z-index: 20;
     }
     .status-bar {
       position: absolute;
@@ -67,20 +66,63 @@
       top: 30vh;
       left: 51%;
       transform: translateX(-50%);
-      z-index: 10; /* Lower than .container to ensure content is in front */
+      z-index: 10;
       width: auto;
       height: auto;
       pointer-events: none;
     }
-
     .vaultboy-gif {
       width: 200px;
       height: auto;
       display: block;
     }
+    /* --- Navigation Bar Styles --- */
+    .clickable-area {
+      position: absolute;
+      width: 200px;
+      height: 100px;
+      background-color: transparent;
+    }
+    .nav-link {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      position: relative;
+      transition: background-color 0.3s, border 0.2s;
+    }
+    .highlight {
+      border: 3px solid #00FF00 !important;
+      background-color: rgba(0,255,0,0.3) !important;
+      z-index: 1000;
+    }
+    /* --- End Navigation Bar Styles --- */
   </style>
 </head>
 <body>
+  <!-- NAV BAR START -->
+  <audio id="clickSound" src="click.wav"></audio>
+  <div class="clickable-area" id="area1" style="top: 20px; left: 18%;">
+    <a class="nav-link" href="stats.html" onclick="playSound(event)"></a>
+  </div>
+  <div class="clickable-area" id="area2" style="top: 20px; left: 31.5%;">
+    <a class="nav-link" href="inv.html" onclick="playSound(event)"></a>
+  </div>
+  <div class="clickable-area" id="area3" style="top: 20px; left: 45%;">
+    <a class="nav-link" href="index.html" onclick="playSound(event)"></a>
+  </div>
+  <div class="clickable-area" id="area4" style="top: 20px; left: 58.5%;">
+    <a class="nav-link" href="map.html" onclick="playSound(event)"></a>
+  </div>
+  <div class="clickable-area" id="area5" style="top: 20px; right: 15.2%;">
+    <a class="nav-link" href="radio.html" onclick="playSound(event)"></a>
+  </div>
+  <!-- NAV BAR END -->
+
   <div class="container">
     <!-- Status Bars with labels -->
     <div id="bar1" class="status-bar" onclick="changeProgress('bar1')">
@@ -108,21 +150,126 @@
       <div class="progress-bar" id="progress6"></div>
     </div>
   </div>
-  <!-- Add Confetti.js Library -->
+  <!-- Confetti.js Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-  <!-- Add Confetti Sound -->
   <audio id="confetti-sound" src="confetti.wav" preload="auto"></audio>
-  <!-- Add All Bars Filled Sound -->
   <audio id="all-bars-filled-sound" src="level up.wav" preload="auto"></audio>
   <script>
-    // ... (no changes to your JavaScript)
+    // --- Navigation Bar logic with highlight, keyboard, swipe, and sound ---
+    const clickableAreas = [
+      document.querySelector('a[href="stats.html"]'),
+      document.querySelector('a[href="inv.html"]'),
+      document.querySelector('a[href="index.html"]'),
+      document.querySelector('a[href="map.html"]'),
+      document.querySelector('a[href="radio.html"]')
+    ];
+    let currentIndex = 0;
+    let debounceTimeout = null;
+    const DEBOUNCE_DELAY = 300;
+
+    function debounceAction(callback) {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+    }
+
+    function playSound(event) {
+      event.preventDefault();
+      var audio = document.getElementById('clickSound');
+      audio.play();
+      setTimeout(function() {
+        window.location.href = event.target.href;
+      }, 500);
+    }
+
+    function highlightArea(index) {
+      clickableAreas.forEach((area, i) => {
+        if (i === index) {
+          area.classList.add('highlight');
+        } else {
+          area.classList.remove('highlight');
+        }
+      });
+    }
+
+    function highlightNextArea() {
+      debounceAction(() => {
+        currentIndex = (currentIndex + 1) % clickableAreas.length;
+        highlightArea(currentIndex);
+        document.getElementById('clickSound').play();
+      });
+    }
+
+    function highlightPreviousArea() {
+      debounceAction(() => {
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length;
+        highlightArea(currentIndex);
+        document.getElementById('clickSound').play();
+      });
+    }
+
+    function activateSelectedArea() {
+      clickableAreas[currentIndex].click();
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+        highlightNextArea();
+      } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+        highlightPreviousArea();
+      } else if (event.key === 'Enter') {
+        activateSelectedArea();
+      }
+    });
+
+    window.addEventListener('wheel', function(event) {
+      event.preventDefault();
+      if (event.deltaY > 0) {
+        highlightNextArea();
+      } else {
+        highlightPreviousArea();
+      }
+    }, { passive: false });
+
+    let touchStartY = 0;
+    let lastTapTime = 0;
+    const DOUBLE_TAP_THRESHOLD = 500;
+
+    document.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+        const currentTime = new Date().getTime();
+        if (currentTime - lastTapTime < DOUBLE_TAP_THRESHOLD) {
+          activateSelectedArea();
+        }
+        lastTapTime = currentTime;
+      }
+    }, {passive: false});
+
+    document.addEventListener('touchmove', function(e) {
+      if (e.touches.length === 1) {
+        const touchEndY = e.touches[0].clientY;
+        const screenHeight = window.innerHeight;
+        if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+          highlightNextArea();
+        } else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+          highlightPreviousArea();
+        }
+      }
+    }, {passive: false});
+
+    // Initial highlight
+    highlightArea(currentIndex);
+
+    // --- End Navigation Bar logic ---
+
+    // Progress bar logic (unchanged)
     const progressValues = [0, 33, 66, 100];
     function changeProgress(id) {
       const progressBar = document.getElementById('progress' + id.charAt(id.length - 1));
       let currentProgress = parseInt(progressBar.style.width.match(/(\d+)%/)?.[1]) || 0;
       let nextProgress = progressValues[(progressValues.indexOf(currentProgress) + 1) % progressValues.length];
       progressBar.style.width = nextProgress + '%';
-      saveProgress(id, nextProgress); // Save progress to localStorage
+      saveProgress(id, nextProgress);
       if (nextProgress === 100) {
         triggerConfetti('small');
       }
@@ -170,15 +317,6 @@
     }
     window.onload = loadProgress;
   </script>
-  <div class="clickable-area" style="position: absolute; top: 10px; left: 35%; width: 200px; height: 50px; background-color: transparent;">
-    <a href="index.html" style="display: block; width: 100%; height: 100%;"></a>
-  </div>
-  <div class="clickable-area" style="position: absolute; top: 10px; left: 20%; width: 200px; height: 50px; background-color: transparent;">
-    <a href="inv.html" style="display: block; width: 100%; height: 100%;"></a>
-  </div>
-  <div class="clickable-area" style="position: absolute; top: 20px; right: 15%; width: 200px; height: 100px; background-color: transparent;">
-    <a href="radio.html" style="display: block; width: 100%; height: 100%;"></a>
-  </div>
   <!-- Vault Boy GIF -->
   <div class="vaultboy-gif-container">
     <img src="vaultboy.gif" alt="Vault Boy" class="vaultboy-gif" />
