@@ -135,15 +135,6 @@
       background: #00FF00;
       color: #0c5116;
     }
-    .selected-marker {
-      animation: bounce-selected 0.5s;
-    }
-    @keyframes bounce-selected {
-      0% { transform: translateY(0);}
-      30% { transform: translateY(-20px);}
-      60% { transform: translateY(0);}
-      100% { transform: translateY(0);}
-    }
   </style>
 </head>
 <body>
@@ -186,9 +177,40 @@
   </div>
 </div>
 
+<!-- Google Maps script with Places library -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY&libraries=places"></script>
 <script>
-  const mapStyle = [/* ... your mapStyle ... */];
+  const mapStyle = [
+    {"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},
+    {"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},
+    {"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"off"}]},
+    {"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#002b08"},{"lightness":"1"}]},
+    {"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#005919"},{"lightness":"0"},{"weight":1.2}]},
+    {"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#00ff3c"}]},
+    {"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#ff0000"}]},
+    {"featureType":"landscape","elementType":"labels.text.fill","stylers":[{"color":"#00ff1c"}]},
+    {"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"color":"#005a02"}]},
+    {"featureType":"landscape.natural","elementType":"geometry","stylers":[{"color":"#0c5116"}]},
+    {"featureType":"poi","elementType":"geometry","stylers":[{"color":"#007a12"},{"lightness":"-26"},{"saturation":"-27"}]},
+    {"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#00ff12"}]},
+    {"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#025201"}]},
+    {"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#006317"},{"lightness":"-8"},{"saturation":"-20"}]},
+    {"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#008d15"},{"lightness":17},{"weight":"1.75"}]},
+    {"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":"-4"},{"weight":"1.10"}]},
+    {"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"weight":"7.53"},{"color":"#000000"}]},
+    {"featureType":"road.highway","elementType":"labels.text.stroke","stylers":[{"color":"#03a100"},{"weight":"3.02"}]},
+    {"featureType":"road.arterial","elementType":"geometry","stylers":[{"lightness":18}]},
+    {"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#00ff1c"},{"weight":"1.64"}]},
+    {"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"weight":"2.70"},{"saturation":"32"},{"lightness":"-6"},{"visibility":"on"}]},
+    {"featureType":"road.arterial","elementType":"labels.text","stylers":[{"visibility":"on"},{"color":"#211010"}]},
+    {"featureType":"road.arterial","elementType":"labels.text.fill","stylers":[{"color":"#000000"}]},
+    {"featureType":"road.arterial","elementType":"labels.text.stroke","stylers":[{"color":"#007803"}]},
+    {"featureType":"road.local","elementType":"geometry","stylers":[{"lightness":16},{"visibility":"on"},{"color":"#000000"},{"weight":"0.65"}]},
+    {"featureType":"road.local","elementType":"labels","stylers":[{"visibility":"off"}]},
+    {"featureType":"transit","elementType":"geometry","stylers":[{"color":"#003503"},{"lightness":"1"}]},
+    {"featureType":"water","elementType":"geometry","stylers":[{"color":"#001f00"},{"lightness":"2"}]},
+    {"featureType":"water","elementType":"labels.text","stylers":[{"color":"#008909"}]}
+  ];
 
   let map;
   let addingMarker = false;
@@ -201,10 +223,7 @@
   let routeMarkers = [];
   let markerToRemove = null;
 
-  // --- For route selection ---
-  let routeEndpoints = [];
-
-  // --- Modal logic (unchanged) ---
+  // --- Modal logic for removal ---
   function showRemoveModal(markerObj) {
     markerToRemove = markerObj;
     document.getElementById('removeModalText').innerHTML =
@@ -231,85 +250,23 @@
       }))
     ));
   }
+
   function loadQuestMarkers() {
     const saved = localStorage.getItem('questMarkers');
     if (!saved) return [];
-    try { return JSON.parse(saved); } catch { return []; }
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return [];
+    }
   }
+
   function removeQuestMarker(markerObj) {
     markerObj.marker.setMap(null);
     questMarkers = questMarkers.filter(obj => obj !== markerObj);
     saveQuestMarkers();
-    // Remove from route endpoints if selected
-    routeEndpoints = routeEndpoints.filter(e => e !== markerObj.marker);
-    updateRoute();
   }
 
-  // --- Route plotting and selection ---
-  function clearRouteMarkers() {
-    routeMarkers.forEach(m => m.setMap(null));
-    routeMarkers = [];
-  }
-  function plotRoute(origin, destination) {
-    if (!directionsService || !directionsRenderer) return;
-    directionsService.route({
-      origin: origin,
-      destination: destination,
-      travelMode: 'DRIVING'
-    }, function(response, status) {
-      if (status === 'OK') {
-        directionsRenderer.setDirections(response);
-        clearRouteMarkers();
-        const leg = response.routes[0].legs[0];
-        // Green A/B markers
-        const markerA = new google.maps.Marker({
-          position: leg.start_location,
-          map: map,
-          title: "Start",
-          icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
-        });
-        const markerB = new google.maps.Marker({
-          position: leg.end_location,
-          map: map,
-          title: "Destination",
-          icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
-        });
-        routeMarkers.push(markerA, markerB);
-      } else {
-        directionsRenderer.set('directions', null);
-        clearRouteMarkers();
-      }
-    });
-  }
-  function updateRoute() {
-    if (routeEndpoints.length === 2) {
-      plotRoute(routeEndpoints[0].getPosition(), routeEndpoints[1].getPosition());
-    } else {
-      directionsRenderer.set('directions', null);
-      clearRouteMarkers();
-    }
-    // Animate selected markers
-    questMarkers.forEach(obj => obj.marker.setAnimation(null));
-    if (searchMarker) searchMarker.setAnimation(null);
-    routeEndpoints.forEach(m => {
-      m.setAnimation(google.maps.Animation.BOUNCE);
-      setTimeout(() => m.setAnimation(null), 500);
-    });
-  }
-  function toggleRouteMarker(marker) {
-    const idx = routeEndpoints.indexOf(marker);
-    if (idx !== -1) {
-      routeEndpoints.splice(idx, 1);
-    } else if (routeEndpoints.length < 2) {
-      routeEndpoints.push(marker);
-    } else {
-      // Swap if already 2
-      routeEndpoints = [routeEndpoints[1], marker];
-    }
-    updateRoute();
-  }
-
-  // --- Quest marker creation with route selection and removal ---
   function addQuestMarker(pos, label, save = true) {
     const marker = new google.maps.Marker({
       position: pos,
@@ -328,16 +285,14 @@
                   <b>${label}</b>
                 </div>`
     });
-    marker.addListener('click', () => {
-      infoWindow.open(map, marker);
-      toggleRouteMarker(marker);
-    });
+    marker.addListener('click', () => infoWindow.open(map, marker));
 
-    // Remove marker logic: right-click or long-press
+    // Remove marker logic: right-click (desktop) or long-press (mobile)
     const markerObj = {marker, label};
     marker.addListener('rightclick', function(e) {
       showRemoveModal(markerObj);
     });
+    // Press-and-hold for mobile
     let longPressTimeout = null;
     marker.addListener('mousedown', function(e) {
       if ('ontouchstart' in window) {
@@ -360,7 +315,14 @@
 
     questMarkers.push(markerObj);
     if (save) saveQuestMarkers();
+
+    // Plot route from user location to marker
+    if (userCurrentPos) {
+      plotRoute(userCurrentPos, pos);
+      setTimeout(() => { map.setCenter(userCurrentPos); }, 1500);
+    }
   }
+
   function restoreQuestMarkers() {
     questMarkers.forEach(obj => obj.marker.setMap(null));
     questMarkers = [];
@@ -370,7 +332,47 @@
     });
   }
 
-  // --- Search/Autocomplete with route selection ---
+  // --- Route plotting logic ---
+  function clearRouteMarkers() {
+    routeMarkers.forEach(m => m.setMap(null));
+    routeMarkers = [];
+  }
+
+  function plotRoute(origin, destination) {
+    if (!directionsService || !directionsRenderer) return;
+    directionsService.route({
+      origin: origin,
+      destination: destination,
+      travelMode: 'DRIVING'
+    }, function(response, status) {
+      if (status === 'OK') {
+        directionsRenderer.setDirections(response);
+
+        // Remove previous route markers
+        clearRouteMarkers();
+
+        // Add green markers for origin and destination
+        const leg = response.routes[0].legs[0];
+        const markerA = new google.maps.Marker({
+          position: leg.start_location,
+          map: map,
+          title: "Start",
+          icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
+        });
+        const markerB = new google.maps.Marker({
+          position: leg.end_location,
+          map: map,
+          title: "Destination",
+          icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
+        });
+        routeMarkers.push(markerA, markerB);
+      } else {
+        directionsRenderer.set('directions', null);
+        clearRouteMarkers();
+      }
+    });
+  }
+
   function initAutocomplete() {
     const input = document.getElementById('pac-input');
     const autocomplete = new google.maps.places.Autocomplete(input);
@@ -382,8 +384,9 @@
         alert("No details available for input: '" + place.name + "'");
         return;
       }
-      if (searchMarker) searchMarker.setMap(null);
-
+      if (searchMarker) {
+        searchMarker.setMap(null);
+      }
       searchMarker = new google.maps.Marker({
         map: map,
         position: place.geometry.location,
@@ -397,21 +400,23 @@
         },
         title: place.name
       });
+
       map.setCenter(place.geometry.location);
       map.setZoom(15);
 
       const infoWindow = new google.maps.InfoWindow({
         content: `<div style="color:#00ff12;font-family:monospace;"><b>${place.name}</b></div>`
       });
-      searchMarker.addListener('click', () => {
-        infoWindow.open(map, searchMarker);
-        toggleRouteMarker(searchMarker);
-      });
+      searchMarker.addListener('click', () => infoWindow.open(map, searchMarker));
       infoWindow.open(map, searchMarker);
+
+      if (userCurrentPos) {
+        plotRoute(userCurrentPos, place.geometry.location);
+        setTimeout(() => { map.setCenter(userCurrentPos); }, 2000);
+      }
     });
   }
 
-  // --- Main Map Init ---
   function initMap() {
     const defaultCenter = { lat: 40.7128, lng: -74.0060 };
     map = new google.maps.Map(document.getElementById('map'), {
@@ -451,6 +456,7 @@
         }
       );
     }
+
     restoreQuestMarkers();
 
     map.addListener('click', function(event) {
@@ -463,6 +469,7 @@
         map.setOptions({draggableCursor: null});
       }
     });
+
     initAutocomplete();
   }
 
