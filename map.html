@@ -5,7 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Map with Background and Navigation</title>
   <style>
-    /* ... All your previous styles, unchanged ... */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      background: black;
+    }
+    body {
+      background-image: url('inv.png');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+    .map-container {
+      position: absolute;
+      top: 20vh;
+      left: 0;
+      width: 100vw;
+      height: 80vh;
+      z-index: 1;
+      touch-action: auto !important;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+      border: none;
+      box-sizing: border-box;
+    }
+    .clickable-area {
+      position: absolute;
+      width: 190px;
+      height: 80px;
+      background-color: transparent;
+      z-index: 10;
+      touch-action: manipulation;
+    }
+    .highlight {
+      border: 3px solid #00FF00;
+      background-color: rgba(0, 255, 0, 0.3);
+    }
+    a:hover {
+      background-color: transparent;
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    #addQuestBtn {
+      position: fixed;
+      top: 70vh;
+      right: 2vw;
+      z-index: 1000;
+      font-size: 1.1em;
+      background: #0c5116;
+      color: #00FF00;
+      border: 2px solid #00FF00;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-family: monospace;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #000;
+      transition: background 0.2s, color 0.2s;
+    }
+    #addQuestBtn:hover {
+      background: #00FF00;
+      color: #0c5116;
+    }
+    #pac-input {
+      position:fixed;
+      top:70vh;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:1001;
+      width:300px;
+      padding:6px 12px;
+      border-radius:4px;
+      border:2px solid #00FF00;
+      font-family:monospace;
+      background:#111;
+      color:#00FF00;
+      font-size:1em;
+      outline: none;
+    }
+    #pac-input:focus {
+      border-color: #00FF99;
+      background: #181;
+      color: #B4FFB4;
+    }
     /* Modal overlay for marker removal */
     #removeModal {
       display: none;
@@ -56,7 +147,36 @@
   </style>
 </head>
 <body>
-<!-- ... existing HTML ... -->
+
+<audio id="clickSound" src="click.wav"></audio>
+
+<!-- Search input -->
+<input id="pac-input" class="controls" type="text" placeholder="Search for a place or address">
+
+<!-- Add Quest Location button -->
+<button id="addQuestBtn" title="Add a quest location to the map">+ Add Quest Location</button>
+
+<!-- Navigation clickable areas -->
+<div class="clickable-area" id="area1" style="top: 20px; left: 18%;">
+  <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area2" style="top: 20px; left: 31.5%;">
+  <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area3" style="top: 20px; left: 45%;">
+  <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area4" style="top: 20px; left: 58.5%;">
+  <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area5" style="top: 20px; right: 10.2%;">
+  <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="map-container" id="mapContainer">
+  <div id="map"></div>
+</div>
+
 <!-- Modal for marker removal -->
 <div id="removeModal">
   <div class="modal-content">
@@ -65,9 +185,10 @@
     <button id="removeModalNo">Cancel</button>
   </div>
 </div>
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY&libraries=places"></script>
 <script>
-  const mapStyle = [/* ... your same mapStyle ... */];
+  const mapStyle = [/* ... your mapStyle ... */];
 
   let map;
   let addingMarker = false;
@@ -102,7 +223,6 @@
   };
   document.getElementById('removeModalNo').onclick = hideRemoveModal;
 
-  // --- Persistence (unchanged) ---
   function saveQuestMarkers() {
     localStorage.setItem('questMarkers', JSON.stringify(
       questMarkers.map(markerObj => ({
@@ -354,7 +474,136 @@
   });
 
   // --- Navigation logic with top 20% restriction ---
-  // ... [All your navigation code, unchanged] ...
+  const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="map.html"]'),
+    document.querySelector('a[href="radio.html"]'),
+  ];
+  let currentIndex = 0;
+  let debounceTimeout = null;
+  const DEBOUNCE_DELAY = 300;
+  function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+  }
+  function playSound(event) {
+    event.preventDefault();
+    var audio = document.getElementById('clickSound');
+    audio.play();
+    setTimeout(function() {
+      window.location.href = event.target.href;
+    }, 500);
+  }
+  function highlightNextArea() {
+    debounceAction(() => {
+      clickableAreas[currentIndex].classList.remove('highlight');
+      currentIndex = (currentIndex + 1) % clickableAreas.length;
+      clickableAreas[currentIndex].classList.add('highlight');
+      var audio = document.getElementById('clickSound');
+      audio.play();
+    });
+  }
+  function highlightPreviousArea() {
+    debounceAction(() => {
+      clickableAreas[currentIndex].classList.remove('highlight');
+      currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length;
+      clickableAreas[currentIndex].classList.add('highlight');
+      var audio = document.getElementById('clickSound');
+      audio.play();
+    });
+  }
+  function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click();
+  }
+  let touchStartY = 0;
+  let lastSwipeTime = 0;
+  const DOUBLE_SWIPE_THRESHOLD = 500;
+  let isTouchingMap = false;
+  document.getElementById('mapContainer').addEventListener('touchstart', function(e) {
+    isTouchingMap = true;
+  }, { passive: true });
+  document.getElementById('mapContainer').addEventListener('touchend', function(e) {
+    isTouchingMap = false;
+  }, { passive: true });
+
+  function isInTop20Percent(y) {
+    return y < window.innerHeight * 0.2;
+  }
+
+  document.addEventListener('touchstart', function(e) {
+    if (e.target.closest('#mapContainer')) {
+      return;
+    }
+    const y = e.touches[0].clientY;
+    if (!isInTop20Percent(y)) return;
+    touchStartY = y;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (isTouchingMap || e.target.closest('#mapContainer')) {
+      return;
+    }
+    const y = e.touches[0].clientY;
+    if (!isInTop20Percent(y)) return;
+    const touchEndY = y;
+    const screenHeight = window.innerHeight;
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+      highlightNextArea();
+    } else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+      const currentTime = Date.now();
+      if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+        highlightPreviousArea();
+      } else {
+        highlightPreviousArea();
+      }
+      lastSwipeTime = currentTime;
+    }
+  }, { passive: false });
+
+  window.addEventListener('wheel', function(event) {
+    if (event.target.closest('#mapContainer')) return;
+    event.preventDefault();
+    if (event.clientY !== undefined && !isInTop20Percent(event.clientY)) return;
+    if (event.deltaY > 0) {
+      highlightNextArea();
+    } else {
+      highlightPreviousArea();
+    }
+  }, { passive: false });
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      highlightNextArea();
+    }
+    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      highlightPreviousArea();
+    }
+    else if (event.key === 'Enter') {
+      activateSelectedArea();
+    }
+  });
+
+  let lastTapTime = 0;
+  const DOUBLE_TAP_THRESHOLD = 500;
+  document.addEventListener('touchstart', function(e) {
+    if (e.target.closest('#mapContainer')) {
+      return;
+    }
+    const y = e.touches[0].clientY;
+    if (!isInTop20Percent(y)) return;
+    e.preventDefault();
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - lastTapTime;
+    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
+      activateSelectedArea();
+    } else {
+      highlightNextArea();
+    }
+    lastTapTime = currentTime;
+  }, { passive: false });
 
   window.onload = function() {
     initMap();
