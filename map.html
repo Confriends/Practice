@@ -5,7 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Map with Background and Navigation</title>
   <style>
-    /* ... [existing CSS] ... */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      background: black;
+    }
+    body {
+      background-image: url('inv.png');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+    .map-container {
+      position: absolute;
+      top: 20vh;
+      left: 0;
+      width: 100vw;
+      height: 80vh;
+      z-index: 1;
+      touch-action: auto !important;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+      border: none;
+      box-sizing: border-box;
+    }
+    .clickable-area {
+      position: absolute;
+      width: 190px;
+      height: 80px;
+      background-color: transparent;
+      z-index: 10;
+      touch-action: manipulation;
+    }
+    .highlight {
+      border: 3px solid #00FF00;
+      background-color: rgba(0, 255, 0, 0.3);
+    }
+    a:hover {
+      background-color: transparent;
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    #addQuestBtn {
+      position: fixed;
+      top: 70vh;
+      right: 2vw;
+      z-index: 1000;
+      font-size: 1.1em;
+      background: #0c5116;
+      color: #00FF00;
+      border: 2px solid #00FF00;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-family: monospace;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #000;
+      transition: background 0.2s, color 0.2s;
+    }
+    #addQuestBtn:hover {
+      background: #00FF00;
+      color: #0c5116;
+    }
+    #pac-input {
+      position:fixed;
+      top:70vh;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:1001;
+      width:300px;
+      padding:6px 12px;
+      border-radius:4px;
+      border:2px solid #00FF00;
+      font-family:monospace;
+      background:#111;
+      color:#00FF00;
+      font-size:1em;
+      outline: none;
+    }
+    #pac-input:focus {
+      border-color: #00FF99;
+      background: #181;
+      color: #B4FFB4;
+    }
     /* Modal overlay for marker removal */
     #removeModal {
       display: none;
@@ -47,7 +138,35 @@
   </style>
 </head>
 <body>
-<!-- ... [existing HTML before map div] ... -->
+
+<audio id="clickSound" src="click.wav"></audio>
+
+<!-- Search input -->
+<input id="pac-input" class="controls" type="text" placeholder="Search for a place or address">
+
+<!-- Add Quest Location button -->
+<button id="addQuestBtn" title="Add a quest location to the map">+ Add Quest Location</button>
+
+<!-- Navigation clickable areas -->
+<div class="clickable-area" id="area1" style="top: 20px; left: 18%;">
+  <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area2" style="top: 20px; left: 31.5%;">
+  <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area3" style="top: 20px; left: 45%;">
+  <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area4" style="top: 20px; left: 58.5%;">
+  <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area5" style="top: 20px; right: 10.2%;">
+  <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<div class="map-container" id="mapContainer">
+  <div id="map"></div>
+</div>
 
 <!-- Modal for marker removal -->
 <div id="removeModal">
@@ -58,10 +177,41 @@
   </div>
 </div>
 
-<!-- ... [existing HTML after map div] ... -->
+<!-- Google Maps script with Places library -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY&libraries=places"></script>
 <script>
-  // ... [existing JS variables] ...
+  const mapStyle = [
+    {"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},
+    {"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},
+    {"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"off"}]},
+    {"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#002b08"},{"lightness":"1"}]},
+    {"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#005919"},{"lightness":"0"},{"weight":1.2}]},
+    {"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#00ff3c"}]},
+    {"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#ff0000"}]},
+    {"featureType":"landscape","elementType":"labels.text.fill","stylers":[{"color":"#00ff1c"}]},
+    {"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"color":"#005a02"}]},
+    {"featureType":"landscape.natural","elementType":"geometry","stylers":[{"color":"#0c5116"}]},
+    {"featureType":"poi","elementType":"geometry","stylers":[{"color":"#007a12"},{"lightness":"-26"},{"saturation":"-27"}]},
+    {"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#00ff12"}]},
+    {"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#025201"}]},
+    {"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#006317"},{"lightness":"-8"},{"saturation":"-20"}]},
+    {"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#008d15"},{"lightness":17},{"weight":"1.75"}]},
+    {"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":"-4"},{"weight":"1.10"}]},
+    {"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"weight":"7.53"},{"color":"#000000"}]},
+    {"featureType":"road.highway","elementType":"labels.text.stroke","stylers":[{"color":"#03a100"},{"weight":"3.02"}]},
+    {"featureType":"road.arterial","elementType":"geometry","stylers":[{"lightness":18}]},
+    {"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#00ff1c"},{"weight":"1.64"}]},
+    {"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"weight":"2.70"},{"saturation":"32"},{"lightness":"-6"},{"visibility":"on"}]},
+    {"featureType":"road.arterial","elementType":"labels.text","stylers":[{"visibility":"on"},{"color":"#211010"}]},
+    {"featureType":"road.arterial","elementType":"labels.text.fill","stylers":[{"color":"#000000"}]},
+    {"featureType":"road.arterial","elementType":"labels.text.stroke","stylers":[{"color":"#007803"}]},
+    {"featureType":"road.local","elementType":"geometry","stylers":[{"lightness":16},{"visibility":"on"},{"color":"#000000"},{"weight":"0.65"}]},
+    {"featureType":"road.local","elementType":"labels","stylers":[{"visibility":"off"}]},
+    {"featureType":"transit","elementType":"geometry","stylers":[{"color":"#003503"},{"lightness":"1"}]},
+    {"featureType":"water","elementType":"geometry","stylers":[{"color":"#001f00"},{"lightness":"2"}]},
+    {"featureType":"water","elementType":"labels.text","stylers":[{"color":"#008909"}]}
+  ];
+
   let map;
   let addingMarker = false;
   let questMarkers = [];
@@ -92,7 +242,6 @@
   };
   document.getElementById('removeModalNo').onclick = hideRemoveModal;
 
-  // --- Marker Persistence Logic ---
   function saveQuestMarkers() {
     localStorage.setItem('questMarkers', JSON.stringify(
       questMarkers.map(markerObj => ({
@@ -113,9 +262,7 @@
   }
 
   function removeQuestMarker(markerObj) {
-    // Remove from map
     markerObj.marker.setMap(null);
-    // Remove from array
     questMarkers = questMarkers.filter(obj => obj !== markerObj);
     saveQuestMarkers();
   }
@@ -140,10 +287,30 @@
     });
     marker.addListener('click', () => infoWindow.open(map, marker));
 
-    // Add right-click (contextmenu) to remove
+    // Remove marker logic: right-click (desktop) or long-press (mobile)
     const markerObj = {marker, label};
     marker.addListener('rightclick', function(e) {
       showRemoveModal(markerObj);
+    });
+    // Press-and-hold for mobile
+    let longPressTimeout = null;
+    marker.addListener('mousedown', function(e) {
+      if ('ontouchstart' in window) {
+        longPressTimeout = setTimeout(() => {
+          showRemoveModal(markerObj);
+        }, 700);
+      }
+    });
+    marker.addListener('mouseup', function(e) {
+      if (longPressTimeout) clearTimeout(longPressTimeout);
+    });
+    marker.addListener('touchstart', function(e) {
+      longPressTimeout = setTimeout(() => {
+        showRemoveModal(markerObj);
+      }, 700);
+    });
+    marker.addListener('touchend', function(e) {
+      if (longPressTimeout) clearTimeout(longPressTimeout);
     });
 
     questMarkers.push(markerObj);
@@ -165,7 +332,290 @@
     });
   }
 
-  // ... [keep the rest of your JS unchanged, except as needed for marker removal above] ...
+  // --- Route plotting logic ---
+  function clearRouteMarkers() {
+    routeMarkers.forEach(m => m.setMap(null));
+    routeMarkers = [];
+  }
+
+  function plotRoute(origin, destination) {
+    if (!directionsService || !directionsRenderer) return;
+    directionsService.route({
+      origin: origin,
+      destination: destination,
+      travelMode: 'DRIVING'
+    }, function(response, status) {
+      if (status === 'OK') {
+        directionsRenderer.setDirections(response);
+
+        // Remove previous route markers
+        clearRouteMarkers();
+
+        // Add green markers for origin and destination
+        const leg = response.routes[0].legs[0];
+        const markerA = new google.maps.Marker({
+          position: leg.start_location,
+          map: map,
+          title: "Start",
+          icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
+        });
+        const markerB = new google.maps.Marker({
+          position: leg.end_location,
+          map: map,
+          title: "Destination",
+          icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
+        });
+        routeMarkers.push(markerA, markerB);
+      } else {
+        directionsRenderer.set('directions', null);
+        clearRouteMarkers();
+      }
+    });
+  }
+
+  function initAutocomplete() {
+    const input = document.getElementById('pac-input');
+    const autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.bindTo("bounds", map);
+
+    autocomplete.addListener("place_changed", function () {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) {
+        alert("No details available for input: '" + place.name + "'");
+        return;
+      }
+      if (searchMarker) {
+        searchMarker.setMap(null);
+      }
+      searchMarker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 7,
+          fillColor: '#00FF00',
+          fillOpacity: 0.9,
+          strokeColor: '#00FF00',
+          strokeWeight: 2
+        },
+        title: place.name
+      });
+
+      map.setCenter(place.geometry.location);
+      map.setZoom(15);
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: `<div style="color:#00ff12;font-family:monospace;"><b>${place.name}</b></div>`
+      });
+      searchMarker.addListener('click', () => infoWindow.open(map, searchMarker));
+      infoWindow.open(map, searchMarker);
+
+      if (userCurrentPos) {
+        plotRoute(userCurrentPos, place.geometry.location);
+        setTimeout(() => { map.setCenter(userCurrentPos); }, 2000);
+      }
+    });
+  }
+
+  function initMap() {
+    const defaultCenter = { lat: 40.7128, lng: -74.0060 };
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: defaultCenter,
+      zoom: 12,
+      styles: mapStyle,
+      mapTypeControl: false,
+      mapTypeId: 'roadmap'
+    });
+
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer({
+      suppressMarkers: true,
+      polylineOptions: {
+        strokeColor: "#00FF00",
+        strokeWeight: 6,
+        strokeOpacity: 0.7
+      }
+    });
+    directionsRenderer.setMap(map);
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const userPos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          userCurrentPos = userPos;
+          map.setCenter(userPos);
+          userMarker = new google.maps.Marker({
+            position: userPos,
+            map,
+            title: "You are here!",
+            icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
+          });
+        }
+      );
+    }
+
+    restoreQuestMarkers();
+
+    map.addListener('click', function(event) {
+      if (addingMarker) {
+        const label = prompt("Name this quest location:");
+        if (label && label.trim().length > 0) {
+          addQuestMarker(event.latLng, label.trim());
+        }
+        addingMarker = false;
+        map.setOptions({draggableCursor: null});
+      }
+    });
+
+    initAutocomplete();
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addQuestBtn').addEventListener('click', function() {
+      addingMarker = true;
+      map.setOptions({draggableCursor: 'crosshair'});
+    });
+  });
+
+  // --- Navigation logic with top 20% restriction ---
+  const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="map.html"]'),
+    document.querySelector('a[href="radio.html"]'),
+  ];
+  let currentIndex = 0;
+  let debounceTimeout = null;
+  const DEBOUNCE_DELAY = 300;
+  function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+  }
+  function playSound(event) {
+    event.preventDefault();
+    var audio = document.getElementById('clickSound');
+    audio.play();
+    setTimeout(function() {
+      window.location.href = event.target.href;
+    }, 500);
+  }
+  function highlightNextArea() {
+    debounceAction(() => {
+      clickableAreas[currentIndex].classList.remove('highlight');
+      currentIndex = (currentIndex + 1) % clickableAreas.length;
+      clickableAreas[currentIndex].classList.add('highlight');
+      var audio = document.getElementById('clickSound');
+      audio.play();
+    });
+  }
+  function highlightPreviousArea() {
+    debounceAction(() => {
+      clickableAreas[currentIndex].classList.remove('highlight');
+      currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length;
+      clickableAreas[currentIndex].classList.add('highlight');
+      var audio = document.getElementById('clickSound');
+      audio.play();
+    });
+  }
+  function activateSelectedArea() {
+    const currentLink = clickableAreas[currentIndex];
+    currentLink.click();
+  }
+  let touchStartY = 0;
+  let lastSwipeTime = 0;
+  const DOUBLE_SWIPE_THRESHOLD = 500;
+  let isTouchingMap = false;
+  document.getElementById('mapContainer').addEventListener('touchstart', function(e) {
+    isTouchingMap = true;
+  }, { passive: true });
+  document.getElementById('mapContainer').addEventListener('touchend', function(e) {
+    isTouchingMap = false;
+  }, { passive: true });
+
+  function isInTop20Percent(y) {
+    return y < window.innerHeight * 0.2;
+  }
+
+  document.addEventListener('touchstart', function(e) {
+    if (e.target.closest('#mapContainer')) {
+      return;
+    }
+    const y = e.touches[0].clientY;
+    if (!isInTop20Percent(y)) return;
+    touchStartY = y;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (isTouchingMap || e.target.closest('#mapContainer')) {
+      return;
+    }
+    const y = e.touches[0].clientY;
+    if (!isInTop20Percent(y)) return;
+    const touchEndY = y;
+    const screenHeight = window.innerHeight;
+    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+      highlightNextArea();
+    } else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+      const currentTime = Date.now();
+      if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
+        highlightPreviousArea();
+      } else {
+        highlightPreviousArea();
+      }
+      lastSwipeTime = currentTime;
+    }
+  }, { passive: false });
+
+  window.addEventListener('wheel', function(event) {
+    if (event.target.closest('#mapContainer')) return;
+    event.preventDefault();
+    if (event.clientY !== undefined && !isInTop20Percent(event.clientY)) return;
+    if (event.deltaY > 0) {
+      highlightNextArea();
+    } else {
+      highlightPreviousArea();
+    }
+  }, { passive: false });
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      highlightNextArea();
+    }
+    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      highlightPreviousArea();
+    }
+    else if (event.key === 'Enter') {
+      activateSelectedArea();
+    }
+  });
+
+  let lastTapTime = 0;
+  const DOUBLE_TAP_THRESHOLD = 500;
+  document.addEventListener('touchstart', function(e) {
+    if (e.target.closest('#mapContainer')) {
+      return;
+    }
+    const y = e.touches[0].clientY;
+    if (!isInTop20Percent(y)) return;
+    e.preventDefault();
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - lastTapTime;
+    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
+      activateSelectedArea();
+    } else {
+      highlightNextArea();
+    }
+    lastTapTime = currentTime;
+  }, { passive: false });
+
+  window.onload = function() {
+    initMap();
+    clickableAreas[currentIndex].classList.add('highlight');
+  }
 </script>
 </body>
 </html>
