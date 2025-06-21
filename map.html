@@ -30,7 +30,6 @@
       width: 100vw;
       height: 80vh;
       z-index: 1;
-      /* Needed so we can detect touches specifically */
       touch-action: auto !important;
     }
     #map {
@@ -39,14 +38,12 @@
       border: none;
       box-sizing: border-box;
     }
-    /* Navigation clickable area styles */
     .clickable-area {
       position: absolute;
       width: 190px;
       height: 80px;
       background-color: transparent;
       z-index: 10;
-      /* Prevent map events from bubbling into nav buttons */
       touch-action: manipulation;
     }
     .highlight {
@@ -56,16 +53,61 @@
     a:hover {
       background-color: transparent;
     }
-    /* Hide scrollbar for the body */
     ::-webkit-scrollbar {
       display: none;
+    }
+    #addQuestBtn {
+      position: fixed;
+      top: 12vh;
+      right: 2vw;
+      z-index: 1000;
+      font-size: 1.1em;
+      background: #0c5116;
+      color: #00FF00;
+      border: 2px solid #00FF00;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-family: monospace;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #000;
+      transition: background 0.2s, color 0.2s;
+    }
+    #addQuestBtn:hover {
+      background: #00FF00;
+      color: #0c5116;
+    }
+    #pac-input {
+      position:fixed;
+      top:6vh;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:1001;
+      width:300px;
+      padding:6px 12px;
+      border-radius:4px;
+      border:2px solid #00FF00;
+      font-family:monospace;
+      background:#111;
+      color:#00FF00;
+      font-size:1em;
+      outline: none;
+    }
+    #pac-input:focus {
+      border-color: #00FF99;
+      background: #181;
+      color: #B4FFB4;
     }
   </style>
 </head>
 <body>
 
-<!-- Click sound -->
 <audio id="clickSound" src="click.wav"></audio>
+
+<!-- Search input -->
+<input id="pac-input" class="controls" type="text" placeholder="Search for a place or address">
+
+<!-- Add Quest Location button -->
+<button id="addQuestBtn" title="Add a quest location to the map">+ Add Quest Location</button>
 
 <!-- Navigation clickable areas -->
 <div class="clickable-area" id="area1" style="top: 20px; left: 18%;">
@@ -84,11 +126,11 @@
   <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
 </div>
 
-<!-- Map container -->
 <div class="map-container" id="mapContainer">
   <div id="map"></div>
 </div>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY"></script>
+<!-- Google Maps script with Places library -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY&libraries=places"></script>
 <script>
   // Google Map custom style
   const mapStyle = [
@@ -122,13 +164,119 @@
     {"featureType":"water","elementType":"geometry","stylers":[{"color":"#001f00"},{"lightness":"2"}]},
     {"featureType":"water","elementType":"labels.text","stylers":[{"color":"#008909"}]}
   ];
+
+  // --- Marker Persistence Logic ---
+  let map;
+  let addingMarker = false;
+  let questMarkers = [];
+  let searchMarker = null;
+
+  function saveQuestMarkers() {
+    localStorage.setItem('questMarkers', JSON.stringify(
+      questMarkers.map(markerObj => ({
+        position: markerObj.marker.getPosition().toJSON(),
+        label: markerObj.label
+      }))
+    ));
+  }
+
+  function loadQuestMarkers() {
+    const saved = localStorage.getItem('questMarkers');
+    if (!saved) return [];
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return [];
+    }
+  }
+
+  function addQuestMarker(pos, label, save = true) {
+    const marker = new google.maps.Marker({
+      position: pos,
+      map: map,
+      icon: {
+        path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+        scale: 5,
+        strokeColor: '#00FF00',
+        fillColor: '#00FF00',
+        fillOpacity: 0.8
+      },
+      title: label
+    });
+    const infoWindow = new google.maps.InfoWindow({
+      content: `<div style="color:#00ff12;font-family:monospace;">
+                  <b>${label}</b>
+                </div>`
+    });
+    marker.addListener('click', () => infoWindow.open(map, marker));
+    questMarkers.push({marker, label});
+    if (save) saveQuestMarkers();
+  }
+
+  function restoreQuestMarkers() {
+    questMarkers.forEach(obj => obj.marker.setMap(null));
+    questMarkers = [];
+    const data = loadQuestMarkers();
+    data.forEach(({position, label}) => {
+      addQuestMarker(position, label, false);
+    });
+  }
+
+  // --- Search/Autocomplete Logic ---
+  function initAutocomplete() {
+    const input = document.getElementById('pac-input');
+    const autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.bindTo("bounds", map);
+
+    autocomplete.addListener("place_changed", function () {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) {
+        alert("No details available for input: '" + place.name + "'");
+        return;
+      }
+
+      // Remove the previous search marker if it exists
+      if (searchMarker) {
+        searchMarker.setMap(null);
+      }
+
+      // Place marker at the searched location
+      searchMarker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 7,
+          fillColor: '#00FF00',
+          fillOpacity: 0.9,
+          strokeColor: '#00FF00',
+          strokeWeight: 2
+        },
+        title: place.name
+      });
+
+      map.setCenter(place.geometry.location);
+      map.setZoom(15);
+
+      // Optionally show info window
+      const infoWindow = new google.maps.InfoWindow({
+        content: `<div style="color:#00ff12;font-family:monospace;"><b>${place.name}</b></div>`
+      });
+      searchMarker.addListener('click', () => infoWindow.open(map, searchMarker));
+      infoWindow.open(map, searchMarker);
+    });
+  }
+
+  // --- Main Map Init ---
   function initMap() {
     const defaultCenter = { lat: 40.7128, lng: -74.0060 };
-    const map = new google.maps.Map(document.getElementById('map'), {
+    map = new google.maps.Map(document.getElementById('map'), {
       center: defaultCenter,
       zoom: 12,
       styles: mapStyle
     });
+
+    // Place user marker if available
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         position => {
@@ -145,11 +293,35 @@
         }
       );
     }
+
+    // Restore saved quest markers
+    restoreQuestMarkers();
+
+    // Add marker on map click if in "adding" mode
+    map.addListener('click', function(event) {
+      if (addingMarker) {
+        const label = prompt("Name this quest location:");
+        if (label && label.trim().length > 0) {
+          addQuestMarker(event.latLng, label.trim());
+        }
+        addingMarker = false;
+        map.setOptions({draggableCursor: null});
+      }
+    });
+
+    // Initialize autocomplete
+    initAutocomplete();
   }
-  window.onload = initMap;
+
+  // --- Add Quest Button logic ---
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addQuestBtn').addEventListener('click', function() {
+      addingMarker = true;
+      map.setOptions({draggableCursor: 'crosshair'});
+    });
+  });
 
   // --- Navigation logic from your original code ---
-  // All clickable areas (the <a> tags for navigation)
   const clickableAreas = [
     document.querySelector('a[href="stats.html"]'),
     document.querySelector('a[href="inv.html"]'),
@@ -194,39 +366,24 @@
     const currentLink = clickableAreas[currentIndex];
     currentLink.click();
   }
-
-  // --- Modified touch events (swipe logic) ---
   let touchStartY = 0;
   let lastSwipeTime = 0;
   const DOUBLE_SWIPE_THRESHOLD = 500;
-
-  // Only attach swipe events to the document for navigation if NOT touching the map
-  // We'll attach swipe navigation listeners to the document, but ignore events that start on the map
-
   let isTouchingMap = false;
-
-  // When touching the map, set flag and don't trigger navigation touch logic
   document.getElementById('mapContainer').addEventListener('touchstart', function(e) {
     isTouchingMap = true;
-    // Do not call preventDefault here, allow map to handle touch
-  }, { passive: true }); // Allow map to handle zoom/pan
-
+  }, { passive: true });
   document.getElementById('mapContainer').addEventListener('touchend', function(e) {
     isTouchingMap = false;
   }, { passive: true });
-
-  // Navigation touch logic (only when not touching map)
   document.addEventListener('touchstart', function(e) {
-    // If the touch is on the map container or a child, ignore the nav logic
     if (e.target.closest('#mapContainer')) {
       return;
     }
     touchStartY = e.touches[0].clientY;
   }, { passive: true });
-
   document.addEventListener('touchmove', function(e) {
     if (isTouchingMap || e.target.closest('#mapContainer')) {
-      // Let the map handle panning/zooming
       return;
     }
     const touchEndY = e.touches[0].clientY;
@@ -243,10 +400,7 @@
       lastSwipeTime = currentTime;
     }
   }, { passive: false });
-
-  // Mouse wheel navigation
   window.addEventListener('wheel', function(event) {
-    // Ignore if the mouse is over the map
     if (event.target.closest('#mapContainer')) return;
     event.preventDefault();
     if (event.deltaY > 0) {
@@ -255,8 +409,6 @@
       highlightPreviousArea();
     }
   }, { passive: false });
-
-  // Keyboard navigation
   document.addEventListener('keydown', function(event) {
     if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
       highlightNextArea();
@@ -268,13 +420,10 @@
       activateSelectedArea();
     }
   });
-
-  // Double-tap logic for nav (disable if tapping map)
   let lastTapTime = 0;
   const DOUBLE_TAP_THRESHOLD = 500;
   document.addEventListener('touchstart', function(e) {
     if (e.target.closest('#mapContainer')) {
-      // Let map handle double-tap
       return;
     }
     e.preventDefault();
@@ -287,8 +436,7 @@
     }
     lastTapTime = currentTime;
   }, { passive: false });
-
-  // Initial highlight
+  // Initial highlight and map
   window.onload = function() {
     initMap();
     clickableAreas[currentIndex].classList.add('highlight');
