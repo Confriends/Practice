@@ -1,7 +1,190 @@
-<!-- ... (your head and body up to the script tag remain unchanged) ... -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Map with Background and Navigation</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      background: black;
+    }
+    body {
+      background-image: url('inv.png');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+    .map-container {
+      position: absolute;
+      top: 20vh;
+      left: 0;
+      width: 100vw;
+      height: 80vh;
+      z-index: 1;
+      touch-action: auto !important;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+      border: none;
+      box-sizing: border-box;
+    }
+    .clickable-area {
+      position: absolute;
+      width: 190px;
+      height: 80px;
+      background-color: transparent;
+      z-index: 10;
+      touch-action: manipulation;
+    }
+    .highlight {
+      border: 3px solid #00FF00;
+      background-color: rgba(0, 255, 0, 0.3);
+    }
+    a:hover {
+      background-color: transparent;
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    #addQuestBtn {
+      position: fixed;
+      top: 70vh;
+      right: 2vw;
+      z-index: 1000;
+      font-size: 1.1em;
+      background: #0c5116;
+      color: #00FF00;
+      border: 2px solid #00FF00;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-family: monospace;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #000;
+      transition: background 0.2s, color 0.2s;
+    }
+    #addQuestBtn:hover {
+      background: #00FF00;
+      color: #0c5116;
+    }
+    #pac-input {
+      position:fixed;
+      top:70vh;
+      left:30%;
+      transform:translateX(-50%);
+      z-index:1001;
+      width:300px;
+      padding:6px 12px;
+      border-radius:4px;
+      border:2px solid #00FF00;
+      font-family:monospace;
+      background:#111;
+      color:#00FF00;
+      font-size:1em;
+      outline: none;
+    }
+    #pac-input:focus {
+      border-color: #00FF99;
+      background: #181;
+      color: #B4FFB4;
+    }
+    /* Modal overlay for marker removal */
+    #removeModal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85);
+      align-items: center;
+      justify-content: center;
+    }
+    #removeModal .modal-content {
+      background: #101c10;
+      border: 2px solid #00FF00;
+      border-radius: 10px;
+      color: #00FF00;
+      font-family: monospace;
+      padding: 32px 36px 22px 36px;
+      text-align: center;
+      box-shadow: 0 0 16px #00ff1c80;
+      min-width: 260px;
+    }
+    #removeModal button {
+      background: #0c5116;
+      color: #00FF00;
+      border: 1.5px solid #00FF00;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 1em;
+      padding: 5px 18px;
+      margin: 0 12px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    #removeModal button:hover {
+      background: #00FF00;
+      color: #0c5116;
+    }
+  </style>
+</head>
+<body>
+
+<audio id="clickSound" src="click.wav"></audio>
+
+<!-- Search input -->
+<input id="pac-input" class="controls" type="text" placeholder="Search for a place or address">
+
+<!-- Add Quest Location button -->
+<button id="addQuestBtn" title="Add a quest location to the map">+ Add Quest Location</button>
+
+<!-- Navigation clickable areas -->
+<div class="clickable-area" id="area1" style="top: 20px; left: 18%;">
+  <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"></a>
+</div>
+<div class="clickable-area" id="area2" style="top: 20px; left: 31.5%;">
+  <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"></a>
+</div>
+<div class="clickable-area" id="area3" style="top: 20px; left: 45%;">
+  <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"></a>
+</div>
+<div class="clickable-area" id="area4" style="top: 20px; left: 58.5%;">
+  <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"></a>
+</div>
+<div class="clickable-area" id="area5" style="top: 20px; right: 10.2%;">
+  <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;"></a>
+</div>
+
+<div class="map-container" id="mapContainer">
+  <div id="map"></div>
+</div>
+
+<!-- Modal for marker removal -->
+<div id="removeModal">
+  <div class="modal-content">
+    <div id="removeModalText" style="margin-bottom:22px;"></div>
+    <button id="removeModalYes">Remove</button>
+    <button id="removeModalNo">Cancel</button>
+  </div>
+</div>
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsz_nf-Ithx6y4mVZ3PxUR26WEMaYrQiY&libraries=places"></script>
 <script>
-  // ... (all your previous JS code remains unchanged up to here) ...
+  // ... your mapStyle, map, marker, and map logic code here (unchanged) ...
+
+  // --- Modal logic for removal ---
+  // ... unchanged ...
+
+  // --- All your other map/marker/route logic here (unchanged) ...
 
   document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('addQuestBtn').addEventListener('click', function() {
@@ -11,9 +194,7 @@
 
     // --- Direct tap/click on navigation opens link instantly after sound ---
     document.querySelectorAll('.clickable-area a').forEach(link => {
-      // Remove any previous click handler
       link.onclick = null;
-      // Click (mouse or finger tap)
       link.addEventListener('click', function(event) {
         event.preventDefault();
         var audio = document.getElementById('clickSound');
@@ -23,7 +204,6 @@
           window.location.href = link.href;
         }, 200);
       }, { passive: false });
-      // Touchstart for instant mobile response
       link.addEventListener('touchstart', function(event) {
         event.preventDefault();
         var audio = document.getElementById('clickSound');
@@ -37,8 +217,6 @@
   });
 
   // --- Navigation logic with top 20% restriction ---
-  // (Your existing highlight/swipe/keyboard nav code remains unchanged below)
-
   const clickableAreas = [
     document.querySelector('a[href="stats.html"]'),
     document.querySelector('a[href="inv.html"]'),
