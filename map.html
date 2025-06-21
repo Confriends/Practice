@@ -58,7 +58,7 @@
     }
     #addQuestBtn {
       position: fixed;
-      top: 60vh;
+      top: 12vh;
       right: 2vw;
       z-index: 1000;
       font-size: 1.1em;
@@ -78,8 +78,8 @@
     }
     #pac-input {
       position:fixed;
-      top:60vh;
-      left:20%;
+      top:6vh;
+      left:50%;
       transform:translateX(-50%);
       z-index:1001;
       width:300px;
@@ -321,7 +321,7 @@
     });
   });
 
-  // --- Navigation logic from your original code ---
+  // --- Navigation logic with top 20% restriction ---
   const clickableAreas = [
     document.querySelector('a[href="stats.html"]'),
     document.querySelector('a[href="inv.html"]'),
@@ -376,17 +376,28 @@
   document.getElementById('mapContainer').addEventListener('touchend', function(e) {
     isTouchingMap = false;
   }, { passive: true });
+
+  // Restrict navigation logic to top 20% of the screen
+  function isInTop20Percent(y) {
+    return y < window.innerHeight * 0.2;
+  }
+
   document.addEventListener('touchstart', function(e) {
     if (e.target.closest('#mapContainer')) {
       return;
     }
-    touchStartY = e.touches[0].clientY;
+    const y = e.touches[0].clientY;
+    if (!isInTop20Percent(y)) return;
+    touchStartY = y;
   }, { passive: true });
+
   document.addEventListener('touchmove', function(e) {
     if (isTouchingMap || e.target.closest('#mapContainer')) {
       return;
     }
-    const touchEndY = e.touches[0].clientY;
+    const y = e.touches[0].clientY;
+    if (!isInTop20Percent(y)) return;
+    const touchEndY = y;
     const screenHeight = window.innerHeight;
     if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
       highlightNextArea();
@@ -400,15 +411,18 @@
       lastSwipeTime = currentTime;
     }
   }, { passive: false });
+
   window.addEventListener('wheel', function(event) {
     if (event.target.closest('#mapContainer')) return;
     event.preventDefault();
+    if (event.clientY !== undefined && !isInTop20Percent(event.clientY)) return;
     if (event.deltaY > 0) {
       highlightNextArea();
     } else {
       highlightPreviousArea();
     }
   }, { passive: false });
+
   document.addEventListener('keydown', function(event) {
     if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
       highlightNextArea();
@@ -420,12 +434,15 @@
       activateSelectedArea();
     }
   });
+
   let lastTapTime = 0;
   const DOUBLE_TAP_THRESHOLD = 500;
   document.addEventListener('touchstart', function(e) {
     if (e.target.closest('#mapContainer')) {
       return;
     }
+    const y = e.touches[0].clientY;
+    if (!isInTop20Percent(y)) return;
     e.preventDefault();
     const currentTime = new Date().getTime();
     const timeDifference = currentTime - lastTapTime;
@@ -436,6 +453,7 @@
     }
     lastTapTime = currentTime;
   }, { passive: false });
+
   // Initial highlight and map
   window.onload = function() {
     initMap();
