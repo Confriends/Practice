@@ -1,150 +1,338 @@
-<!-- ... -->
-<style>
-  /* --- Navigation Bar Styles --- */
-  .clickable-area {
-    position: absolute;
-    width: 80px;     /* MATCH OTHER PAGE */
-    height: 40px;    /* MATCH OTHER PAGE */
-    background-color: transparent;
-  }
-  .nav-link {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
-    text-decoration: none;
-    cursor: pointer;
-    border: 1px solid transparent;
-    border-radius: 5px;
-    position: relative;
-    transition: background-color 0.3s, border 0.2s;
-  }
-  .highlight {
-    border: 2px solid #0f0 !important;  /* MATCH OTHER PAGE */
-    background-color: rgba(0,255,0,0.2) !important;
-    z-index: 1000;
-  }
-  /* --- End Navigation Bar Styles --- */
-</style>
-<!-- ... -->
-<audio id="clickSound" src="click.wav" preload="auto"></audio>
-<!-- ... -->
-<script>
-  // --- Navigation Bar logic with highlight, keyboard, swipe, and sound ---
-  const clickableAreas = [
-    document.querySelector('a[href="stats.html"]'),
-    document.querySelector('a[href="inv.html"]'),
-    document.querySelector('a[href="index.html"]'),
-    document.querySelector('a[href="map.html"]'),
-    document.querySelector('a[href="radio.html"]')
-  ];
-  let currentIndex = 0;
-  let debounceTimeout = null;
-  const DEBOUNCE_DELAY = 200;
-
-  function playClickSound() {
-    const audio = document.getElementById('clickSound');
-    audio.currentTime = 0;
-    audio.play();
-  }
-
-  function debounceAction(callback) {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
-  }
-
-  function playSoundAndNavigate(event) {
-    event.preventDefault();
-    playClickSound();
-    setTimeout(function() {
-      window.location.href = event.target.href;
-    }, 150); // shorter delay for snappier UX
-  }
-
-  function highlightArea(index) {
-    clickableAreas.forEach((area, i) => {
-      if (i === index) {
-        area.classList.add('highlight');
-      } else {
-        area.classList.remove('highlight');
-      }
-    });
-  }
-
-  function highlightNextArea() {
-    debounceAction(() => {
-      currentIndex = (currentIndex + 1) % clickableAreas.length;
-      highlightArea(currentIndex);
-      playClickSound();
-    });
-  }
-
-  function highlightPreviousArea() {
-    debounceAction(() => {
-      currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length;
-      highlightArea(currentIndex);
-      playClickSound();
-    });
-  }
-
-  function activateSelectedArea() {
-    playClickSound();
-    setTimeout(() => {
-      clickableAreas[currentIndex].click();
-    }, 150);
-  }
-
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-      highlightNextArea();
-    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-      highlightPreviousArea();
-    } else if (event.key === 'Enter') {
-      activateSelectedArea();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pip-Boy</title>
+  <style>
+    body {
+      background-image: url('fo4status2.jpg');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-color: black;
+      margin: 0;
+      height: 100vh;
     }
-  });
-
-  window.addEventListener('wheel', function(event) {
-    event.preventDefault();
-    if (event.deltaY > 0) {
-      highlightNextArea();
-    } else {
-      highlightPreviousArea();
+    .container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 20;
     }
-  }, { passive: false });
+    .status-bar {
+      position: absolute;
+      width: 12vw;
+      height: 2vh;
+      background-color: #333;
+      transition: background 0.3s ease;
+      cursor: pointer;
+      border: 2px solid #4CAF50;
+    }
+    .status-bar label {
+      color: lime;
+      font-size: 1.2vw;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      position: absolute;
+      width: 100%;
+      top: -25px;
+      font-weight: bold;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: lime;
+      width: 0%;
+    }
+    #bar1 { top: 26vh; left: 33vw; transform: translateX(100%); }
+    #bar2 { top: 40vh; left: 36vw; transform: translateX(-50%); }
+    #bar3 { top: 54vh; left: 36vw; transform: translateX(-50%); }
+    #bar4 { top: 69vh; left: 66.8vw; transform: translateX(-300%); }
+    #bar5 { top: 40vh; left: 66vw; transform: translateX(-50%); }
+    #bar6 { top: 54vh; left: 66vw; transform: translateX(-50%); }
+    @media (max-width: 768px) {
+      .status-bar { width: 20vw; height: 4vh; }
+      .status-bar label { font-size: 2vw; }
+      #bar1 { top: 20vh; }
+      #bar2 { top: 45vh; }
+      #bar3 { top: 50vh; }
+      #bar4 { top: 65vh; }
+      #bar5 { top: 55vh; }
+      #bar6 { top: 60vh; }
+    }
+    .vaultboy-gif-container {
+      position: fixed;
+      top: 30vh;
+      left: 51%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: auto;
+      height: auto;
+      pointer-events: none;
+    }
+    .vaultboy-gif {
+      width: 200px;
+      height: auto;
+      display: block;
+    }
+    /* --- Navigation Bar Styles --- */
+    .clickable-area {
+      position: absolute;
+      width: 80px;    /* Reduced size to match typical nav */
+      height: 40px;
+      background-color: transparent;
+    }
+    .nav-link {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      position: relative;
+      transition: background-color 0.3s, border 0.2s;
+    }
+    .highlight {
+      border: 2px solid #0f0 !important;
+      background-color: rgba(0,255,0,0.2) !important;
+      z-index: 1000;
+    }
+    /* --- End Navigation Bar Styles --- */
+  </style>
+</head>
+<body>
+  <!-- NAV BAR START -->
+  <audio id="clickSound" src="click.wav" preload="auto"></audio>
+  <div class="clickable-area" id="area1" style="top: 20px; left: 18%;">
+    <a class="nav-link" href="stats.html"></a>
+  </div>
+  <div class="clickable-area" id="area2" style="top: 20px; left: 31.5%;">
+    <a class="nav-link" href="inv.html"></a>
+  </div>
+  <div class="clickable-area" id="area3" style="top: 20px; left: 45%;">
+    <a class="nav-link" href="index.html"></a>
+  </div>
+  <div class="clickable-area" id="area4" style="top: 20px; left: 58.5%;">
+    <a class="nav-link" href="map.html"></a>
+  </div>
+  <div class="clickable-area" id="area5" style="top: 20px; right: 15.2%;">
+    <a class="nav-link" href="radio.html"></a>
+  </div>
+  <!-- NAV BAR END -->
 
-  let touchStartY = 0;
-  let lastTapTime = 0;
-  const DOUBLE_TAP_THRESHOLD = 500;
+  <div class="container">
+    <!-- Status Bars with labels -->
+    <div id="bar1" class="status-bar" onclick="changeProgress('bar1')">
+      <label>WATER</label>
+      <div class="progress-bar" id="progress1"></div>
+    </div>
+    <div id="bar2" class="status-bar" onclick="changeProgress('bar2')">
+      <label>FOOD</label>
+      <div class="progress-bar" id="progress2"></div>
+    </div>
+    <div id="bar3" class="status-bar" onclick="changeProgress('bar3')">
+      <label>SELFCARE</label>
+      <div class="progress-bar" id="progress3"></div>
+    </div>
+    <div id="bar4" class="status-bar" onclick="changeProgress('bar4')">
+      <label>STEPS</label>
+      <div class="progress-bar" id="progress4"></div>
+    </div>
+    <div id="bar5" class="status-bar" onclick="changeProgress('bar5')">
+      <label>ADMIN</label>
+      <div class="progress-bar" id="progress5"></div>
+    </div>
+    <div id="bar6" class="status-bar" onclick="changeProgress('bar6')">
+      <label>CHORES</label>
+      <div class="progress-bar" id="progress6"></div>
+    </div>
+  </div>
+  <!-- Confetti.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <audio id="confetti-sound" src="confetti.wav" preload="auto"></audio>
+  <audio id="all-bars-filled-sound" src="level up.wav" preload="auto"></audio>
+  <script>
+    // --- Navigation Bar logic with highlight, keyboard, swipe, and sound ---
+    const clickableAreas = [
+      document.querySelector('a[href="stats.html"]'),
+      document.querySelector('a[href="inv.html"]'),
+      document.querySelector('a[href="index.html"]'),
+      document.querySelector('a[href="map.html"]'),
+      document.querySelector('a[href="radio.html"]')
+    ];
+    let currentIndex = 0;
+    let debounceTimeout = null;
+    const DEBOUNCE_DELAY = 200;
 
-  document.addEventListener('touchstart', function(e) {
-    if (e.touches.length === 1) {
-      touchStartY = e.touches[0].clientY;
-      const currentTime = new Date().getTime();
-      if (currentTime - lastTapTime < DOUBLE_TAP_THRESHOLD) {
+    function playClickSound() {
+      const audio = document.getElementById('clickSound');
+      audio.currentTime = 0;
+      audio.play();
+    }
+
+    function debounceAction(callback) {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+    }
+
+    function playSoundAndNavigate(event) {
+      event.preventDefault();
+      playClickSound();
+      setTimeout(function() {
+        window.location.href = event.target.href;
+      }, 150);
+    }
+
+    function highlightArea(index) {
+      clickableAreas.forEach((area, i) => {
+        if (i === index) {
+          area.classList.add('highlight');
+        } else {
+          area.classList.remove('highlight');
+        }
+      });
+    }
+
+    function highlightNextArea() {
+      debounceAction(() => {
+        currentIndex = (currentIndex + 1) % clickableAreas.length;
+        highlightArea(currentIndex);
+        playClickSound();
+      });
+    }
+
+    function highlightPreviousArea() {
+      debounceAction(() => {
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length;
+        highlightArea(currentIndex);
+        playClickSound();
+      });
+    }
+
+    function activateSelectedArea() {
+      playClickSound();
+      setTimeout(() => {
+        clickableAreas[currentIndex].click();
+      }, 150);
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+        highlightNextArea();
+      } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+        highlightPreviousArea();
+      } else if (event.key === 'Enter') {
         activateSelectedArea();
       }
-      lastTapTime = currentTime;
-    }
-  }, {passive: false});
+    });
 
-  document.addEventListener('touchmove', function(e) {
-    if (e.touches.length === 1) {
-      const touchEndY = e.touches[0].clientY;
-      const screenHeight = window.innerHeight;
-      if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+    window.addEventListener('wheel', function(event) {
+      event.preventDefault();
+      if (event.deltaY > 0) {
         highlightNextArea();
-      } else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+      } else {
         highlightPreviousArea();
       }
+    }, { passive: false });
+
+    let touchStartY = 0;
+    let lastTapTime = 0;
+    const DOUBLE_TAP_THRESHOLD = 500;
+
+    document.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+        const currentTime = new Date().getTime();
+        if (currentTime - lastTapTime < DOUBLE_TAP_THRESHOLD) {
+          activateSelectedArea();
+        }
+        lastTapTime = currentTime;
+      }
+    }, {passive: false});
+
+    document.addEventListener('touchmove', function(e) {
+      if (e.touches.length === 1) {
+        const touchEndY = e.touches[0].clientY;
+        const screenHeight = window.innerHeight;
+        if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+          highlightNextArea();
+        } else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+          highlightPreviousArea();
+        }
+      }
+    }, {passive: false});
+
+    // Initial highlight
+    highlightArea(currentIndex);
+
+    // Assign playSoundAndNavigate to nav links
+    clickableAreas.forEach(area => {
+      area.onclick = playSoundAndNavigate;
+    });
+
+    // --- End Navigation Bar logic ---
+
+    // Progress bar logic (unchanged)
+    const progressValues = [0, 33, 66, 100];
+    function changeProgress(id) {
+      const progressBar = document.getElementById('progress' + id.charAt(id.length - 1));
+      let currentProgress = parseInt(progressBar.style.width.match(/(\d+)%/)?.[1]) || 0;
+      let nextProgress = progressValues[(progressValues.indexOf(currentProgress) + 1) % progressValues.length];
+      progressBar.style.width = nextProgress + '%';
+      saveProgress(id, nextProgress);
+      if (nextProgress === 100) {
+        triggerConfetti('small');
+      }
+      if (allBarsFilled()) {
+        triggerConfetti('large');
+        playAllBarsFilledSound();
+      }
     }
-  }, {passive: false});
-
-  // Initial highlight
-  highlightArea(currentIndex);
-
-  // Assign playSoundAndNavigate to nav links
-  clickableAreas.forEach(area => {
-    area.onclick = playSoundAndNavigate;
-  });
-</script>
+    function saveProgress(id, percentage) {
+      localStorage.setItem(id, percentage);
+    }
+    function loadProgress() {
+      const statusBars = document.querySelectorAll('.status-bar');
+      statusBars.forEach(statusBar => {
+        const id = statusBar.id;
+        const savedProgress = localStorage.getItem(id);
+        if (savedProgress !== null) {
+          const progressElement = statusBar.querySelector('.progress-bar');
+          progressElement.style.width = savedProgress + '%';
+        }
+      });
+    }
+    function allBarsFilled() {
+      const progressBars = document.querySelectorAll('.progress-bar');
+      return Array.from(progressBars).every(bar => bar.style.width === '100%');
+    }
+    function triggerConfetti(type) {
+      document.getElementById('confetti-sound').play();
+      if (type === 'small') {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { x: Math.random(), y: Math.random() }
+        });
+      } else if (type === 'large') {
+        confetti({
+          particleCount: 500,
+          spread: 180,
+          origin: { x: 0.5, y: 0.5 }
+        });
+      }
+    }
+    function playAllBarsFilledSound() {
+      document.getElementById('all-bars-filled-sound').play();
+    }
+    window.onload = loadProgress;
+  </script>
+  <!-- Vault Boy GIF -->
+  <div class="vaultboy-gif-container">
+    <img src="vaultboy.gif" alt="Vault Boy" class="vaultboy-gif" />
+  </div>
+</body>
+</html>
