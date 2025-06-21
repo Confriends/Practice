@@ -29,6 +29,15 @@
         background-color: transparent;
         text-decoration: none;
         cursor: pointer;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        position: relative;
+        transition: background-color 0.3s, border 0.2s;
+    }
+    .highlight {
+        border: 3px solid #00FF00 !important; /* Bright green border */
+        background-color: rgba(0,255,0,0.3) !important; /* Light green background */
+        z-index: 1000;
     }
     /* --- End Navigation Bar Styles --- */
     #preloader {
@@ -237,19 +246,19 @@
 <audio id="clickSound" src="click.wav"></audio>
 <!-- Navigation clickable areas -->
 <div class="clickable-area" id="area1" style="top: 20px; left: 18%;">
-    <a class="nav-link" href="stats.html" onclick="playSound(event)"></a>
+    <a class="nav-link" href="stats.html" onclick="playSound(event)"> </a>
 </div>
 <div class="clickable-area" id="area2" style="top: 20px; left: 31.5%;">
-    <a class="nav-link" href="inv.html" onclick="playSound(event)"></a>
+    <a class="nav-link" href="inv.html" onclick="playSound(event)"> </a>
 </div>
 <div class="clickable-area" id="area3" style="top: 20px; left: 45%;">
-    <a class="nav-link" href="index.html" onclick="playSound(event)"></a>
+    <a class="nav-link" href="index.html" onclick="playSound(event)"> </a>
 </div>
 <div class="clickable-area" id="area4" style="top: 20px; left: 58.5%;">
-    <a class="nav-link" href="map.html" onclick="playSound(event)"></a>
+    <a class="nav-link" href="map.html" onclick="playSound(event)"> </a>
 </div>
 <div class="clickable-area" id="area5" style="top: 20px; right: 15.2%;">
-    <a class="nav-link" href="radio.html" onclick="playSound(event)"></a>
+    <a class="nav-link" href="radio.html" onclick="playSound(event)"> </a>
 </div>
 <!-- Navigation Bar: End -->
 
@@ -276,11 +285,27 @@
     <span onclick="resetTasks()" class="resetBtn">Reset</span>
     <audio id="confettiSound" src="confetti.wav" preload="auto"></audio>
     <audio id="statusCompleteSound" src="level up.wav" preload="auto"></audio>
-    <!-- Removed old navigation bar to avoid duplication -->
 </div>
 
 <script>
-// --- Navigation Bar click sound logic ---
+// --- Navigation Bar logic with highlight, keyboard, swipe, and sound ---
+const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="map.html"]'),
+    document.querySelector('a[href="radio.html"]')
+];
+
+let currentIndex = 0;
+let debounceTimeout = null;
+const DEBOUNCE_DELAY = 300; // ms
+
+function debounceAction(callback) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+}
+
 function playSound(event) {
     event.preventDefault();
     var audio = document.getElementById('clickSound');
@@ -289,9 +314,96 @@ function playSound(event) {
         window.location.href = event.target.href;
     }, 500);
 }
-// --- End Navigation Bar click sound logic ---
 
-// Load the saved progress from localStorage if available
+// Highlight the currently selected area
+function highlightArea(index) {
+    clickableAreas.forEach((area, i) => {
+        if (i === index) {
+            area.classList.add('highlight');
+        } else {
+            area.classList.remove('highlight');
+        }
+    });
+}
+
+// Move highlight to next area
+function highlightNextArea() {
+    debounceAction(() => {
+        currentIndex = (currentIndex + 1) % clickableAreas.length;
+        highlightArea(currentIndex);
+        document.getElementById('clickSound').play();
+    });
+}
+
+// Move highlight to previous area
+function highlightPreviousArea() {
+    debounceAction(() => {
+        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length;
+        highlightArea(currentIndex);
+        document.getElementById('clickSound').play();
+    });
+}
+
+// Activate highlighted area
+function activateSelectedArea() {
+    clickableAreas[currentIndex].click();
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+        highlightNextArea();
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+        highlightPreviousArea();
+    } else if (event.key === 'Enter') {
+        activateSelectedArea();
+    }
+});
+
+// Mouse wheel navigation
+window.addEventListener('wheel', function(event) {
+    event.preventDefault();
+    if (event.deltaY > 0) {
+        highlightNextArea();
+    } else {
+        highlightPreviousArea();
+    }
+}, { passive: false });
+
+// Touch/swipe navigation & double-tap
+let touchStartY = 0;
+let lastTapTime = 0;
+const DOUBLE_TAP_THRESHOLD = 500;
+
+document.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+        const currentTime = new Date().getTime();
+        if (currentTime - lastTapTime < DOUBLE_TAP_THRESHOLD) {
+            activateSelectedArea();
+        }
+        lastTapTime = currentTime;
+    }
+}, {passive: false});
+
+document.addEventListener('touchmove', function(e) {
+    if (e.touches.length === 1) {
+        const touchEndY = e.touches[0].clientY;
+        const screenHeight = window.innerHeight;
+        if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
+            highlightNextArea();
+        } else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
+            highlightPreviousArea();
+        }
+    }
+}, {passive: false});
+
+// Initial highlight
+highlightArea(currentIndex);
+
+// --- END Navigation Bar logic ---
+
+// --- Your main todo logic below (unchanged) ---
 function loadProgress() {
   const savedProgress = localStorage.getItem('progress');
   const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
