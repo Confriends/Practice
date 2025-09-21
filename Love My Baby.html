@@ -14,6 +14,11 @@
       margin: 0;
       background: #f5f5f5;
     }
+    .dice-container {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
     .dice {
       font-size: 5rem;
       width: 6rem;
@@ -24,9 +29,8 @@
       border: 3px solid #222;
       border-radius: 1rem;
       background: #fff;
-      margin-bottom: 2rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       user-select: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       cursor: pointer;
       transition: box-shadow 0.2s;
     }
@@ -36,16 +40,49 @@
     .label {
       font-size: 1.2rem;
       color: #555;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .dice-container {
+        gap: 1rem;
+      }
+      .dice {
+        font-size: 3rem;
+        width: 3.5rem;
+        height: 3.5rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="label">Tap the die to roll</div>
-  <div class="dice" id="dice">?</div>
+  <div class="label">Tap anywhere to roll the dice</div>
+  <div class="dice-container">
+    <div class="dice" id="dice1">?</div>
+    <div class="dice" id="dice2">?</div>
+    <div class="dice" id="dice3">?</div>
+  </div>
   <script>
     const faces = ["L", "R", "C", "•", "•", "•"];
-    const dice = document.getElementById("dice");
+    const diceEls = [
+      document.getElementById("dice1"),
+      document.getElementById("dice2"),
+      document.getElementById("dice3")
+    ];
 
-    function rollDice() {
-      const face = faces[Math
+    function rollAllDice() {
+      diceEls.forEach(die => {
+        const face = faces[Math.floor(Math.random() * faces.length)];
+        die.textContent = face;
+      });
+    }
+
+    // Roll when tapping anywhere on the body
+    document.body.addEventListener("click", rollAllDice);
+    document.body.addEventListener("touchstart", rollAllDice);
+
+    // Optional: initial roll when page loads
+    rollAllDice();
+  </script>
+</body>
+</html>
