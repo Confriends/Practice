@@ -1,258 +1,51 @@
-<html>
-   <audio id="clickSound" src="click.wav"></audio> <!-- Existing click sound -->
-   <audio id="specialClickSound" src="click.wav"></audio> <!-- New sound for 3 links -->
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=.5">
-<style>
-body {
-    background-image: url('inv.png'); /* replace with your image path */
-    background-size: cover;
-    background-position: center top;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: black;
-    margin: 0;
-    height: 100vh;
-    overflow: hidden; /* Prevent page scrolling */
-}
-        /* Your CSS styles go here */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            overflow: hidden;
-            margin-top: 70px;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 15%;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-ul {
-    margin: 100px;
-    padding: 100px;
-    width: 55%;
-    top: 10%
-    float: left;
-}
-
-ul {
-    list-style-type: none;
-    padding: 50;
-}
-
-li {
-    margin-top: 0px;
-    margin-bottom: 10px;
-}
-        /* Your CSS styles go here */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            overflow: hidden;
-            margin-top: 70px;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 10%;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-/* Highlighted state for clickable areas */
-.highlight {
-    border: 3px solid #00FF00; /* Bright green border */
-    background-color: rgba(0, 255, 0, 0.3); /* Light green background for better visibility */
-}
-
-a:hover {
-    background-color: transparent;
-}
-
-.clickable-area {
-    position: absolute;
-    width: 250px;
-    height: 150px;
-    background-color: transparent;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>LRC Dice Generator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #f5f5f5;
+    }
+    .dice {
+      font-size: 5rem;
+      width: 6rem;
+      height: 6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #222;
+      border-radius: 1rem;
+      background: #fff;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      user-select: none;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    .dice:active {
+      box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    }
+    .label {
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 1rem;
+    }
+  </style>
 </head>
-
 <body>
-   <div class="video-container">
-   <iframe width="560" height="315" src="https://www.youtube.com/embed/HkMD3nZqw0Q?si=j8HMyA-wGts45Q8O" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-    </div>
+  <div class="label">Tap the die to roll</div>
+  <div class="dice" id="dice">?</div>
+  <script>
+    const faces = ["L", "R", "C", "•", "•", "•"];
+    const dice = document.getElementById("dice");
 
-<!-- Your clickable areas arranged in the correct order -->
-<div class="clickable-area" id="area1" style="position: absolute; top: 20px; left: 18%;">
-    <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
-</div>
-
-<div class="clickable-area" id="area2" style="position: absolute; top: 20px; left: 31.5%;"> 
-<a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
-</div>
-
-
-<div class="clickable-area" id="area3" style="position: absolute; top: 20px; left: 44%;">
-    <a href="index.html" style="display: block; width: 55%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
-</div>
-
-   <div class="clickable-area" id="area4" style="position: absolute; top: 20px; left: 58.5%;">
-    <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
-</div>
-
-<div class="clickable-area" id="area5" style="position: absolute; top: 20px; right: 13.3%;">
-    <a href="radio.html" style="display: block; width: 60%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
-</div>
-
-
-<script>
-// All clickable areas (both <li> and <div class="clickable-area">)
-const clickableAreas = [
-    document.querySelector('a[href="stats.html"]'),
-    document.querySelector('a[href="inv.html"]'),
-    document.querySelector('a[href="index.html"]'),
-    document.querySelector('a[href="map.html"]'),
-    document.querySelector('a[href="radio.html"]'),
-];
-
-let currentIndex = 0; // Starting index
-
-// Debounce variables
-let debounceTimeout = null;
-const DEBOUNCE_DELAY = 300; // 300ms delay
-
-function debounceAction(callback) {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(callback, DEBOUNCE_DELAY);
-}
-
-// Function to play the appropriate sound
-function playSound(event) {
-    event.preventDefault(); // Prevent the default link behavior until we are ready
-    
-    if (event.target.innerText === "Fallout Radio" || event.target.innerText === "BRAT" || event.target.innerText === "Station 3") {
-        var specialAudio = document.getElementById('specialClickSound');
-        specialAudio.play(); // Play the special sound
-    } else {
-        var audio = document.getElementById('clickSound');
-        audio.play(); // Play the default click sound
-    }
-
-    // Delay opening the new page to allow the sound to play
-    setTimeout(function() {
-        window.open(event.target.href, '_blank'); // Open the link after the delay
-    }, 500); // Adjust the delay as needed
-}
-
-// Function to highlight the next clickable area
-function highlightNextArea() {
-    debounceAction(() => {
-        clickableAreas[currentIndex].classList.remove('highlight');
-        currentIndex = (currentIndex + 1) % clickableAreas.length; // Increment index
-        clickableAreas[currentIndex].classList.add('highlight');
-        var audio = document.getElementById('clickSound');
-        audio.play(); // Play click sound
-    });
-}
-
-// Function to highlight the previous clickable area
-function highlightPreviousArea() {
-    debounceAction(() => {
-        clickableAreas[currentIndex].classList.remove('highlight');
-        currentIndex = (currentIndex - 1 + clickableAreas.length) % clickableAreas.length; // Decrement index
-        clickableAreas[currentIndex].classList.add('highlight');
-        var audio = document.getElementById('clickSound');
-        audio.play(); // Play click sound
-    });
-}
-
-// Function to activate the currently highlighted area (simulate a click)
-function activateSelectedArea() {
-    const currentLink = clickableAreas[currentIndex];
-    currentLink.click(); // Simulate a click on the highlighted area
-}
-
-// Handling touch events for swipe detection
-let touchStartY = 0; // Track the initial touch position
-let lastSwipeTime = 0; // Track the time of the last swipe
-const DOUBLE_SWIPE_THRESHOLD = 500; // Maximum time between swipes for a double swipe to be detected
-
-document.addEventListener('touchstart', function(e) {
-    touchStartY = e.touches[0].clientY; // Store the initial Y position on touch start
-});
-
-document.addEventListener('touchmove', function(e) {
-    const touchEndY = e.touches[0].clientY; // Get the current touch position
-    const screenHeight = window.innerHeight;
-
-    // Swipe up from the top half of the screen (move forward)
-    if (touchStartY > touchEndY && touchEndY < screenHeight / 2) {
-        highlightNextArea();
-    }
-    // Swipe down from the bottom half of the screen (move backward)
-    else if (touchStartY < touchEndY && touchEndY > screenHeight / 2) {
-        const currentTime = Date.now();
-
-        // Check if this swipe is within the DOUBLE_SWIPE_THRESHOLD time from the last swipe
-        if (currentTime - lastSwipeTime < DOUBLE_SWIPE_THRESHOLD) {
-            console.log("Double back detected! Adjusting behavior...");
-            highlightPreviousArea(); // Only go back one step
-        } else {
-            highlightPreviousArea();
-        }
-
-        // Update the last swipe time to the current time
-        lastSwipeTime = currentTime;
-    }
-});
-
-// Handling mouse wheel events to cycle through clickable areas
-window.addEventListener('wheel', function(event) {
-    event.preventDefault(); // Prevent default scroll behavior
-    
-    if (event.deltaY > 0) {
-        highlightNextArea(); // Scroll down -> Move forward
-    } else {
-        highlightPreviousArea(); // Scroll up -> Move backward
-    }
-}, { passive: false }); // Allows calling event.preventDefault()
-
-// Add event listeners for device buttons or keyboard
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-        highlightNextArea(); // Move forward (Right/Down)
-    }
-    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-        highlightPreviousArea(); // Move backward (Left/Up)
-    }
-    else if (event.key === 'Enter') {
-        activateSelectedArea(); // Select the highlighted link
-    }
-});
-
-// Handling double-tap logic for touch devices (if needed)
-let lastTapTime = 0;
-const DOUBLE_TAP_THRESHOLD = 500; // Threshold for double tap
-
-document.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    const currentTime = new Date().getTime();
-    const timeDifference = currentTime - lastTapTime;
-
-    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
-        activateSelectedArea();
-    } else {
-        highlightNextArea();
-    }
-    lastTapTime = currentTime;
-});
-</script>
-
-</body>
-</html>
+    function rollDice() {
+      const face = faces[Math
