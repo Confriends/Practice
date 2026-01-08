@@ -76,5 +76,98 @@
       color: #0c5116;
     }
     #pac-input {
-*
-
+      position: fixed;
+      top: 70vh;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+      width: 300px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 2px solid #00FF00;
+      font-family: monospace;
+      background: #111;
+      color: #00FF00;
+      font-size: 1em;
+      outline: none;
+    }
+    #pac-input:focus {
+      border-color: #00FF99;
+      background: #181;
+      color: #B4FFB4;
+    }
+  </style>
+</head>
+<body>
+
+<audio id="clickSound" src="click.wav"></audio>
+
+<!-- Search input -->
+<input id="pac-input" class="controls" type="text" placeholder="Search for a place or address">
+
+<!-- Add Quest Location button -->
+<button id="addQuestBtn" title="Add a quest location to the map">+ Add Quest Location</button>
+
+<!-- Navigation clickable areas -->
+<div class="clickable-area" id="area1" style="top: 20px; left: 18%;">
+  <a href="stats.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area2" style="top: 20px; left: 31.5%;">
+  <a href="inv.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area3" style="top: 20px; left: 45%;">
+  <a href="index.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area4" style="top: 20px; left: 58.5%;">
+  <a href="map.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+<div class="clickable-area" id="area5" style="top: 20px; right: 10.2%;">
+  <a href="radio.html" style="display: block; width: 50%; height: 50%; background-color: transparent;" onclick="playSound(event)"></a>
+</div>
+
+<!-- Map/Scrollable Image Container -->
+<div class="map-container" id="mapContainer">
+  <img src="20260108_145151.jpg" alt="Scrollable full image" class="scrollable-image">
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addQuestBtn').addEventListener('click', function() {
+      alert("The map has been replaced with an image. Functionality to add quest locations is disabled.");
+    });
+
+    // Add touch navigation for nav links (one tap/touch to open)
+    document.querySelectorAll('.clickable-area a').forEach(link => {
+      link.ontouchstart = null;
+      link.addEventListener('touchstart', function(event) {
+        event.preventDefault();
+        playSound(event);
+      }, { passive: false });
+    });
+  });
+
+  function playSound(event) {
+    event.preventDefault();
+    var audio = document.getElementById('clickSound');
+    audio.play();
+    setTimeout(function() {
+      window.location.href = event.target.href;
+    }, 500);
+  }
+
+  const clickableAreas = [
+    document.querySelector('a[href="stats.html"]'),
+    document.querySelector('a[href="inv.html"]'),
+    document.querySelector('a[href="index.html"]'),
+    document.querySelector('a[href="map.html"]'),
+    document.querySelector('a[href="radio.html"]'),
+  ];
+
+  function highlightNextArea() {
+    const currentLink = clickableAreas[0];
+    currentLink.click();
+  }
+</script>
+
+</body>
+</html>
